@@ -6,7 +6,7 @@
   <link href="https://rma-shuyu.github.io/atom.xml" rel="self"/>
   
   <link href="https://rma-shuyu.github.io/"/>
-  <updated>2022-11-01T12:41:05.099Z</updated>
+  <updated>2022-11-01T13:08:13.333Z</updated>
   <id>https://rma-shuyu.github.io/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Linux小工具</title>
+    <link href="https://rma-shuyu.github.io/2020/10/25/Linux%E5%B0%8F%E5%B7%A5%E5%85%B7/"/>
+    <id>https://rma-shuyu.github.io/2020/10/25/Linux%E5%B0%8F%E5%B7%A5%E5%85%B7/</id>
+    <published>2020-10-25T11:20:04.000Z</published>
+    <updated>2022-11-01T13:08:13.333Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="w"><a href="#w" class="headerlink" title="w"></a>w</h2><p>可以查看当前登陆系统的用户有哪些</p><h2 id="nmon"><a href="#nmon" class="headerlink" title="nmon"></a>nmon</h2><p>nmon 是一个可以监控当前系统性能的小工具， 可以查看网络、CPU、内存和磁盘的使用情况<br><a href="https://blog.csdn.net/qq_35304570/article/details/81351065">下载及安装地址</a><br><img src="7412cebccfaa9dcfcfb8949d91a8bc1c328a30575b5cb9a654df8f6128293eca.png" alt="图 1">  </p><ul><li>按键“c”可以查看CPU相 关信息;</li><li>“m”对应内存、“n”对应网络;</li><li>按键“d”可以查看磁盘信息;</li><li>按键“t”可以查看系统的进程信息，h是帮助等等；<br><img src="0f372c8376114a6a7d5b8f69a311381262922683addbd7b178d99cf8348df8ee.png" alt="图 2">  </li></ul><h2 id="ncdu"><a href="#ncdu" class="headerlink" title="ncdu"></a>ncdu</h2><p>ncdu 命令可以用来查看和分析 Linux 中各目录对磁盘空间占用情况的工具<br>执行 命令  ncdu /home/alipms</p><ul><li>分析完成后，会生成类似如下截图的输出。</li><li><a href="http://blog.51cto.com/daxionglaiba/1828379">下载及安装地址</a></li></ul><p> <img src="b0e3db3c71edf8969fc99b30c4d601ac3a5dfee64a7780247710c3ca70305811.png" alt="图 3">  </p><h2 id="findmnt"><a href="#findmnt" class="headerlink" title="findmnt"></a>findmnt</h2><p>是一个 Linux 内置的命令行工具，它主要用于查找挂载的文件系统状态。Findmnt 可以查看到当前系统中已挂载的设备，在必要时还可进行 mount 或 umount 操作<br><img src="89dcb4566e506c15bb4a169ae465f7bfe31ee003ac1df04c821b706fa362a42f.png" alt="图 4">  </p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;w&quot;&gt;&lt;a href=&quot;#w&quot; class=&quot;headerlink&quot; title=&quot;w&quot;&gt;&lt;/a&gt;w&lt;/h2&gt;&lt;p&gt;可以查看当前登陆系统的用户有哪些&lt;/p&gt;
+&lt;h2 id=&quot;nmon&quot;&gt;&lt;a href=&quot;#nmon&quot; class=&quot;headerlink&quot; titl</summary>
+      
+    
+    
+    
+    <category term="linux" scheme="https://rma-shuyu.github.io/categories/linux/"/>
+    
+    
+    <category term="linux" scheme="https://rma-shuyu.github.io/tags/linux/"/>
+    
+  </entry>
   
   <entry>
     <title>vscode使用md</title>
