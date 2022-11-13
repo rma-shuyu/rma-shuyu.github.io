@@ -1,6 +1,349 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>mlx5 dpdk编译</title>
+    <url>/2021/01/07/mlx5-dpdk%E7%BC%96%E8%AF%91/</url>
+    <content><![CDATA[<h2 id="MLX5运行环境安装"><a href="#MLX5运行环境安装" class="headerlink" title="MLX5运行环境安装"></a>MLX5运行环境安装</h2><p>MLNX_OFED_LINUX-5.4-1.0.3.0-rhel7.4-x86_64.tgz<br>该驱动下载官网：<a href="https://www.mellanox.com/products/infiniband-drivers/linux/mlnx_ofed">https://www.mellanox.com/products/infiniband-drivers/linux/mlnx_ofed</a><br>简要安装步骤<br>将MLNX_OFED_LINUX-5.4-1.0.3.0-rhel7.4-x86_64.tgz放在/home/setup目录，解压，进入解压包的顶层目录,里面有两个脚本mlnxofedinstall跟mlnx_add_kernel_support.sh， 首先执行<br>./mlnxofedinstall –upstream-libs –dpdk –add-kernel-support</p>
+<p>请严格按照所给参数进行安装，安装中间可能会出现一些依赖库的安装，请自行使用yum安装。安装完成后进行下一步<br>/etc/init.d/openibd restart</p>
+<p>这里有个特殊点，如果出现以上报错 ： rmmod: ERROR: Module rdma_cm is in use by: rpcrdma ib_isert<br>把对应的模块停掉就好了。查看 lsmod |grep rdma_cm<br>modprobe -r rpcrdma<br>modprobe -r ib_isert<br>这个完成后，然后运行第二个脚本<br>./mlnx_add_kernel_support.sh -m /home/setup/MLNX_OFED_LINUX-5.4-1.0.3.0-rhel7.4-x86_64 -v</p>
+<p><strong>注意：</strong><br> /home/setup/MLNX_OFED_LINUX-5.4-1.0.3.0-rhel7.4-x86_64 这个是实际该安装包的压缩目录，最好使用绝对路径（相对路径未使用过）</p>
+<h2 id="DPDK编译（20-11）"><a href="#DPDK编译（20-11）" class="headerlink" title="DPDK编译（20.11）"></a>DPDK编译（20.11）</h2><p>DPDK编译版本：20.11<br>编译依赖：MLX5运行环境的安装，因为meson build时会检查当前系统环境，存在MLX5运行环境时，meson build会自动加载MLX5相关的静态动态库<br>应用程序编译：</p>
+<ol>
+<li><p>检查DPDK编译是否存在MLX5相关的静态动态库，如果不存在需要重新安装MLX5运行环境<br><img src="44d0628aecf620aed3d1ec30cfc18e64f190703e83be9b80c34777eac91ec158.png" alt="图 7">  </p>
+</li>
+<li><p>编译配置添加rte_common_mlx5、rte_net_mlx5静态库 </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">DBDK_LIBS        += -lrte_common_mlx5</span><br><span class="line">DBDK_LIBS        += -lrte_net_mlx5</span><br></pre></td></tr></table></figure></li>
+<li><p>链接-lmlx5 -libverbs动态库</p>
+</li>
+<li><p>执行程序编译，编译完之后检查应用程序是否能找到链接的动态库，如果不能的话需要检查动态库的安装位置</p>
+</li>
+</ol>
+<h2 id="DPDK编译（18-11）"><a href="#DPDK编译（18-11）" class="headerlink" title="DPDK编译（18.11）"></a>DPDK编译（18.11）</h2><p>DPDK编译版本：18.11<br>编译依赖：MLX5运行环境的安装，依赖安装后的动态库<br>应用程序编译： </p>
+<ol>
+<li><p>18.11通过make&amp;&amp;make install来编译相关网卡支持的驱动库<br>修改DPDK源码目录config/common-base文件内的CONFIG_RTE_LIBRTE_MLX5_PMD选项<br>CONFIG_RTE_LIBRTE_MLX5_PMD=y<br>会将rte_pmd_mlx5静态库编译到指定目录中 </p>
+</li>
+<li><p>编译配置添加rte_pmd_mlx5静态库 </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">DBDK_LIBS        += -lrte_pmd_mlx5</span><br></pre></td></tr></table></figure></li>
+<li><p>链接 -lmlx5 -libverbs -lmnl动态库</p>
+</li>
+<li><p>执行程序编译，编译完之后检查应用程序是否能找到链接的动态库，如果不能的话需要检查动态库的安装位置<br><img src="f559d10e5e4010af751779993a8476d896d3546c5fa7de3a248ce553c39a1454.png" alt="图 8">  </p>
+</li>
+</ol>
+<h2 id="DPDK应用程序启动"><a href="#DPDK应用程序启动" class="headerlink" title="DPDK应用程序启动"></a>DPDK应用程序启动</h2><ol>
+<li><p>判断网卡驱动是否为MLX</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./DPDK/dpdk-devbind.py -s | grep <span class="variable">$&#123;DEV_LIST[0]&#125;</span> | grep mlx</span><br></pre></td></tr></table></figure></li>
+<li><p>如果是MLX驱动则加载ib_uverbs mlx5_core mlx5_ib，正常分配大页 </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo /sbin/modprobe -a ib_uverbs mlx5_core mlx5_ib</span><br><span class="line">/sbin/lsmod | grep -s ib_uverbs &gt; /dev/null</span><br><span class="line"><span class="keyword">if</span> [ $? -ne 0 ] ; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;## ERROR: Could not load ib_uverbs.&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">/sbin/lsmod | grep -s mlx5_core &gt; /dev/null</span><br><span class="line"><span class="keyword">if</span> [ $? -ne 0 ] ; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;## ERROR: Could not load mlx5_core.&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">/sbin/lsmod | grep -s mlx5_ib &gt; /dev/null</span><br><span class="line"><span class="keyword">if</span> [ $? -ne 0 ] ; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;## ERROR: Could not load mlx5_ib.&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>注意：</strong><br>    <strong>千万不要安装igb_uio与vfio-pci驱动，要不然mlx5无法启动</strong></p>
+<ol start="3">
+<li>添加pci的id号至bind_nic.log<br>程序在eal初始化时需要-a指定该文件中的参数，<strong>注意不要将管理口添加进去</strong>，否则进程会将管理口托管，导致其他应用无法使用管理口</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pci_id[0]=`./DPDK/dpdk-devbind.py -s | grep <span class="variable">$&#123;DEV_LIST[0]&#125;</span> | awk <span class="string">&#x27;&#123;print $1&#125;&#x27;</span>`</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$&#123;pci_id[0]&#125;</span> if=<span class="variable">$&#123;DEV_LIST[0]&#125;</span> ip=None mask=None now_drv=mlx5_core old_drv=igb_uio&quot;</span> &gt; bind_nic.log</span><br><span class="line"><span class="keyword">for</span>((i=1; i&lt;<span class="variable">$&#123;DEV_NUM&#125;</span>; i++));</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    pci_id[<span class="variable">$i</span>]=`./DPDK/dpdk-devbind.py -s | grep <span class="variable">$&#123;DEV_LIST[$i]&#125;</span> | awk <span class="string">&#x27;&#123;print $1&#125;&#x27;</span>`</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$&#123;pci_id[$i]&#125;</span> if=<span class="variable">$&#123;DEV_LIST[$i]&#125;</span> ip=None mask=None now_drv=mlx5_core old_drv=igb_uio&quot;</span> &gt;&gt; bind_nic.log</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>DPDK</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>DPDK</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>wsl常用命令</title>
+    <url>/2020/11/07/wsl%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="基本"><a href="#基本" class="headerlink" title="基本"></a>基本</h1><h2 id="列出可用的-Linux-发行版"><a href="#列出可用的-Linux-发行版" class="headerlink" title="列出可用的 Linux 发行版"></a>列出可用的 Linux 发行版</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --list --online</span><br></pre></td></tr></table></figure>
+<p><img src="7ec56d6171fba0cf87c50f6de7c7b91acf1ae3f2f158f41d224f2292ff1875de.png" alt="图 10">  </p>
+<h2 id="列出已安装的-Linux-发行版"><a href="#列出已安装的-Linux-发行版" class="headerlink" title="列出已安装的 Linux 发行版"></a>列出已安装的 Linux 发行版</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --list --verbose</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl -l -v</span><br></pre></td></tr></table></figure>
+<p><img src="8910516bd8ed4d4e895e9d4783f8a8ed25359315f576169c8b6570b7a1febe42.png" alt="图 11">  </p>
+<h2 id="安装特定的-Linux-发行版"><a href="#安装特定的-Linux-发行版" class="headerlink" title="安装特定的 Linux 发行版"></a>安装特定的 Linux 发行版</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --install --distribution &lt;Distribution Name&gt;</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --install -d &lt;Distribution Name&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="启动并进入特定的版本"><a href="#启动并进入特定的版本" class="headerlink" title="启动并进入特定的版本"></a>启动并进入特定的版本</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl -d &lt;Distribution Name&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="将-WSL-版本设置为-1-或-2"><a href="#将-WSL-版本设置为-1-或-2" class="headerlink" title="将 WSL 版本设置为 1 或 2"></a>将 WSL 版本设置为 1 或 2</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --set-version &lt;distribution name&gt; &lt;versionNumber&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="设置默认-WSL-版本"><a href="#设置默认-WSL-版本" class="headerlink" title="设置默认 WSL 版本"></a>设置默认 WSL 版本</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --set-default-version &lt;Version&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="设置默认-Linux-发行版"><a href="#设置默认-Linux-发行版" class="headerlink" title="设置默认 Linux 发行版"></a>设置默认 Linux 发行版</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --set-default &lt;Distribution Name&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="更新-WSL"><a href="#更新-WSL" class="headerlink" title="更新 WSL"></a>更新 WSL</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --update</span><br></pre></td></tr></table></figure>
+
+<h2 id="检查-WSL-状态"><a href="#检查-WSL-状态" class="headerlink" title="检查 WSL 状态"></a>检查 WSL 状态</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --status</span><br></pre></td></tr></table></figure>
+
+<h2 id="Help-命令"><a href="#Help-命令" class="headerlink" title="Help 命令"></a>Help 命令</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --<span class="built_in">help</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="进阶"><a href="#进阶" class="headerlink" title="进阶"></a>进阶</h1><h2 id="导出"><a href="#导出" class="headerlink" title="导出"></a>导出</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --<span class="built_in">export</span> Ubuntu-20.04 d:\ubuntu20.04.tar</span><br></pre></td></tr></table></figure>
+
+<h2 id="导入"><a href="#导入" class="headerlink" title="导入"></a>导入</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --import &lt;DistributionName&gt;  &lt;安装位置&gt;  &lt;tar文件名&gt;</span><br></pre></td></tr></table></figure>
+<p>例如：<br>在d盘ubuntu目录下导入ubuntu20.04.tar，指定wsl2版本，则命令如下</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --import Ubuntu-20.04 d:\ubuntu d:\ubuntu20.04.tar --version 2</span><br></pre></td></tr></table></figure>
+<p><strong>导入时改变DistributionName(如Ubuntu-20.04改成Ubuntu)，会导致WSL不可用。</strong></p>
+<h2 id="Ubuntu修改默认登陆用户"><a href="#Ubuntu修改默认登陆用户" class="headerlink" title="Ubuntu修改默认登陆用户"></a>Ubuntu修改默认登陆用户</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ubuntu2004.exe config --default-user root</span><br></pre></td></tr></table></figure>
+
+<h2 id="注销发行版"><a href="#注销发行版" class="headerlink" title="注销发行版"></a>注销发行版</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --unregister Ubuntu-20.04</span><br></pre></td></tr></table></figure>
+
+<h2 id="LxRunOffline"><a href="#LxRunOffline" class="headerlink" title="LxRunOffline"></a>LxRunOffline</h2><p>可以安装任何linux发行版，例如centos</p>
+]]></content>
+      <categories>
+        <category>WSL</category>
+      </categories>
+      <tags>
+        <tag>WSL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>wsl设置开机启动ssh服务</title>
+    <url>/2020/11/07/wsl%E8%AE%BE%E7%BD%AE%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8ssh%E6%9C%8D%E5%8A%A1/</url>
+    <content><![CDATA[<h2 id="安装ssh服务"><a href="#安装ssh服务" class="headerlink" title="安装ssh服务"></a>安装ssh服务</h2><p>说明:虽然已经安装了ssh服务，但是好像默认自带的不能用。所以需要先卸载再安装。</p>
+<p>执行以下命令进行卸载和安装</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">sudo apt remove openssh-server</span><br><span class="line">sudo apt install openssh-server</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h2><p>编辑ssh配置文件，/etc/ssh/sshd_config，修改的配置项如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">Port 1220</span><br><span class="line">ListenAddress 0.0.0.0</span><br><span class="line"></span><br><span class="line">PermitRootLogin <span class="built_in">yes</span></span><br><span class="line"></span><br><span class="line">PasswordAuthentication <span class="built_in">yes</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>service ssh restart</code></p>
+<h2 id="添加开机自启动ssh服务"><a href="#添加开机自启动ssh服务" class="headerlink" title="添加开机自启动ssh服务"></a>添加开机自启动ssh服务</h2><ol>
+<li>在 Windows10 上，使用 windows + r 键，调出运行，输入 shell:startup 进入开机启动项文件夹</li>
+<li>新建wsl.bat</li>
+<li>添加如下内容：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">C:\Users\rma.ma\AppData\Local\Microsoft\WindowsApps\ubuntu1804.exe run <span class="string">&quot;sudo service ssh start&quot;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
+      <categories>
+        <category>WSL</category>
+      </categories>
+      <tags>
+        <tag>WSL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>wsl安装Ubuntu</title>
+    <url>/2020/11/07/wsl%E5%AE%89%E8%A3%85Ubuntu/</url>
+    <content><![CDATA[<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>wsl常用命令<br>wsl设置开机启动ssh服务</p>
+<h2 id="查看已经安装和可安装的版本"><a href="#查看已经安装和可安装的版本" class="headerlink" title="查看已经安装和可安装的版本"></a>查看已经安装和可安装的版本</h2><p>通过<code>wsl -l -v</code>和<code>wsl -l -o</code>查看已经安装和可安装的版本，本次已Ubuntu-20.04为例做安装<br><img src="89215c6f60f9caf5a5f38ee811a945b01e4da2330e72059db9818db0a9f1b4ff.png" alt="图 1">  </p>
+<h2 id="安装Ubuntu-20-04发行版"><a href="#安装Ubuntu-20-04发行版" class="headerlink" title="安装Ubuntu-20.04发行版"></a>安装Ubuntu-20.04发行版</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --install -d Ubuntu-20.04</span><br></pre></td></tr></table></figure>
+<p><img src="81a43f49f8cb1b173ca879badc27f2759dbbf6a494d06eec9c85248927b1b9a2.png" alt="图 2">  </p>
+<h2 id="设置默认登录用户为root"><a href="#设置默认登录用户为root" class="headerlink" title="设置默认登录用户为root"></a>设置默认登录用户为root</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ubuntu2004.exe config --default-user root</span><br></pre></td></tr></table></figure>
+<p>设置root密码<br><img src="541acf7bef46d4c729ce79102a7f79530634818c2c5a011be37a4b245d0b7a5b.png" alt="图 3">  </p>
+<h2 id="ssh登录"><a href="#ssh登录" class="headerlink" title="ssh登录"></a>ssh登录</h2><ol>
+<li><p>启动并进入Ubuntu-20.04</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl -d Ubuntu-20.04</span><br></pre></td></tr></table></figure></li>
+<li><p><a href="https://www.cnblogs.com/zqifa/p/12910989.html">更换apt源</a><br>sudo cp /etc/apt/sources.list /etc/apt/sources.list.backup<br>vim /etc/apt/sources.list<br>内容如下</p>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#阿里云源</span></span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse</span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line"></span><br><span class="line"><span class="comment">#清华源</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释</span></span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse</span><br><span class="line"><span class="comment"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse</span></span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line"><span class="comment"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse</span></span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line"><span class="comment"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse</span></span><br><span class="line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line"><span class="comment"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 预发布软件源，不建议启用</span></span><br><span class="line"><span class="comment"># deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse</span></span><br><span class="line"><span class="comment"># deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#中科大源</span></span><br><span class="line"></span><br><span class="line">deb https://mirrors.ustc.edu.cn/ubuntu/ focal main restricted universe multiverse</span><br><span class="line">deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal main restricted universe multiverse</span><br><span class="line">deb https://mirrors.ustc.edu.cn/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line">deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line">deb https://mirrors.ustc.edu.cn/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line">deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line">deb https://mirrors.ustc.edu.cn/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line">deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line">deb https://mirrors.ustc.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse</span><br><span class="line">deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse</span><br><span class="line"></span><br><span class="line"><span class="comment">#网易163源</span></span><br><span class="line"></span><br><span class="line">deb http://mirrors.163.com/ubuntu/ focal main restricted universe multiverse</span><br><span class="line">deb http://mirrors.163.com/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line">deb http://mirrors.163.com/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line">deb http://mirrors.163.com/ubuntu/ focal-proposed main restricted universe multiverse</span><br><span class="line">deb http://mirrors.163.com/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ focal main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ focal-proposed main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>sudo apt-get update<br>sudo apt-get upgrade</p>
+<ol start="3">
+<li>wsl设置开机启动ssh服务</li>
+</ol>
+<h2 id="wsl连不上外网修复"><a href="#wsl连不上外网修复" class="headerlink" title="wsl连不上外网修复"></a>wsl连不上外网修复</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --shutdown</span><br><span class="line">netsh winsock reset</span><br><span class="line">netsh int ip reset all</span><br><span class="line">netsh winhttp reset proxy</span><br><span class="line">ipconfig /flushdns</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>重启电脑</p>
+]]></content>
+      <categories>
+        <category>WSL</category>
+      </categories>
+      <tags>
+        <tag>WSL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mlx5环境安装</title>
+    <url>/2020/11/06/mlx5%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>环境信息：centos7 x86_64 LINUX-5<br>yum install python-devel lsof<br>yum install -y createrepo<br>yum install tk</p>
+<h2 id="安装包准备"><a href="#安装包准备" class="headerlink" title="安装包准备"></a>安装包准备</h2><p>MLNX_OFED_LINUX-5.4-1.0.3.0-rhel7.4-x86_64.tgz<br>该驱动下载官网：<a href="https://www.mellanox.com/products/infiniband-drivers/linux/mlnx_ofed">https://www.mellanox.com/products/infiniband-drivers/linux/mlnx_ofed</a></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>cd /home/setup/MLNX_OFED_LINUX-5.4-3.0.3.0-rhel7.4-x86_64<br>./mlnxofedinstall –upstream-libs –dpdk –add-kernel-support<br><img src="4e802edfe5cc5c05e95ffa36e3e6dfff420d76854025737d8fb3443e86735814.png" alt="图 1">  </p>
+<p>/etc/init.d/openibd restart<br><img src="29957518d473b6b6cdaa1e4480719011baf03d8227fd6f6ede00c2d4d5ec2f49.png" alt="图 2"><br><img src="1d4b811ccacdda6cc4e574bdaf079b2dc3b8f90df193afac667c9fe17038ee82.png" alt="图 3">  </p>
+<p>./mlnx_add_kernel_support.sh -m /home/setup/MLNX_OFED_LINUX-5.4-3.0.3.0-rhel7.4-x86_64<br><img src="341a0189edff3f9b0067fc99d88cb0013ec896541ec2512522dc34cbb067711d.png" alt="图 4"><br><img src="e4b42ff5bc2aa8054c16240c88013b6115ebb3a25474d2243f2245d7df1d9b36.png" alt="图 5">  </p>
+<p>环境安装好后会有以下文件生成<br><img src="98bea2c8977a696b56a4a749b18c5fd7090eab8c98184d163332961836a417bf.png" alt="图 6">  </p>
+]]></content>
+      <categories>
+        <category>DPDK</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>DPDK</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux之大页内存</title>
+    <url>/2020/11/06/Linux%E4%B9%8B%E5%A4%A7%E9%A1%B5%E5%86%85%E5%AD%98/</url>
+    <content><![CDATA[<h2 id="Linux之大页内存"><a href="#Linux之大页内存" class="headerlink" title="Linux之大页内存"></a>Linux之大页内存</h2><p>Linux通过使用大页内存来取代传统的4kb内存页面，使得管理虚拟地址数变少，加快了从虚拟地址到物理地址的映射以及通过摒弃内存页面的换入换出以提高内存的整体性能。</p>
+<ul>
+<li>优点1：不存在页面由于内存空间不足引起的换入换出。</li>
+<li>优点2：相同的内存大小情况下，管理的虚拟地址减少，降低CPU管理内存地址压力。</li>
+<li>优点3：普通内存结构，每一个页面（4K）就需要64字节进行管理。使用大页内存可以降低管理查找页面负载。</li>
+<li>优点4：提高内存的整体性能。</li>
+</ul>
+<h2 id="Linux之透明大页"><a href="#Linux之透明大页" class="headerlink" title="Linux之透明大页"></a>Linux之透明大页</h2><p>由于 Huge pages 很难手动管理，而且通常需要对代码进行重大的更改才能有效的使用，因此 RHEL 6 开始引入了 Transparent Huge Pages （ THP ）， THP 是一个抽象层，能够自动创建、管理和使用传统大页。<br>大页面不是某个进程独占的，它是一个系统资源，<strong>如果透明大页面功能被打开，那么大页面会为所有进程服务</strong>。<br>Linux操作系统，<strong>默认打开了透明大页面功能</strong>（Transparent Hugepages），这个功能会使操作系统看到有大页面存在的时候，会在应用进程或者内核进程申请大块内存的时候，优先为它们分配大页面，大页面无法分配时，才会分配传统的4KB页面。</p>
+<h2 id="DPDK与大页内存"><a href="#DPDK与大页内存" class="headerlink" title="DPDK与大页内存"></a>DPDK与大页内存</h2><p>DPDK程序启动，rte_eal_init初始化环境抽象层（ EAL ）时候，映射Hugepages 。<br>当系统运行一段时间后，DPDK重启时rte_eal_init初始化可能失败，报错类似如下信息：<br>EAL: No free hugepages reported in hugepages-2048kB<br>EAL: Can only reserve 927 pages from 4096 requested<br>这个问题是说，在EAL在初始化的时候，无法从操作系统的Hugepages中找到所需要的连续的大页面。<br><strong>根本原因在于当前系统开启了透明大页，大页内存被系统分配给其他程序使用了</strong>。</p>
+<h2 id="查看与关闭透明大页"><a href="#查看与关闭透明大页" class="headerlink" title="查看与关闭透明大页"></a>查看与关闭透明大页</h2><p>相关命令：cat  /sys/kernel/mm/transparent_hugepage/enabled<br>echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled<br>echo never &gt; /sys/kernel/mm/transparent_hugepage/defrag</p>
+]]></content>
+      <categories>
+        <category>LINUX</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>大页内存</tag>
+        <tag>透明大页</tag>
+        <tag>DPDK</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>内存检测之valgrind</title>
+    <url>/2020/11/05/%E5%86%85%E5%AD%98%E6%A3%80%E6%B5%8B%E4%B9%8Bvalgrind/</url>
+    <content><![CDATA[<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>valgrind包含几个标准的工具，它们是：</p>
+<p>1、memcheck</p>
+<p>memcheck探测程序中内存管理存在的问题。它检查所有对内存的读/写操作，并截取所有的malloc/new/free/delete调用。因此memcheck工具能够探测到以下问题：</p>
+<p>1）使用未初始化的内存</p>
+<p>2）读/写已经被释放的内存</p>
+<p>3）读/写内存越界</p>
+<p>4）读/写不恰当的内存栈空间</p>
+<p>5）内存泄漏</p>
+<p>6）使用malloc/new/new[]和free/delete/delete[]不匹配。</p>
+<p>2、cachegrind</p>
+<p>cachegrind是一个cache剖析器。它模拟执行CPU中的L1, D1和L2 cache，因此它能很精确的指出代码中的cache未命中。如果你需要，它可以打印出cache未命中的次数，内存引用和发生cache未命中的每一行代码，每一个函数，每一个模块和整个程序的摘要。如果你要求更细致的信息，它可以打印出每一行机器码的未命中次数。在x86和amd64上，cachegrind通过CPUID自动探测机器的cache配置，所以在多数情况下它不再需要更多的配置信息了。</p>
+<p>3、helgrind</p>
+<p>helgrind查找多线程程序中的竞争数据。helgrind查找内存地址，那些被多于一条线程访问的内存地址，但是没有使用一致的锁就会被查出。这表示这些地址在多线程间访问的时候没有进行同步，很可能会引起很难查找的时序问题。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">valgrind --tool=memcheck --leak-check=full --show-reachable=<span class="built_in">yes</span> --trace-children=<span class="built_in">yes</span> --log-file=reportleak ./xxx</span><br></pre></td></tr></table></figure>
+
+<p>其中./xxx代表可执行程序，执行完之后将生产日志文件reportleak，<br>注意：如果是不停止程序，那么可以通过ctrl+c停止运行；如果是后台运行程序，那么可以top查看memcheck进程的pid，通过kill -2 该pid，发送ctrl+c信号停止。<br>一定要停止才能生存完整的reportleak</p>
+<h3 id="使用样例"><a href="#使用样例" class="headerlink" title="使用样例"></a>使用样例</h3><ol>
+<li><p>样例代码: 代码中Leak和AvoidLeak存在内存泄漏<br><img src="4f4d3f0f999e05d2751a403ca94b51e93d2cfe2ca198e493add36f27c1be5e12.png" alt="图 20">  </p>
+</li>
+<li><p>编译运行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">valgrind --tool=memcheck --leak-check=full --show-reachable=<span class="built_in">yes</span> --trace-children=<span class="built_in">yes</span> --log-file=reportleak ./test</span><br></pre></td></tr></table></figure>
+<p>查看reportleak中definitely的日志<br><img src="b217a8cfe633d131b63f5a5fe4656e37f93e91c0151b2b86e52e274289e3a51b.png" alt="图 21">  </p>
+</li>
+</ol>
+<h2 id="缺陷"><a href="#缺陷" class="headerlink" title="缺陷"></a>缺陷</h2><p>valgrind 的好处是不用编译应用程序即可进行内存泄漏的检测，而且内存泄漏无处遁形，上述相同的测试程序使用tcmalloc无法报出Leak的内存泄漏</p>
+<p>然而valgrind 太过于庞大，对机器硬件性能要求较高，在目前8核的机器上使用valgrind 会导致CPU飙高</p>
+]]></content>
+      <categories>
+        <category>内存检测</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>内存检测</tag>
+        <tag>valgrind</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>内存检测之asan</title>
+    <url>/2020/11/04/%E5%86%85%E5%AD%98%E6%A3%80%E6%B5%8B%E4%B9%8Basan/</url>
+    <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>addressSanitizer主要包括两部分：插桩(Instrumentation)和动态运行库(Run-time library)。<br>插桩主要是针对在llvm编译器级别对访问内存的操作(store，load，alloca等)，将它们进行处理。<br>动态运行库主要提供一些运行时的复杂的功能(比如poison/unpoison shadow memory)以及将malloc,free等系统调用函数hook住。<br>该算法的思路是：如果想防住Buffer Overflow漏洞，只需要在每块内存区域右端（或两端，能防overflow和underflow）加一块区域（RedZone），使RedZone的区域的影子内存（Shadow Memory)设置为不可写即可。</p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ul>
+<li>GCC版本4.8以及以上</li>
+<li>安装asan动态库(libasan)</li>
+<li>编译参数加上 -fsanitize=address -fno-omit-frame-pointer –g</li>
+<li>运行程序，查看结果</li>
+</ul>
+<h2 id="使用样例"><a href="#使用样例" class="headerlink" title="使用样例"></a>使用样例</h2><ul>
+<li><p>样例代码: 代码存在内存泄漏<br><img src="74b8a5a4910de02d7b8c993258ad787fcb32996313ef3cee0e2fd49e2f893f89.png" alt="图 10"></p>
+</li>
+<li><p>编译运行<br><img src="17b5883dc069c8c32892d589d2c9273eaf8124babca0590e2e5933689c15ada7.png" alt="图 11"></p>
+</li>
+<li><p>样例代码: 代码存在内存越界<br><img src="b92b03582a8c04de6737c16ec405f89fac0f399f3d068a802f478846ddc29634.png" alt="图 12"></p>
+</li>
+<li><p>编译运行<br><img src="5a57213a417566f56b5a0e91af3a8add8f4f77a95671a5830a807a5e4a97bc53.png" alt="图 13"></p>
+</li>
+</ul>
+<h1 id="AddressSanitizer能检测的错误"><a href="#AddressSanitizer能检测的错误" class="headerlink" title="AddressSanitizer能检测的错误"></a>AddressSanitizer能检测的错误</h1><p><img src="40fd715d333285db18a8d99dd4fa300f9f8105a6b0b3d80ceb78aeb4397aaa77.png" alt="图 14"></p>
+<h1 id="缺陷"><a href="#缺陷" class="headerlink" title="缺陷"></a>缺陷</h1><p>Asan目前能定位绝大都部分的内存越界；但是对于一些特殊情况下的越界访问好像是无法定位的；例如下面的场景</p>
+<p><img src="9871fbda3864c971db9013d26118f10f0cefc0081f03aa6b6eb0f8aae87427f0.png" alt="图 15"></p>
+<p>编译运行后，asan工具无法很好的抛出异常<br><img src="b8f42ac1161a0a1ab95e8f6bee047502485ba41942a947391067d3413c3a15d3.png" alt="图 16"><br>即，asan无法定位分配的有效内存内的越界，例如内存池或者结构体等，在连续有效的内存内哪怕一个成员覆盖了相邻成员的内存。</p>
+]]></content>
+      <categories>
+        <category>内存检测</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>内存检测</tag>
+        <tag>asan</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>内存检测之TCMalloc</title>
+    <url>/2020/11/03/%E5%86%85%E5%AD%98%E6%A3%80%E6%B5%8B%E4%B9%8Btcmalloc/</url>
+    <content><![CDATA[<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>TCMalloc就是一个内存分配器，管理堆内存，主要影响malloc和free，用于降低频繁分配、释放内存造成的性能损耗，并且有效地控制内存碎片。<br>glibc中的内存分配器是ptmalloc2，tcmalloc号称要比它快。<br>一次malloc和free操作，ptmalloc需要300ns，而tcmalloc只要50ns。<br>同时tcmalloc也优化了小对象的存储，需要更少的空间。<br>tcmalloc特别对多线程做了优化，对于小对象的分配基本上是不存在锁竞争，而大对象使用了细粒度、高效的自旋锁（spinlock）。<br>分配给线程的本地缓存，在长时间空闲的情况下会被回收，供其他线程使用，这样提高了在多线程情况下的内存利用率，不会浪费内存，而这一点ptmalloc2是做不到的。<br> <br>TCMalloc除了解决内存碎片，提升申请释放效率，还包含了一个堆检查器以及一个堆测量器，用于检测程序内存泄漏。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><ol>
+<li><p>tcmalloc库安装</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">apt-get install libgoogle-perftools-dev</span><br></pre></td></tr></table></figure></li>
+<li><p>安装pprof工具</p>
+<ul>
+<li>安装autotools工具包<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">apt-get install autotools-dev m4 autoconf2.13 autoconf-archive gnu-standards autoconf-doc libtool autoconf</span><br></pre></td></tr></table></figure></li>
+<li>源码下载 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git@github.com:gperftools/gperftools.git</span><br></pre></td></tr></table></figure></li>
+<li>进入gperftools目录执行./autogen.sh</li>
+<li>./configure &amp;&amp; make &amp;&amp; make install</li>
+<li>查看pprof是否安装成功<br><img src="b8ad9413113be96825243c343f1785e1b45ffe3934604b0e23d948aa0cc9e59c.png" alt="图 7">  </li>
+</ul>
+</li>
+<li><p>测试程序验证</p>
+<ul>
+<li>编译链接时添加-ltcmalloc</li>
+<li>env HEAPCHECK=normal PPROF_PATH=/usr/local/bin/pprof ./test<br><img src="5d929d3cf8389aada4f8273a654e4d0a7dbe5a913cc4701d06d2b54a00324921.png" alt="图 8">  </li>
+<li>参数说明:<br><img src="368850a3ea956629e4abd887c9282def0d08c00238af402bb51e5fd473e7ad23.png" alt="图 9">  </li>
+</ul>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>内存检测</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>内存检测</tag>
+        <tag>TCMalloc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>settings-sync同步vscode配置</title>
+    <url>/2020/10/27/settings-sync%E5%90%8C%E6%AD%A5vscode%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h2 id="配置同步：将自己本地的配置云同步到-GitHub"><a href="#配置同步：将自己本地的配置云同步到-GitHub" class="headerlink" title="配置同步：将自己本地的配置云同步到 GitHub"></a>配置同步：将自己本地的配置云同步到 GitHub</h2><ol>
+<li>安装插件 settings-sync</li>
+<li>安装完插件后，在插件里使用 GitHub 账号登录</li>
+<li>登录后在 vscode 的界面中，可以选择一个别人的 gist；也可以忽略掉，然后创建一个属于自己的 gist</li>
+<li>使用快捷键 「Command + Shift + P」，在弹出的命令框中输入 sync，并选择「更新/上传配置」，这样就可以把最新的配置上传到 GitHub</li>
+</ol>
+<h2 id="管理同步：（换另外一个电脑时，从云端同步配置到本地）"><a href="#管理同步：（换另外一个电脑时，从云端同步配置到本地）" class="headerlink" title="管理同步：（换另外一个电脑时，从云端同步配置到本地）"></a>管理同步：（换另外一个电脑时，从云端同步配置到本地）</h2><ol>
+<li>当我们换另外一台电脑时，可以先在 VS Code 中安装 settings-sync 插件</li>
+<li>安装完插件后，在插件里使用 GitHub 账号登录</li>
+<li>登录之后，插件的界面上，会自动出现之前的同步记录：<br><img src="3c26e5a5e56f386ea70dafd7f60d5a822d9599946e1750b6b165739b797d969d.png" alt="图 5">  </li>
+<li>上图中，我们点击最新的那条记录，就可将云端的最新配置同步到本地：<br><img src="a0101f018a94c658d2ecba2b99de840513e76f78fbfb401e4fde4f6cf4ffc564.png" alt="图 6">  </li>
+<li>如果你远程的配置没有成功同步到本地，那可能是网络的问题，此时，可以使用快捷键 「Command + Shift + P」，在弹出的命令框中输入 sync，并选择「下载配置」，多试几次</li>
+</ol>
+<h2 id="使用其他人的配置"><a href="#使用其他人的配置" class="headerlink" title="使用其他人的配置"></a>使用其他人的配置</h2><p>如果我们想使用别人的配置，首先需要对方提供给你 gist。具体步骤如下：</p>
+<ol>
+<li>安装插件 settings-sync。</li>
+<li>使用快捷键 「Command + Shift + P」，在弹出的命令框中输入 sync，并选择「下载配置」</li>
+<li>在弹出的界面中，选择「Download Public Gist」，然后输入别人分享给你的 gist。注意，这一步不需要登录 GitHub 账号。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>VSCODE</category>
+      </categories>
+      <tags>
+        <tag>vscode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vscode 中TODO的使用</title>
+    <url>/2020/10/26/vscode-%E4%B8%ADTODO%E7%9A%84%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h2 id="安装TODO-Highlight"><a href="#安装TODO-Highlight" class="headerlink" title="安装TODO Highlight"></a>安装TODO Highlight</h2><p><img src="b5946132aba47eef30b53a79429b8e2d90539f4f4b298baf3f09ca916a185297.png" alt="图 1">  </p>
+<h2 id="安装Todo-Tree"><a href="#安装Todo-Tree" class="headerlink" title="安装Todo Tree"></a>安装Todo Tree</h2><p><img src="e405f7816e0ead47ca536f929fd270b28a66b3dd6761c07c93f4207d0716bb5b.png" alt="图 2">  </p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>点击侧边栏Todo Tree，如下图标<br><img src="909b7dbe5d928a5e8b6968c925a0f26b6ff34d8a9570391b56ac55a25b6f2b34.png" alt="图 3"><br>如下图，显示代办事项<br><img src="efe3b59a96b586c4615b98240218df831488f7b1121d4e660a706b782736fbb9.png" alt="图 4">  </p>
+]]></content>
+      <categories>
+        <category>VSCODE</category>
+      </categories>
+      <tags>
+        <tag>vscode</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Linux小工具</title>
     <url>/2020/10/25/Linux%E5%B0%8F%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<h2 id="w"><a href="#w" class="headerlink" title="w"></a>w</h2><p>可以查看当前登陆系统的用户有哪些</p>
@@ -20,7 +363,7 @@
 <h2 id="findmnt"><a href="#findmnt" class="headerlink" title="findmnt"></a>findmnt</h2><p>是一个 Linux 内置的命令行工具，它主要用于查找挂载的文件系统状态。Findmnt 可以查看到当前系统中已挂载的设备，在必要时还可进行 mount 或 umount 操作<br><img src="89dcb4566e506c15bb4a169ae465f7bfe31ee003ac1df04c821b706fa362a42f.png" alt="图 4">  </p>
 ]]></content>
       <categories>
-        <category>linux</category>
+        <category>LINUX</category>
       </categories>
       <tags>
         <tag>linux</tag>
@@ -112,10 +455,43 @@
 </ul>
 ]]></content>
       <categories>
-        <category>vscode</category>
+        <category>VSCODE</category>
       </categories>
       <tags>
         <tag>vscode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo Next主题中文Toc无法展开</title>
+    <url>/2020/10/03/Hexo%20Next%E4%B8%BB%E9%A2%98%E4%B8%AD%E6%96%87Toc%E6%97%A0%E6%B3%95%E5%B1%95%E5%BC%80/</url>
+    <content><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>如下图，当编辑多级标题时，在主页的侧边栏无法显示完全</p>
+<p><img src="edd95282baee44c9f19d0e60498dca2126541ae7233bcfd8a70177864391a72d.png" alt="图 19">  </p>
+<h2 id="问题修复"><a href="#问题修复" class="headerlink" title="问题修复"></a>问题修复</h2><p>在themes\next\source\css_custom\custom.styl文件中添加</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">.post-toc .nav .nav-child &#123;</span><br><span class="line">   display: block;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>HEXO</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>hexo故障修复</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo Next主题中文Toc无法跳转</title>
+    <url>/2020/10/03/Hexo%20Next%E4%B8%BB%E9%A2%98%E4%B8%AD%E6%96%87Toc%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%AC/</url>
+    <content><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>安装 Next 主题后, 侧边栏目录中中文目录锚点点击后无法正常跳转</p>
+<h2 id="故障描述"><a href="#故障描述" class="headerlink" title="故障描述"></a>故障描述</h2><p>如图，点击左边侧边栏无法正常跳转<br><img src="74e496c94572c1caef9b9e5f6fc755161b3fbb628194a8299880617fc7f643ee.png" alt="图 18">  </p>
+<h2 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h2><p>知道是 ‘post-details.js’ 文件报错后就简单了. 阅读源码后我们发现是 targetSelector 解析 UTF8 有问题</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">// TOC item animation navigate &amp; prevent <span class="comment">#item selector in adress bar.</span></span><br><span class="line">$(<span class="string">&#x27;.post-toc a&#x27;</span>).on(<span class="string">&#x27;click&#x27;</span>, <span class="keyword">function</span> (e) &#123;</span><br><span class="line">  e.preventDefault();</span><br><span class="line">  &lt;!-- targetSelector 解析UTF8的问题 -&gt;</span><br><span class="line">  var targetSelector = NexT.utils.escapeSelector(this.getAttribute(<span class="string">&#x27;href&#x27;</span>));</span><br><span class="line">  var offset = $(targetSelector).offset().top;</span><br><span class="line"></span><br><span class="line">  hasVelocity ?</span><br><span class="line">    html.velocity(<span class="string">&#x27;stop&#x27;</span>).velocity(<span class="string">&#x27;scroll&#x27;</span>, &#123;</span><br><span class="line">      offset: offset  + <span class="string">&#x27;px&#x27;</span>,</span><br><span class="line">      mobileHA: <span class="literal">false</span></span><br><span class="line">    &#125;) :</span><br><span class="line">    $(<span class="string">&#x27;html, body&#x27;</span>).stop().animate(&#123;</span><br><span class="line">      scrollTop: offset</span><br><span class="line">    &#125;, 500);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="问题修复"><a href="#问题修复" class="headerlink" title="问题修复"></a>问题修复</h2><p>将 targetSelector 再解析一次就好了</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">var targetSelector = NexT.utils.escapeSelector(this.getAttribute(<span class="string">&#x27;href&#x27;</span>));</span><br><span class="line">&lt;!-- 添加下面这行代码, 重新解析 URL -&gt;</span><br><span class="line">targetSelector = decodeURI(this.getAttribute(<span class="string">&#x27;href&#x27;</span>))</span><br><span class="line">var offset = $(targetSelector).offset().top;</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>HEXO</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+        <tag>hexo故障修复</tag>
       </tags>
   </entry>
 </search>
