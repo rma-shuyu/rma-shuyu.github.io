@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function () {
+        if ('') {
+            if (prompt('请输入文章密码') !== '') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://rma-shuyu.github.io/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="licenses," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="rma's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="BSD许可协议1、概念： BSD 许可协议，即 Berkeley Software Distribution license 的简称，是由加州大学伯克利分校发布并维护的开源软件许可证。BSD许可证是自由软件中使用最广泛的许可协议之一。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="licenses">
+<meta property="og:url" content="https://rma-shuyu.github.io/2020/09/11/licenses/index.html">
+<meta property="og:site_name" content="rma&#39;s Blog">
+<meta property="og:description" content="BSD许可协议1、概念： BSD 许可协议，即 Berkeley Software Distribution license 的简称，是由加州大学伯克利分校发布并维护的开源软件许可证。BSD许可证是自由软件中使用最广泛的许可协议之一。">
+<meta property="og:locale">
+<meta property="og:image" content="https://rma-shuyu.github.io/2020/09/11/licenses/8ea9ebf985a55a4924d29135f341d7db96481dcb0daf7fc4d6e8a1ca764898a3.png">
+<meta property="og:image" content="https://rma-shuyu.github.io/2020/09/11/licenses/ac478febdf707959be88d11b80c3cb90ca6b80ebdc20bd35d9f588b8827ff7e3.png">
+<meta property="og:image" content="https://rma-shuyu.github.io/2020/09/11/licenses/21a6eb647e8f2233756b138d55cfdbb919119940a3b58153a8a2b1f459deed47.png">
+<meta property="article:published_time" content="2020-09-11T11:29:42.000Z">
+<meta property="article:modified_time" content="2023-01-27T12:06:26.908Z">
+<meta property="article:author" content="rma-shuyu">
+<meta property="article:tag" content="licenses">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://rma-shuyu.github.io/2020/09/11/licenses/8ea9ebf985a55a4924d29135f341d7db96481dcb0daf7fc4d6e8a1ca764898a3.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rma-shuyu.github.io/2020/09/11/licenses/"/>
+
+
+
+
+
+  <title>licenses | rma's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a target="_blank" rel="noopener" href="https://github.com/rma-shuyu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">rma's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay hungry, stay foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2020/09/11/licenses/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">licenses</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-11T19:29:42+08:00">
+                2020-09-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/licenses/" itemprop="url" rel="index">
+                    <span itemprop="name">licenses</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/09/11/licenses/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/09/11/licenses/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="BSD许可协议"><a href="#BSD许可协议" class="headerlink" title="BSD许可协议"></a>BSD许可协议</h3><p><strong>1、概念：</strong></p>
+<p>BSD 许可协议，即 Berkeley Software Distribution license 的简称，是由加州大学伯克利分校发布并维护的开源软件许可证。BSD许可证是自由软件中使用最广泛的许可协议之一。</p>
+<span id="more"></span>
+<p><strong>2、两个概念：</strong></p>
+<p>BSD：人们常说的BSD，指的是 Berkeley Software Distribution，即伯克利软件套件，是加州大学伯克利分校在AT&amp;T贝尔实验室的Unix操作系统基础上，开发打包的操作系统及相关软件套件。</p>
+<p>BSD许可协议：BSD套件遵循某种开源许可证的方式发布，这种许许可证因此而得名，被叫做 BSD许可证。</p>
+<p><strong>3、BSD协议特点：</strong></p>
+<p>BSD开源协议是一个给予使用者很大自由的协议，可以自由的使用、修改源代码，也可以将修改后的代码作为开源或者专有软件再发布。</p>
+<p><strong>4、版本演进历史：</strong></p>
+<p>旧版BSD：1998发布初版。<br>新版BSD：1999年发布修订版。</p>
+<p>BSD协议的初稿内含有一项额外的条款，要求所有从以BSD许可证授权的软件派生著作，都必须要包含一段文字以交代源代码的来源。该条文列于原BSD许可证的第三条。</p>
+<p>GNU项目将这个称为“令人感到不舒服的BSD交代条款”，GNU工程认为存在两个问题：</p>
+<p>第一，修改源码的人都希望将其大名加到鸣谢中，如果一个项目参加的人非常多，或者软件包中包含许多个单独项目，鸣谢阵容将会变得非常庞大。<br>第二，这跟GNU通用公共许可协议相抵触，GPL不允许增加额外的限制，所以软件只能在GNU跟BSD之间选择。由于这两个许可证在自由软件中使用很普遍，如果作者想将GPL和BSD有所结合，就会出现冲突。</p>
+<p>应自由软件基金会和GNU计划的发起者斯托曼的请求，1999年7月22日，伯克利技术许可办公室的主管 William Hoskins 删除了BSD许可证的第三条。从此以后，自由软件作者就可以方便地采用BSD许可证下的软件，从而跟GPL下的作品融合。</p>
+<p>原来的许可证有时被称为“BSD-old”（老BSD）或“4-clause BSD”（四句版BSD），当前的BSD许可证有的被称为“BSD-new”（新BSD）、“revised BSD”（修订的BSD）或“3-clause BSD”（三句版BSD）。</p>
+<p><strong>5、协议分析：</strong></p>
+<p>当发布使用了BSD协议的代码或以BSD协议代码为基础做二次开发自己的产品时，需满足以下三个条件：</p>
+<ul>
+<li>如果再发布的产品中包含源代码，则在源代码中必须带有原来代码中的BSD协议。</li>
+<li>如果再发布的只是二进制类库/软件，则需要在类库/软件的文档和版权声明中包含原来代码中的BSD协议。</li>
+<li>不可以用开源代码的作者/机构名字和原来产品的名字做市场推广。</li>
+</ul>
+<p>BSD协议鼓励项目代码共享，但需要尊重作者的著作权。BSD协议由于允许使用者修改和重新发布代码，也允许在BSD代码上开发商业软件发布和销售，因此是对商业集成很友好的协议。</p>
+<p>很多公司在选用开源产品的时候都首选BSD协议，因为可以完全控制这些第三方的代码，在必要的时候可以修改或者二次开发。遵守BSD 协议的软件，允许用作商业用途，甚至可按照专属许可证进行再发布。</p>
+<h3 id="GNU-GPL-LGPL"><a href="#GNU-GPL-LGPL" class="headerlink" title="GNU(GPL, LGPL)"></a>GNU(GPL, LGPL)</h3><h4 id="GPL"><a href="#GPL" class="headerlink" title="GPL"></a>GPL</h4><p><strong>1、概念：</strong></p>
+<p>GPL，即GNU通用公共许可协议，是 GNU General Public License 的简写。它是由自由软件基金会(FSF)公布的自由软件许可证。</p>
+<p><strong>2、版本演进历史：</strong></p>
+<p>GPLv1：1989年2月25日发布。<br>GPLv2：1991年6月发布。<br>GPLv3：2007年6月29日发布。</p>
+<p><strong>3、协议特点：</strong></p>
+<p>GPL协议最大的一个特征是具有传染性，即GPL对于许可证有强制继承的要求，这也是GPL与其他许可证在哲学思想上最大的差异。</p>
+<p><strong>4、权利和义务：</strong></p>
+<p>GPL 规定了使用遵循了GPL协议软件时，使用者的权力和义务如下：</p>
+<p><strong>权力：</strong></p>
+<ul>
+<li>获取源码的权力；</li>
+<li>修改源码的权利；</li>
+<li>自由处理衍生作品的权利。</li>
+</ul>
+<p><strong>义务：</strong></p>
+<ul>
+<li>使用了遵循GPL协议发布的软件，自身也必须遵守GPL协议。这也是GPL被人称为有传染性的原因。</li>
+<li>必须开放源代码；允许使用者自由获取(复制)、修改、发布的产品，即拥有获取源码、修改源码、分发软件的自由。</li>
+</ul>
+<p><strong>5、GPL 自由权利的描述：</strong></p>
+<p>GPL的条款和条件必须提供给任何接受GPL应用的作品的副本（“被许可人”）的人员。<br>任何遵守条款和条件的被授证人员都有权修改作品，以及复制和重新分发作品或任何派生版本。<br>GPL下的软件可以用于所有目的，包括商业目的，甚至作为创建专有软件的工具，例如使用GPL许可的编译器时，分发GPL许可作品（如软件）的用户或公司可能会收取副本费用或无偿提供费用。</p>
+<p><strong>6、分析说明：</strong></p>
+<p>这里被授权人，可以理解为，是使用了遵循GPL协议软件的作品的作者或者组织。<br>第三点将GPL与禁止商业再分发的软件许可区分开来，也与共享软件许可证区分开来。FSF认为自由软件不应该限制商业使用和发布（包括再发布）。GPL明确规定，GPL作品可能以任何价格出售。<br>许可只依赖于使用的库和软件组件，而不是依赖于底层平台。例如，作为GPL许可操作系统（如Linux）下的应用程序运行的软件不需要根据GPL进行许可或者以源代码可用性分发。</p>
+<p><strong>7、官方网址：</strong></p>
+<p>gnu.org/licenses/gpl-3.0.html</p>
+<h4 id="LGPL"><a href="#LGPL" class="headerlink" title="LGPL"></a>LGPL</h4><p><strong>1、概念：</strong></p>
+<p>LGPL，即GNU宽通用公共许可证，是 GNU Lesser General Public License 的简称。它是由自由软件基金会(FSF)公布的自由软件许可证。</p>
+<p><strong>2、版本演进历史：</strong></p>
+<p>第一版(2.0)：1991年发布，第一个字母 L 定义为 Library，为与 GPLv2 保持一致而采用 2.0 版的编号。</p>
+<p>第二版(2.1)：1999年发布，第一个字母 L 定义为 Lesser，以显示 FSF 认为并不是所有程序库都应当采用该许可证的态度。</p>
+<p>第三版(3.0)：2007年发布，它以在 GPL 第3版之上附加应用一系列许可的方式表现。</p>
+<p><strong>3、协议特点：</strong></p>
+<p>LGPL和GPL不同，GPL要求任何使用/修改/衍生之GPL类库的的软件必须采用GPL协议不同，LGPL允许商业软件通过引用(link)的方式使用LGPL类库而不需要开源商业软件的代码。这使得采用LGPL协议的开源代码可以被商业软件作为类库引用并发布和销售。</p>
+<p><strong>4、LGPL的发展和分析：</strong></p>
+<p>从第一版的 L 表示 Library 的含义以及其版本号直接和GPL保持一致(第一版就是2.0)可知，该协议是GPL的补充协议，是一个主要为开源类库使用设计的开源协议，因为FSF逐渐意识到，GPL协议的强制传染性在某些场景下太过苛刻，会阻碍开源产品被更广泛的传播和使用，实际上很多软件开发过程中使用开源软件的场景，仅仅是把某个开源软件当做底层的库来引用，针对此种场景，FSF在1991年发布GPL第二版时，发布了LGPL第一版。</p>
+<p>LGPL的含义可以理解为：它允许企业与软件开发者将LGPL授权的软件以依赖库链接的形式集成至他们自己的软件内（即使该软件是私有软件也被允许），同时不会受到类似于GPL传染特性的许可证强制对软件开源的限制。但如果修改LGPL协议的代码而产生的衍生代码，则所有修改的代码，涉及修改部分的额外代码和衍生的代码都必须采用LGPL协议。</p>
+<p>采用LGPL的项目本身虽然仍有“Copyleft”的限制条件，但这些限制不会感染到仅仅只链接到本项目的软件。因此LGPL协议的开源代码很适合作为第三方类库被商业软件引用，但不适合希望以LGPL协议代码为基础，通过修改和衍生的方式做二次开发的商业软件采用。LGPL为了在GPL与其他许可式许可证之间获取折衷，常被用于一些GNU程序库，亦可使用于独立存在的应用程序中，比较有名的例子为 Mozilla 跟 <a target="_blank" rel="noopener" href="http://openoffice.org./">http://OpenOffice.Org。</a></p>
+<h3 id="MIT"><a href="#MIT" class="headerlink" title="MIT"></a>MIT</h3><p><strong>1、概念：</strong></p>
+<p>MIT 许可协议：即 The MIT License，该许可协议之名源自麻省理工学院（Massachusetts Institute of Technology, MIT），又称“X许可协议”（X License）或“X11许可协议”（X11 License）。</p>
+<p><strong>2、版本演进历史：</strong></p>
+<p>1988，由自麻省理工学院(MIT)发布。</p>
+<p><strong>3、协议特点：</strong></p>
+<p>MIT许可协议是许多软件许可条款中被广泛使用的其中一种。与其他常见的软件许可协议（如GPL、LGPL、BSD）相比，MIT是相对宽松的软件许可协议，赋予软件被许可人更大的权利与更少的限制。</p>
+<p><strong>4、协议分析：</strong></p>
+<p>被许可人权利：被许可人有权利使用、复制、修改、合并、出版发行、散布、再许可和/或贩售软件及软件的副本，及授予被供应人同等权利，惟服从以下义务。<br>被许可人义务：在软件和软件的所有副本中都必须包含以上著作权声明和本许可声明。</p>
+<p><strong>5、其他重要特性：</strong></p>
+<p>此许可协议并非属copyleft的自由软件许可协议条款，允许在自由及开放源代码软件或非自由软件（proprietary software）所使用。<br>MIT的内容可依照软件代码著作权者的需求更改内容，这也是MIT与BSD本质上的不同处。<br>MIT许可协议可与其他许可协议并存。MIT条款也是自由软件基金会（FSF）所认可的自由软件许可协议条款，与GPL兼容。</p>
+<p>有许多团体均采用MIT许可证，例如著名的SSH连线软件PuTTY与X窗口系统、Expat、Mono开发平台库、Ruby on Rails、Lua等等也都采用MIT许可协议。</p>
+<h3 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h3><p><strong>1、概念：</strong></p>
+<p>Apache许可证，即 Apache License，是一个由Apache软件基金会(ASF)发布的自由软件许可证。</p>
+<p>Apache许可证最初为 Apache Web 服务器而撰写，Apache许可证在Apache社区内外被广泛使用；Apache基金会下属所有项目都使用Apache许可证；许多非Apache基金会项目也使用了Apache许可证。</p>
+<p>官网：<a target="_blank" rel="noopener" href="http://www.apache.org/licenses/">http://www.apache.org/licenses/</a></p>
+<p><strong>2、版本演进历史：</strong></p>
+<p>Apache License 1.0，1995年发布。</p>
+<p><a target="_blank" rel="noopener" href="http://www.apache.org/licenses/LICENSE-1.0">http://www.apache.org/licenses/LICENSE-1.0</a></p>
+<p>Apache License 1.1，2000年发布。<br><a target="_blank" rel="noopener" href="http://www.apache.org/licenses/LICENSE-1.1">http://www.apache.org/licenses/LICENSE-1.1</a></p>
+<p>Apache License 2.0，2004年发布。<br><a target="_blank" rel="noopener" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+<p><strong>3、协议要求：</strong></p>
+<p>Apache许可证，具体要求如下：</p>
+<p>对所有未修改的部分应用相同的许可证，并且在每个许可文件中，必须保留再分发代码中的任何原始著作权、专利、商标和归属通知(不需要包括任何部分的派生作品)；</p>
+<p>在每个更改的许可文件中，都必须添加一条通知，说明对该文件进行了更改。</p>
+<p>不强制要求派生和修改产物使用相同的许可证进行发布。</p>
+<p><strong>4、协议分析说明：</strong></p>
+<p>如果声明文本文件是作为原始作品发布的一部分，则派生作品必须包含该通知文本文件的可读副本，可以是文档或显示在软件中。</p>
+<p>声明文件的内容不会修改许可证，因为它们仅用于提供信息，并且可以在许可证文本中添加更多属性声明，前提是这些声明不能被理解为修改许可证。修改可能有适当的著作权声明，并可能为修改提供不同的许可条款。</p>
+<h3 id="Mozilla-MPL"><a href="#Mozilla-MPL" class="headerlink" title="Mozilla (MPL)"></a>Mozilla (MPL)</h3><p><strong>1、概念：</strong></p>
+<p>MPL，即 Mozilla公共许可证，是 Mozilla Public License 的简称，由Mozilla基金会开发并维护。</p>
+<p><strong>2、版本演进历史：</strong></p>
+<p>第一版，1.0版本，1998年发布。</p>
+<p>第二版，1.1版本，其主要变更是理清了关于专利部分的条款，以及允许多个许可证之间共存。</p>
+<p>第三版，2.0版本，2012年1月3日发布。该版本使许可协议更加清晰，更加方便应用，同时也兼容于GPL及Apache许可证。</p>
+<p>从1.1版本开始，允许遵循MPL许可证的项目里多个许可证的共存，这一特性旨在鼓励与偏好使用GPL许可的开发者合作。1.1版本的结构，法律切合度，以及其对专利权的明确态度都深深的影响了后来流行的许可协议，有点像是第三版的GPL。很多项目都以此派生出他们自己的许可协议，如Sun Microsystems的通用开发与散布许可证。</p>
+<p><strong>3、协议特点：</strong></p>
+<p>MPL允许在其授权下的源代码与其他授权的文件进行混合，包括私有许可证，但在MPL授权下的代码文件必须保持MPL授权，并且保持开源。</p>
+<p>可以理解为：遵循MPL的项目允许使用者对于MPL作品进行二次开发和发布，但MPL的部分、以及修改的部分，需要遵循MPL协议，并对修改部分作出说明，但允许衍生项目中有私有模块的存在。</p>
+<p>这样的条款让MPL既不像MIT和BSD那样允许派生作品完全转化为私有，也不像GPL那样要求所有的派生作品包括新的组件在内的作品全部必须保持GPL。</p>
+<p>一句话，MPL协议通过允许在派生项目中存在私有模块，同时保证核心文件的开源，同时激励了商业及开源社区来参与帮助开发核心软件。</p>
+<p><strong>4、发展与应用：</strong></p>
+<p>MPL既是得到自由软件基金会(FSF)承认的自由软件许可证，也是得到开放源代码促进会(OSF)承认的开源软件许可证。</p>
+<p>该协议融合了BSD许可证和GNU通用公共许可协议的特性，追求平衡专有软件和开源软件开发者之间的顾虑。</p>
+<p>MPL用于 Mozilla Firefox、Mozilla Thunderbird 及其他 Mozilla软件的许可，也被其他产品所用，如Adobe以此为Flex产品线许可，还有LibreOffice 4.0（同时使用LGPLv3）。</p>
+<p><strong>对比</strong><br><img src="8ea9ebf985a55a4924d29135f341d7db96481dcb0daf7fc4d6e8a1ca764898a3.png" alt="图 3"><br><img src="ac478febdf707959be88d11b80c3cb90ca6b80ebdc20bd35d9f588b8827ff7e3.png" alt="图 4">  </p>
+<h3 id="开源工程中licenses"><a href="#开源工程中licenses" class="headerlink" title="开源工程中licenses"></a>开源工程中licenses</h3><p><img src="21a6eb647e8f2233756b138d55cfdbb919119940a3b58153a8a2b1f459deed47.png" alt="图 2">  </p>
+<p><strong>样例</strong></p>
+<p>GPLv2  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * jmnd interface</span><br><span class="line"> *</span><br><span class="line"> * Copyright Jaguarmicro. 2022-2028 </span><br><span class="line"> *</span><br><span class="line"> * This work is licensed under the terms of the GNU GPL, version 2. </span><br><span class="line"> *</span><br><span class="line"> * Contributions after 2012-01-13 are licensed under the terms of the</span><br><span class="line"> * GNU GPL, version 2 or (at your option) any later version.</span><br><span class="line"> */</span><br></pre></td></tr></table></figure>
+
+
+<p> BSD</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">/*-</span><br><span class="line"> *   BSD LICENSE</span><br><span class="line"> *</span><br><span class="line"> *   Copyright (c) Jaguarmicro Corporation.</span><br><span class="line"> *   All rights reserved.</span><br><span class="line"> *</span><br><span class="line"> *   Redistribution and use <span class="keyword">in</span> <span class="built_in">source</span> and binary forms, with or without</span><br><span class="line"> *   modification, are permitted provided that the following conditions</span><br><span class="line"> *   are met:</span><br><span class="line"> *</span><br><span class="line"> *     * Redistributions of <span class="built_in">source</span> code must retain the above copyright</span><br><span class="line"> *       notice, this list of conditions and the following disclaimer.</span><br><span class="line"> *     * Redistributions <span class="keyword">in</span> binary form must reproduce the above copyright</span><br><span class="line"> *       notice, this list of conditions and the following disclaimer <span class="keyword">in</span></span><br><span class="line"> *       the documentation and/or other materials provided with the</span><br><span class="line"> *       distribution.</span><br><span class="line"> *     * Neither the name of Intel Corporation nor the names of its</span><br><span class="line"> *       contributors may be used to endorse or promote products derived</span><br><span class="line"> *       from this software without specific prior written permission.</span><br><span class="line"> *</span><br><span class="line"> *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</span><br><span class="line"> *   <span class="string">&quot;AS IS&quot;</span> AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</span><br><span class="line"> *   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</span><br><span class="line"> *   A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</span><br><span class="line"> *   OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span><br><span class="line"> *   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</span><br><span class="line"> *   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span><br><span class="line"> *   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</span><br><span class="line"> *   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span><br><span class="line"> *   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span><br><span class="line"> *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span><br><span class="line"> */</span><br></pre></td></tr></table></figure>
+
+<p>私有licence</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/* xxx.c - XXXXXXXXX */</span><br><span class="line"></span><br><span class="line">/* Copyright 2022-2028 Jaguarmicro Corporation. */</span><br></pre></td></tr></table></figure>
+
+<p>参考vxworks</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/* privateCode.c - uses VM contexts to make data private to a code segment */</span><br><span class="line"></span><br><span class="line">/* Copyright 1984-1997 Wind River Systems, Inc. */</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/licenses/" rel="tag"><i class="fa fa-tag"></i> licenses</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/09/10/Quagga%E4%BD%BF%E7%94%A8/" rel="next" title="Quagga使用">
+                <i class="fa fa-chevron-left"></i> Quagga使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/09/12/anycast/" rel="prev" title="Anycast">
+                Anycast <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mashuyu.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+                <a href="/archives">
+                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/rma-shuyu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1004129700@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#BSD%E8%AE%B8%E5%8F%AF%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.</span> <span class="nav-text">BSD许可协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GNU-GPL-LGPL"><span class="nav-number">2.</span> <span class="nav-text">GNU(GPL, LGPL)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#GPL"><span class="nav-number">2.1.</span> <span class="nav-text">GPL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LGPL"><span class="nav-number">2.2.</span> <span class="nav-text">LGPL</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MIT"><span class="nav-number">3.</span> <span class="nav-text">MIT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Apache"><span class="nav-number">4.</span> <span class="nav-text">Apache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mozilla-MPL"><span class="nav-number">5.</span> <span class="nav-text">Mozilla (MPL)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E6%BA%90%E5%B7%A5%E7%A8%8B%E4%B8%ADlicenses"><span class="nav-number">6.</span> <span class="nav-text">开源工程中licenses</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rma-shuyu</span>
+
+  
+</div>
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共90.8k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'D2xdJ1c0QWBntVsHIVyVXtSZ-gzGzoHsz',
+        appKey: 'UGFWDjX2oTi2dIoWPAyisa9S',
+        placeholder: '请在此输入您的留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function () {
+        if ('') {
+            if (prompt('请输入文章密码') !== '') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://rma-shuyu.github.io/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="go," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="rma's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="介绍 sync包提供了互斥锁。除了Once和WaitGroup类型，其余多数适用于低水平的程序，多数情况下，高水平的同步使用channel通信性能会更优一些。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sync包使用">
+<meta property="og:url" content="https://rma-shuyu.github.io/2021/04/28/sync%E5%8C%85%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="rma&#39;s Blog">
+<meta property="og:description" content="介绍 sync包提供了互斥锁。除了Once和WaitGroup类型，其余多数适用于低水平的程序，多数情况下，高水平的同步使用channel通信性能会更优一些。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-04-28T12:27:18.000Z">
+<meta property="article:modified_time" content="2023-01-27T12:06:26.958Z">
+<meta property="article:author" content="rma-shuyu">
+<meta property="article:tag" content="go">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rma-shuyu.github.io/2021/04/28/sync包使用/"/>
+
+
+
+
+
+  <title>sync包使用 | rma's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a target="_blank" rel="noopener" href="https://github.com/rma-shuyu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">rma's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay hungry, stay foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/04/28/sync%E5%8C%85%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">sync包使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-28T20:27:18+08:00">
+                2021-04-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/GO/" itemprop="url" rel="index">
+                    <span itemprop="name">GO</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/04/28/sync%E5%8C%85%E4%BD%BF%E7%94%A8/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/04/28/sync%E5%8C%85%E4%BD%BF%E7%94%A8/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><blockquote>
+<p>sync包提供了互斥锁。除了Once和WaitGroup类型，其余多数适用于低水平的程序，多数情况下，高水平的同步使用channel通信性能会更优一些。</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="并发等待组-WaitGroup"><a href="#并发等待组-WaitGroup" class="headerlink" title="并发等待组(WaitGroup)"></a>并发等待组(WaitGroup)</h2><p><code>WaitGroup</code>，即等待一组Goroutine结束。父Goroutine调用Add()方法来设置应等待Goroutine的数量。每个被等待的Goroutine在结束时应该调用Done()方法。与此同时，主Goroutine可调用Wait()方法阻塞至所有Goroutine结束。</p>
+<p><strong>WaitGroup结构</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A WaitGroup must not be copied after first use.</span></span><br><span class="line"><span class="keyword">type</span> WaitGroup <span class="keyword">struct</span> &#123;</span><br><span class="line">	noCopy noCopy</span><br><span class="line">	state1 [<span class="number">3</span>]<span class="type">uint32</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>方法列表</strong></p>
+<table>
+    <tr>
+        <th>方法名</th><th>功能</th>
+    </tr>
+    <tr>
+        <td>(wg *WaitGroup) Add(delta int)</td><td>等待组的计数器 +1</td>
+    </tr>
+    <tr>
+        <td>(wg *WaitGroup) Done()</td><td>等待组的计数器 -1</td>
+    </tr>
+    <tr>
+        <td>(wg *WaitGroup) Wait()</td><td>当等待组计数器不等于0时,阻塞直到0</td>
+    </tr>
+</table>
+
+
+<p><strong>Add参数取值范围</strong><br>等待组内部拥有一个计数器，计数器的值可以通过Add(delta int)方法调用实现计数器的增加和减少。该方法应该在创建新的Goroutine之前调用。</p>
+<p>参数值x取值</p>
+<table>
+    <tr>
+        <th>取值</th><th>描述</th>
+    </tr>
+    <tr>
+        <td>delta < 0</td><td>x小于0时,但会报错: panic: sync: negative WaitGroup counter</td>
+    </tr>
+    <tr>
+        <td>delta = 0</td><td>x等于0时,会释放Wait()方法阻塞等待的所有Goroutine</td>
+    </tr>
+    <tr>
+        <td>delta > 0</td><td>x大于0时,Wait()方法会阻塞Goroutine直到WaitGroup计数减为0</td>
+    </tr>
+</table>
+
+<p><strong>不使用WaitGroup示例</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 创建通道</span></span><br><span class="line">	intChan := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">int</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 计算1-50的和</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(intChan <span class="keyword">chan</span> <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">		sum := <span class="number">0</span></span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">1</span>; i &lt;= <span class="number">50</span>; i++ &#123;</span><br><span class="line">			sum += i</span><br><span class="line">		&#125;</span><br><span class="line">		intChan &lt;- sum</span><br><span class="line">	&#125;(intChan)</span><br><span class="line">	<span class="comment">// 计算51-100的和</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(intChan <span class="keyword">chan</span> <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">		sum := <span class="number">0</span></span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">51</span>; i &lt;= <span class="number">100</span>; i++ &#123;</span><br><span class="line">			sum += i</span><br><span class="line">		&#125;</span><br><span class="line">		intChan &lt;- sum</span><br><span class="line">	&#125;(intChan)</span><br><span class="line">	<span class="comment">// 另外创建个channle聚合结果</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(intChan <span class="keyword">chan</span> <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">		sum1 := &lt;-intChan</span><br><span class="line">		sum2 := &lt;-intChan</span><br><span class="line">		fmt.Printf(<span class="string">&quot;sum1 = %d sum2 = %d  \nsum1 + sum2 = %d \n&quot;</span>, sum1, sum2, sum1+sum2)</span><br><span class="line">	&#125;(intChan)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 注意,需求手动sleep</span></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	fmt.Println(<span class="string">&quot;运行结束&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/** 输出:</span></span><br><span class="line"><span class="comment">  sum1 = 1275 sum2 = 3775  </span></span><br><span class="line"><span class="comment">  sum1 + sum2 = 5050 </span></span><br><span class="line"><span class="comment">  运行结束</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>使用WaitGroup示例</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 声明等待组</span></span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	<span class="comment">// 设置，需要等待3个协程执行完成</span></span><br><span class="line">	wg.Add(<span class="number">3</span>)</span><br><span class="line">	<span class="comment">// 创建通道</span></span><br><span class="line">	intChan := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">int</span>)</span><br><span class="line">	<span class="comment">// 计算1-50的和</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(intChan <span class="keyword">chan</span> <span class="type">int</span>, wg *sync.WaitGroup)</span></span> &#123;</span><br><span class="line">		sum := <span class="number">0</span></span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">1</span>; i &lt;= <span class="number">50</span>; i++ &#123;</span><br><span class="line">			sum += i</span><br><span class="line">		&#125;</span><br><span class="line">		intChan &lt;- sum</span><br><span class="line">		<span class="comment">// 计数器减一</span></span><br><span class="line">		wg.Done()</span><br><span class="line">	&#125;(intChan, &amp;wg)</span><br><span class="line">	<span class="comment">// 计算51-100的和</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(intChan <span class="keyword">chan</span> <span class="type">int</span>, wg *sync.WaitGroup)</span></span> &#123;</span><br><span class="line">		sum := <span class="number">0</span></span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">51</span>; i &lt;= <span class="number">100</span>; i++ &#123;</span><br><span class="line">			sum += i</span><br><span class="line">		&#125;</span><br><span class="line">		intChan &lt;- sum</span><br><span class="line">		<span class="comment">// 计数器减一</span></span><br><span class="line">		wg.Done()</span><br><span class="line">	&#125;(intChan, &amp;wg)</span><br><span class="line">	<span class="comment">// 另外创建个channle聚合结果</span></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(intChan <span class="keyword">chan</span> <span class="type">int</span>,wg *sync.WaitGroup)</span></span> &#123;</span><br><span class="line">		sum1 := &lt;-intChan</span><br><span class="line">		sum2 := &lt;-intChan</span><br><span class="line">		fmt.Printf(<span class="string">&quot;sum1 = %d sum2 = %d  \nsum1 + sum2 = %d \n&quot;</span>, sum1, sum2, sum1+sum2)</span><br><span class="line">		<span class="comment">// 计数器减一</span></span><br><span class="line">		wg.Done()</span><br><span class="line">	&#125;(intChan,&amp;wg)</span><br><span class="line">	<span class="comment">// 阻塞，直到等待组的计数器等于0</span></span><br><span class="line">	wg.Wait()</span><br><span class="line">	fmt.Println(<span class="string">&quot;运行结束&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**输出</span></span><br><span class="line"><span class="comment">  sum1 = 1275 sum2 = 3775 </span></span><br><span class="line"><span class="comment">  sum1 + sum2 = 5050 </span></span><br><span class="line"><span class="comment">  运行结束</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="互斥锁-Mutex"><a href="#互斥锁-Mutex" class="headerlink" title="互斥锁(Mutex)"></a>互斥锁(Mutex)</h2><p><code>Mutex</code>是一个互斥锁，保证同时只有一个Goroutine可以访问共享资源。Mutex类型的锁和Goroutine无关，可以由不同的Goroutine加锁和解锁。也可以为其他结构体的字段，零值为解锁状态。</p>
+<p><strong>结构介绍</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Mutex <span class="keyword">struct</span> &#123;</span><br><span class="line">	state <span class="type">int32</span> <span class="comment">// state 表示当前互斥锁的状态</span></span><br><span class="line">	sema  <span class="type">uint32</span> <span class="comment">// sema 是用于控制锁状态的信号量</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>方法列表</strong></p>
+<table>
+    <tr>
+        <th>方法名</th><th>功能</th>
+    </tr>
+    <tr>
+        <td>(m *Mutex) Lock()</td><td>方法锁住m，如果 m 已经加锁，则阻塞直到 m 解锁</td>
+    </tr>
+    <tr>
+        <td>(m *Mutex) Unlock()</td><td>解锁 m，如果 m 未加锁会导致运行时错误</td>
+    </tr>
+</table>
+
+<p><strong>模拟多个窗口售票</strong><br>不作为结构体属性使用</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// 声明全局等待组</span></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"><span class="comment">// 声明全局锁</span></span><br><span class="line"><span class="keyword">var</span> mutex sync.Mutex</span><br><span class="line"><span class="comment">// 声明全局余票</span></span><br><span class="line"><span class="keyword">var</span> ticket <span class="type">int</span> = <span class="number">10</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 设置等待组计数器</span></span><br><span class="line">	wg.Add(<span class="number">3</span>)</span><br><span class="line">	<span class="comment">// 窗口卖票</span></span><br><span class="line">	<span class="keyword">go</span> saleTicket(<span class="string">&quot;窗口A&quot;</span>,&amp;wg)</span><br><span class="line">	<span class="keyword">go</span> saleTicket(<span class="string">&quot;窗口B&quot;</span>,&amp;wg)</span><br><span class="line">	<span class="keyword">go</span> saleTicket(<span class="string">&quot;窗口C&quot;</span>,&amp;wg)</span><br><span class="line">	wg.Wait()</span><br><span class="line">	fmt.Println(<span class="string">&quot;运行结束!&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 卖票流程</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">saleTicket</span><span class="params">(windowName <span class="type">string</span>, wg *sync.WaitGroup)</span></span>  &#123;</span><br><span class="line">	<span class="comment">// 卖票流程结束后关闭</span></span><br><span class="line">	<span class="keyword">defer</span> wg.Done()</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="comment">// 加锁</span></span><br><span class="line">		mutex.Lock()</span><br><span class="line">		<span class="keyword">if</span>  ticket &gt; <span class="number">0</span>&#123;</span><br><span class="line">			time.Sleep(<span class="number">10</span> * time.Millisecond)</span><br><span class="line">			ticket--</span><br><span class="line">			fmt.Printf(<span class="string">&quot;%s 卖出一张票，余票: %d \n&quot;</span>,windowName,ticket)</span><br><span class="line">		&#125; <span class="keyword">else</span>  &#123;</span><br><span class="line">			fmt.Printf(<span class="string">&quot;%s 票已卖完! \n&quot;</span>,windowName)</span><br><span class="line">			<span class="comment">// 解锁</span></span><br><span class="line">			mutex.Unlock()</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 解锁</span></span><br><span class="line">		mutex.Unlock()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**输出</span></span><br><span class="line"><span class="comment">  窗口C 卖出一张票，余票: 9 </span></span><br><span class="line"><span class="comment">  窗口C 卖出一张票，余票: 8 </span></span><br><span class="line"><span class="comment">  窗口B 卖出一张票，余票: 7 </span></span><br><span class="line"><span class="comment">  窗口A 卖出一张票，余票: 6 </span></span><br><span class="line"><span class="comment">  窗口C 卖出一张票，余票: 5 </span></span><br><span class="line"><span class="comment">  窗口B 卖出一张票，余票: 4 </span></span><br><span class="line"><span class="comment">  窗口A 卖出一张票，余票: 3 </span></span><br><span class="line"><span class="comment">  窗口C 卖出一张票，余票: 2 </span></span><br><span class="line"><span class="comment">  窗口B 卖出一张票，余票: 1 </span></span><br><span class="line"><span class="comment">  窗口A 卖出一张票，余票: 0 </span></span><br><span class="line"><span class="comment">  窗口C 票已卖完! </span></span><br><span class="line"><span class="comment">  窗口B 票已卖完! </span></span><br><span class="line"><span class="comment">  窗口A 票已卖完! </span></span><br><span class="line"><span class="comment">  运行结束!</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>作为结构体属性使用</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;strconv&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// 声明一个票池</span></span><br><span class="line"><span class="keyword">type</span> ticketPool <span class="keyword">struct</span> &#123;</span><br><span class="line">	over <span class="type">int</span></span><br><span class="line">	lock sync.Mutex</span><br><span class="line">	wg   sync.WaitGroup</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 定义售票方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *ticketPool)</span></span> sellTicket(windowName <span class="type">string</span>) &#123;</span><br><span class="line">	<span class="comment">// 等待组减一</span></span><br><span class="line">	<span class="keyword">defer</span> t.wg.Done()</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="comment">// 加锁</span></span><br><span class="line">		t.lock.Lock()</span><br><span class="line">		<span class="keyword">if</span> t.over &gt; <span class="number">0</span> &#123;</span><br><span class="line">			time.Sleep(<span class="number">10</span> * time.Millisecond)</span><br><span class="line">			t.over--</span><br><span class="line">			fmt.Printf(<span class="string">&quot;%s 卖出一张票，余票: %d \n&quot;</span>, windowName, t.over)</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">// 无票，跳无限循环并解锁</span></span><br><span class="line">			t.lock.Unlock()</span><br><span class="line">			fmt.Printf(<span class="string">&quot;%s 票已卖完! \n&quot;</span>, windowName)</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 正常售票流程解锁</span></span><br><span class="line">		t.lock.Unlock()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 创建一个票池</span></span><br><span class="line">	ticketP := ticketPool&#123;over: <span class="number">10</span>&#125;</span><br><span class="line">	fmt.Printf(<span class="string">&quot;T:%T v: %v \n&quot;</span>, ticketP, ticketP)</span><br><span class="line">	<span class="comment">// 设置窗口数量</span></span><br><span class="line">	windowNum := <span class="number">3</span></span><br><span class="line">	<span class="comment">// 设置等待组计数器</span></span><br><span class="line">	ticketP.wg.Add(windowNum)</span><br><span class="line">	<span class="comment">// 定义3个窗口售票</span></span><br><span class="line">	<span class="keyword">for</span> i:= <span class="number">1</span> ; i &lt;= windowNum; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> ticketP.sellTicket(<span class="string">&quot;窗口&quot;</span> + strconv.Itoa(i))</span><br><span class="line">	&#125;</span><br><span class="line">	ticketP.wg.Wait()</span><br><span class="line">	fmt.Println(<span class="string">&quot;运行结束!&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**输出</span></span><br><span class="line"><span class="comment">  窗口3 卖出一张票，余票: 9 </span></span><br><span class="line"><span class="comment">  窗口3 卖出一张票，余票: 8 </span></span><br><span class="line"><span class="comment">  窗口1 卖出一张票，余票: 7 </span></span><br><span class="line"><span class="comment">  窗口2 卖出一张票，余票: 6 </span></span><br><span class="line"><span class="comment">  窗口3 卖出一张票，余票: 5 </span></span><br><span class="line"><span class="comment">  窗口1 卖出一张票，余票: 4 </span></span><br><span class="line"><span class="comment">  窗口2 卖出一张票，余票: 3 </span></span><br><span class="line"><span class="comment">  窗口3 卖出一张票，余票: 2 </span></span><br><span class="line"><span class="comment">  窗口1 卖出一张票，余票: 1 </span></span><br><span class="line"><span class="comment">  窗口2 卖出一张票，余票: 0 </span></span><br><span class="line"><span class="comment">  窗口1 票已卖完! </span></span><br><span class="line"><span class="comment">  窗口2 票已卖完! </span></span><br><span class="line"><span class="comment">  窗口3 票已卖完! </span></span><br><span class="line"><span class="comment">  运行结束!</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<h2 id="读写锁-RWMutex"><a href="#读写锁-RWMutex" class="headerlink" title="读写锁(RWMutex)"></a>读写锁(RWMutex)</h2><p><strong>结构介绍</strong><br><code>RWMutex</code>是读写互斥锁，简称读写锁。该锁可以同时被多个读取者持有或被唯一个写入者持有。RWMutex类型锁跟Goroutine无关，可以由不同的Goroutine加锁、解锁。RWMutex也可以创建为其他结构体的字段；零值为解锁状态。</p>
+<p><strong>RWMutex锁结构</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> RWMutex <span class="keyword">struct</span> &#123;</span><br><span class="line">    w  Mutex <span class="comment">//用于控制多个写锁，获得写锁首先要获取该锁，如果有一个写锁在进行，那么再到来的写锁将会阻塞于此</span></span><br><span class="line">    writerSem  <span class="type">uint32</span> <span class="comment">//写阻塞等待的信号量，最后一个读者释放锁时会释放信号量</span></span><br><span class="line">    readerSem  <span class="type">uint32</span> <span class="comment">//读阻塞的协程等待的信号量，持有写锁的协程释放锁后会释放信号量</span></span><br><span class="line">    readerCount <span class="type">int32</span>  <span class="comment">//记录读者个数</span></span><br><span class="line">    readerWait  <span class="type">int32</span>  <span class="comment">//记录写阻塞时读者个数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>读写锁堵塞场景</strong></p>
+<table>
+    <tr>
+        <th>场景</th><th>描述</th>
+    </tr>
+    <tr>
+        <td>写锁需要阻塞写锁</td><td>一个协程拥有写锁时，其他协程写锁需要阻塞</td>
+    </tr>
+    <tr>
+        <td>写锁需要阻塞读锁</td><td>一个协程拥有写锁时，其他协程读锁需要阻塞</td>
+    </tr>
+    <tr>
+        <td>读锁需要阻塞写锁</td><td>一个协程拥有读锁时，其他协程写锁需要阻塞</td>
+    </tr>
+    <tr>
+        <td>读锁不能阻塞读锁</td><td>一个协程拥有读锁时，其他协程也可以拥有读锁</td>
+    </tr>
+</table>
+
+<p><strong>方法列表</strong></p>
+<table>
+    <tr>
+        <th>方法名</th><th>描述</th>
+    </tr>
+    <tr>
+        <td>(rw *RWMutex) RLock()</td><td>获取读锁,当一个协程拥有读锁时，其他协程写锁需要阻塞</td>
+    </tr>
+    <tr>
+        <td>(rw *RWMutex) RUnlock()</td><td>释放读锁</td>
+    </tr>
+    <tr>
+        <td>(rw *RWMutex) Lock()</td><td>获取写锁，与Mutex完全一致</td>
+    </tr>
+    <tr>
+        <td>(rw *RWMutex) Unlock()</td><td>释放写锁</td>
+    </tr>
+</table>
+
+<p><strong>读写文件</strong><br>不作为结构体属性使用</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;strconv&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// 声明全局变量，文件内容</span></span><br><span class="line"><span class="keyword">var</span> fileContext <span class="type">string</span></span><br><span class="line"><span class="comment">// 声明全局读写互斥锁</span></span><br><span class="line"><span class="keyword">var</span> rxMutex sync.RWMutex</span><br><span class="line"><span class="comment">// 声明全局等待组</span></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 设置计数器</span></span><br><span class="line">	wg.Add(<span class="number">5</span>)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">1</span>; i &lt;= <span class="number">5</span>; i++ &#123;</span><br><span class="line">		name := <span class="string">&quot;同学-&quot;</span> + strconv.Itoa(i)</span><br><span class="line">		<span class="keyword">if</span> i%<span class="number">2</span> == <span class="number">0</span> &#123;</span><br><span class="line">			<span class="keyword">go</span> readFile(name)</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">go</span> writeFile(name, strconv.Itoa(i))</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 等待所有计数器执行完成</span></span><br><span class="line">	wg.Wait()</span><br><span class="line">	fmt.Println(<span class="string">&quot;运行结束!&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读文件</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readFile</span><span class="params">(name <span class="type">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="comment">// 释放读锁</span></span><br><span class="line">	<span class="keyword">defer</span> rxMutex.RUnlock()</span><br><span class="line">	<span class="comment">// 获取读锁</span></span><br><span class="line">	rxMutex.RLock()</span><br><span class="line">	<span class="comment">// 打印读取内容</span></span><br><span class="line">	fmt.Printf(<span class="string">&quot;%s 获取读锁，读取内容为: %s \n&quot;</span>, name, fileContext)</span><br><span class="line">	<span class="comment">// 计数器减一</span></span><br><span class="line">	wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 写文件</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">writeFile</span><span class="params">(name, s <span class="type">string</span>)</span></span> &#123;</span><br><span class="line">	<span class="comment">// 释放写锁</span></span><br><span class="line">	<span class="keyword">defer</span> rxMutex.Unlock()</span><br><span class="line">	<span class="comment">// 获取写锁</span></span><br><span class="line">	rxMutex.Lock()</span><br><span class="line">	<span class="comment">// 写入内容</span></span><br><span class="line">	fileContext = fileContext + <span class="string">&quot; &quot;</span> + s</span><br><span class="line">	fmt.Printf(<span class="string">&quot;%s 获取写锁，写入内容: %s。 文件内容变成: %s \n&quot;</span>, name, s, fileContext)</span><br><span class="line">	<span class="comment">// 计数器减一</span></span><br><span class="line">	wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**输出</span></span><br><span class="line"><span class="comment">  同学-1 获取写锁，写入内容: 1。 文件内容变成:  1 </span></span><br><span class="line"><span class="comment">  同学-4 获取读锁，读取内容为:  1 </span></span><br><span class="line"><span class="comment">  同学-2 获取读锁，读取内容为:  1 </span></span><br><span class="line"><span class="comment">  同学-5 获取写锁，写入内容: 5。 文件内容变成:  1 5 </span></span><br><span class="line"><span class="comment">  同学-3 获取写锁，写入内容: 3。 文件内容变成:  1 5 3 </span></span><br><span class="line"><span class="comment">  运行结束!</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>作为结构体属性使用</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;strconv&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="comment">// 定义一个文件结构体</span></span><br><span class="line"><span class="keyword">type</span> fileResource <span class="keyword">struct</span> &#123;</span><br><span class="line">	content <span class="type">string</span></span><br><span class="line">	wg sync.WaitGroup</span><br><span class="line">	rwLock sync.RWMutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读文件</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f *fileResource)</span></span>readFile(name <span class="type">string</span>) &#123;</span><br><span class="line">	<span class="comment">// 释放读锁</span></span><br><span class="line">	<span class="keyword">defer</span> f.rwLock.RUnlock()</span><br><span class="line">	<span class="comment">// 获取读锁</span></span><br><span class="line">	f.rwLock.RLock()</span><br><span class="line">	<span class="comment">// 打印读取内容</span></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	fmt.Printf(<span class="string">&quot;%s 获取读锁，读取内容为: %s \n&quot;</span>, name, f.content)</span><br><span class="line">	<span class="comment">// 计数器减一</span></span><br><span class="line">	f.wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 写文件</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f *fileResource)</span></span>writeFile(name, s <span class="type">string</span>) &#123;</span><br><span class="line">	<span class="comment">// 释放写锁</span></span><br><span class="line">	<span class="keyword">defer</span> f.rwLock.Unlock()</span><br><span class="line">	<span class="comment">// 获取写锁</span></span><br><span class="line">	f.rwLock.Lock()</span><br><span class="line">	<span class="comment">// 写入内容</span></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	f.content = f.content + <span class="string">&quot; &quot;</span> + s</span><br><span class="line">	fmt.Printf(<span class="string">&quot;%s 获取写锁，写入内容: %s。 文件内容变成: %s \n&quot;</span>, name, s, f.content)</span><br><span class="line">	<span class="comment">// 计数器减一</span></span><br><span class="line">	f.wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 声明结构体</span></span><br><span class="line">	<span class="keyword">var</span> file fileResource</span><br><span class="line">	<span class="comment">// 设置计数器</span></span><br><span class="line">	file.wg.Add(<span class="number">5</span>)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">1</span>; i &lt;= <span class="number">5</span>; i++ &#123;</span><br><span class="line">		name := <span class="string">&quot;同学-&quot;</span> + strconv.Itoa(i)</span><br><span class="line">		<span class="keyword">if</span> i%<span class="number">2</span> == <span class="number">0</span> &#123;</span><br><span class="line">			<span class="keyword">go</span> file.readFile(name)</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">go</span> file.writeFile(name, strconv.Itoa(i))</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 等待所有计数器执行完成</span></span><br><span class="line">	file.wg.Wait()</span><br><span class="line">	fmt.Println(<span class="string">&quot;运行结束!&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**输出</span></span><br><span class="line"><span class="comment">  同学-5 获取写锁，写入内容: 5。 文件内容变成:  5 </span></span><br><span class="line"><span class="comment">  同学-1 获取写锁，写入内容: 1。 文件内容变成:  5 1 </span></span><br><span class="line"><span class="comment">  同学-2 获取读锁，读取内容为:  5 1 </span></span><br><span class="line"><span class="comment">  同学-3 获取写锁，写入内容: 3。 文件内容变成:  5 1 3 </span></span><br><span class="line"><span class="comment">  同学-4 获取读锁，读取内容为:  5 1 3 </span></span><br><span class="line"><span class="comment">  运行结束!</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<h2 id="条件变量-Cond"><a href="#条件变量-Cond" class="headerlink" title="条件变量(Cond)"></a>条件变量(Cond)</h2><p><strong>介绍</strong><br>与互斥锁不同，条件变量的作用并不是保证在同一时刻仅有一个线程访问某一个共享数据，而是在对应的共享数据的状态发生变化时，通知其他因此而被阻塞的线程。条件变量总是与互斥锁组合使用，互斥锁为共享数据的访问提供互斥支持，而条件变量可以就共享数据的状态的变化向相关线程发出通知。</p>
+<p>使用场景:  我需要完成一项任务，但是这项任务需要满足一定条件才可以执行，否则我就等着。</p>
+<p><strong>方法列表</strong></p>
+<table>
+    <tr>
+        <th>方法名</th><th>描述</th>
+    </tr>
+    <tr>
+        <td>NewCond(l Locker) *Cond</td><td>生成一个cond,需要传入实现Locker接口的变量，一般是*Mutex或*RWMutex类型的值</td>
+    </tr>
+    <tr>
+        <td>(c *Cond) Wait()</td><td>等待通知</td>
+    </tr>
+    <tr>
+        <td>(c *Cond) Signal()</td><td>发送单个通知</td>
+    </tr>
+    <tr>
+        <td>(c *Cond) Broadcast()</td><td>广播(多个通知)</td>
+    </tr>
+</table>
+
+<p><strong>使用示例</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 声明互斥锁</span></span><br><span class="line">	<span class="keyword">var</span> mutex sync.Mutex</span><br><span class="line">	<span class="comment">// 声明条件变量</span></span><br><span class="line">	cond := sync.NewCond(&amp;mutex)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">1</span>; i &lt;= <span class="number">10</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(i <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">			<span class="comment">// 获取锁</span></span><br><span class="line">			cond.L.Lock()</span><br><span class="line">			<span class="comment">// 释放锁</span></span><br><span class="line">			<span class="keyword">defer</span> cond.L.Unlock()</span><br><span class="line">			<span class="comment">// 等待通知,阻塞当前协程</span></span><br><span class="line">			cond.Wait()</span><br><span class="line">			<span class="comment">// 等待通知后打印输出</span></span><br><span class="line">			fmt.Printf(<span class="string">&quot;输出:%d ! \n&quot;</span>, i)</span><br><span class="line">		&#125;(i)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 单个通知</span></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	fmt.Println(<span class="string">&quot;单个通知A！&quot;</span>)</span><br><span class="line">	cond.Signal()</span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	fmt.Println(<span class="string">&quot;单个通知B！&quot;</span>)</span><br><span class="line">	cond.Signal()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 广播通知</span></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	fmt.Println(<span class="string">&quot;广播通知！并睡眠1秒，等待其他协程输出!&quot;</span>)</span><br><span class="line">	cond.Broadcast()</span><br><span class="line">	<span class="comment">// 等待其他协程处理完</span></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	fmt.Println(<span class="string">&quot;运行结束！&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**输出</span></span><br><span class="line"><span class="comment">  单个通知A！</span></span><br><span class="line"><span class="comment">  输出:1 ! </span></span><br><span class="line"><span class="comment">  单个通知B！</span></span><br><span class="line"><span class="comment">  输出:4 ! </span></span><br><span class="line"><span class="comment">  广播通知！并睡眠1秒，等待其他协程输出!</span></span><br><span class="line"><span class="comment">  输出:10 ! </span></span><br><span class="line"><span class="comment">  输出:2 ! </span></span><br><span class="line"><span class="comment">  输出:3 ! </span></span><br><span class="line"><span class="comment">  输出:8 ! </span></span><br><span class="line"><span class="comment">  输出:9 ! </span></span><br><span class="line"><span class="comment">  输出:6 ! </span></span><br><span class="line"><span class="comment">  输出:5 ! </span></span><br><span class="line"><span class="comment">  输出:7 ! </span></span><br><span class="line"><span class="comment">  运行结束！</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<h2 id="一次-Once"><a href="#一次-Once" class="headerlink" title="一次(Once)"></a>一次(Once)</h2><p><code>sync.Once</code> 是使Go方法只执行一次的对象实现，作用与 init 函数类似,但也有所不同。区别如下:</p>
+<p><code>init</code> 函数是在文件包首次被加载的时候执行，且只执行一次<br><code>sync.Onc</code> 是在代码运行中需要的时候执行，且只执行一次</p>
+<p><strong>方法介绍</strong></p>
+<table>
+    <tr>
+        <th>方法名</th><th>描述</th>
+    </tr>
+    <tr>
+        <td>(o *Once) Do(f func())</td><td>函数只会执行一次，并保证在返回时，传入Do的函数已经执行完成。</td>
+    </tr>
+</table>
+多个 goroutine 同时执行 once.Do 的时候，可以保证抢占到 once.Do 执行权的 goroutine 执行完 once.Do 后，其他goroutine才能得到返回 。
+
+<p><strong>重复调用只执行一次</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;strconv&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">	<span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	echo := <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		t := time.Now().Unix()</span><br><span class="line">		fmt.Printf(<span class="string">&quot;输出时间 %v &quot;</span>,strconv.FormatInt(t,<span class="number">10</span>))</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">var</span> one sync.Once</span><br><span class="line">  <span class="comment">// 虽然遍历调用，但是只会执行一次</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">1</span>; i&lt; <span class="number">10</span> ; i++  &#123;</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(a,b <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">			one.Do(echo)</span><br><span class="line">		&#125;(i,i+<span class="number">1</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	time.Sleep(<span class="number">3</span> * time.Second)</span><br><span class="line">	fmt.Println(<span class="string">&quot;运行结束！&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**输出</span></span><br><span class="line"><span class="comment">  输出时间 1608083525 </span></span><br><span class="line"><span class="comment">  运行结束！</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="对象池-Pool"><a href="#对象池-Pool" class="headerlink" title="对象池(Pool)"></a>对象池(Pool)</h2><p><strong>为什么使用?</strong><br>Go语言是支持垃圾自动回收的。对于一些暂时用不到但是后续会用到的对象，为了提升性能，可以先暂存起来，这虽然会占用一些内存，但是比起销毁了再新建，要节省运行时间。Go语言专门提供了暂存对象的工具，就是sync.Pool。</p>
+<p><code>sync.Pool</code>是一个对象池，它是并发安全的，而且大小是可伸缩的，仅受限于内存。当需要使用对象的时候可以从对象池中直接取出使用。</p>
+<p><strong>数据结构</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Pool <span class="keyword">struct</span> &#123;</span><br><span class="line">	noCopy noCopy <span class="comment">//禁止复制</span></span><br><span class="line">	local     unsafe.Pointer <span class="comment">//本地缓冲池指针,每个处理器分配一个;其类型是[P]poolLocal数组</span></span><br><span class="line">	localSize <span class="type">uintptr</span> <span class="comment">//数组大小</span></span><br><span class="line"></span><br><span class="line">	victim     unsafe.Pointer <span class="comment">// local from previous cycle</span></span><br><span class="line">	victimSize <span class="type">uintptr</span>        <span class="comment">// size of victims array</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 缓存池没有对象时,调用此方法创建</span></span><br><span class="line">	New <span class="function"><span class="keyword">func</span><span class="params">()</span></span> <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>方法列表</strong><br>sync.Pool提供以下两个公共方法，用来操作对象池。</p>
+<table>
+    <tr>
+        <th>方法名</th><th>描述</th>
+    </tr>
+    <tr>
+        <td>(p *Pool) Put(x interface{})</td><td>向池中添加对象</td>
+    </tr>
+    <tr>
+        <td>(p *Pool) Get() interface{}</td><td>从池中获取对象</td>
+    </tr>
+</table>
+
+<p>Get方法是从池中获取对象，如果没有对象则调用New方法创建生成，如果未设置New则返回nil。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 创建对象池</span></span><br><span class="line">	pool := sync.Pool&#123;</span><br><span class="line">		New: <span class="function"><span class="keyword">func</span><span class="params">()</span></span> <span class="keyword">interface</span>&#123;&#125;&#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="built_in">make</span>([]<span class="type">string</span>,<span class="number">5</span>)</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 首次获取</span></span><br><span class="line">	fmt.Printf(<span class="string">&quot;不设置直接获取: %v\n&quot;</span>,pool.Get())</span><br><span class="line">	<span class="comment">// 设置后获取</span></span><br><span class="line">	pool.Put([]<span class="type">string</span>&#123;<span class="string">&quot;Hello&quot;</span>,<span class="string">&quot;Word&quot;</span>&#125;)</span><br><span class="line">	<span class="comment">// 设置后获取</span></span><br><span class="line">	fmt.Printf(<span class="string">&quot;设置后,第一次获取: %v\n&quot;</span>,pool.Get())</span><br><span class="line">	fmt.Printf(<span class="string">&quot;设置后,第二次获取: %v\n&quot;</span>,pool.Get())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>注意事项</strong><br>存入sync.Pool的对象可能会在不通知的情况下被释放，这一点一定要注意。比如一些socket长连接就不适合存入sync.Pool内。</p>
+<h2 id="sync-Map"><a href="#sync-Map" class="headerlink" title="sync.Map"></a>sync.Map</h2><p>如果要缓存的数据量不大，可以考虑使用sync.Map(Go 1.9+版本支持)。在1.6版本以前，Go语言自带标准的map类型是并发读安全的，但是并发写不安全。</p>
+<h3 id="查询和新增"><a href="#查询和新增" class="headerlink" title="查询和新增"></a>查询和新增</h3><p><strong>查找方法</strong><br><code>Load</code>: 通过参数key查询对应的value，如果不存在则返回nil；ok表示是否找到对应的值。</p>
+<p><strong>新增方法</strong><br><code>Store</code>: 对sync.Map的更新或新增，参数是键值对<br><code>LoadOrStore</code>: 参数为key和value。根据参数key查找对应的value，如果找到,则不修改原来的值并通过actual返回，并且loaded为true；如果未找到，则存储key-value并且将存储的value通过actual返回，loaded为false。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 定义map 类型</span></span><br><span class="line">	<span class="keyword">var</span> syncMap sync.Map</span><br><span class="line">	<span class="comment">// 新增</span></span><br><span class="line">	syncMap.Store(<span class="string">&quot;name&quot;</span>,<span class="string">&quot;张三&quot;</span>)</span><br><span class="line">	load, _ := syncMap.Load(<span class="string">&quot;name&quot;</span>)</span><br><span class="line">	fmt.Printf(<span class="string">&quot;Store新增-&gt;name:%v\n&quot;</span>,load)</span><br><span class="line">	<span class="comment">// 找到则不更新，返回旧值</span></span><br><span class="line">	store, loaded := syncMap.LoadOrStore(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;李四&quot;</span>)</span><br><span class="line">	fmt.Printf(<span class="string">&quot;找到则返回旧值-&gt; name:%v loaded:%v \n&quot;</span>,store,loaded)</span><br><span class="line">	<span class="comment">// 找不到则新增</span></span><br><span class="line">	age, loaded := syncMap.LoadOrStore(<span class="string">&quot;age&quot;</span>, <span class="number">20</span>)</span><br><span class="line">	fmt.Printf(<span class="string">&quot;找不到则新增-&gt; age:%v loaded:%v \n&quot;</span>,age,loaded)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**输出:</span></span><br><span class="line"><span class="comment">Store新增-&gt;name:张三</span></span><br><span class="line"><span class="comment">找到则返回旧值-&gt; name:张三 loaded:true </span></span><br><span class="line"><span class="comment">找不到则新增-&gt; age:20 loaded:false </span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><p><code>LoadAndDelete</code>: 根据参数key删除对应的value，如果找到则删除，并通过value返回删除的值，并设置loaded为true；如果未找到，则value返回nil，loaded为false。<br><code>Delete</code>：根据参数key删除对应的value。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 定义map 类型</span></span><br><span class="line">	<span class="keyword">var</span> syncMap sync.Map</span><br><span class="line">	<span class="comment">// 新增</span></span><br><span class="line">	syncMap.Store(<span class="string">&quot;name&quot;</span>,<span class="string">&quot;张三&quot;</span>)</span><br><span class="line">	syncMap.Store(<span class="string">&quot;age&quot;</span>,<span class="number">20</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 找到情况</span></span><br><span class="line">	andDelete, loaded := syncMap.LoadAndDelete(<span class="string">&quot;name&quot;</span>)</span><br><span class="line">	fmt.Printf(<span class="string">&quot;找到-&gt; val:%v loaded:%v \n&quot;</span>,andDelete,loaded)</span><br><span class="line">	search, ok := syncMap.Load(<span class="string">&quot;name&quot;</span>)</span><br><span class="line">	fmt.Printf(<span class="string">&quot;删除name后查找-&gt; search:%v ok:%v \n&quot;</span>,search,ok)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 找不到情况</span></span><br><span class="line">	andDelete2, loaded := syncMap.LoadAndDelete(<span class="string">&quot;name2&quot;</span>)</span><br><span class="line">	fmt.Printf(<span class="string">&quot;找不到-&gt; val:%v loaded:%v \n&quot;</span>,andDelete2,loaded)</span><br><span class="line"></span><br><span class="line">	syncMap.Delete(<span class="string">&quot;age&quot;</span>)</span><br><span class="line">	searchAge, ok := syncMap.Load(<span class="string">&quot;name&quot;</span>)</span><br><span class="line">	fmt.Printf(<span class="string">&quot;删除age后查找-&gt; searchAge:%v ok:%v \n&quot;</span>,searchAge,ok)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/** 输出</span></span><br><span class="line"><span class="comment">找到-&gt; val:张三 loaded:true </span></span><br><span class="line"><span class="comment">删除name后查找-&gt; search:&lt;nil&gt; ok:false </span></span><br><span class="line"><span class="comment">找不到-&gt; val:&lt;nil&gt; loaded:false </span></span><br><span class="line"><span class="comment">删除age后查找-&gt; searchAge:&lt;nil&gt; ok:false </span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h3><p>sync.Map不能通过for…range遍历，只能通过包提供的方法Range进行遍历。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 定义map 类型</span></span><br><span class="line">	<span class="keyword">var</span> syncMap sync.Map</span><br><span class="line">	<span class="comment">// 新增</span></span><br><span class="line">	syncMap.Store(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;张三&quot;</span>)</span><br><span class="line">	syncMap.Store(<span class="string">&quot;age&quot;</span>, <span class="number">20</span>)</span><br><span class="line">	syncMap.Store(<span class="string">&quot;home&quot;</span>, <span class="string">&quot;天津永和大区&quot;</span>)</span><br><span class="line">	syncMap.Range(<span class="function"><span class="keyword">func</span><span class="params">(key, value <span class="keyword">interface</span>&#123;&#125;)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;key: %v value: %v \n&quot;</span>, key, value)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**输出</span></span><br><span class="line"><span class="comment">key: name value: 张三 </span></span><br><span class="line"><span class="comment">key: age value: 20 </span></span><br><span class="line"><span class="comment">key: home value: 天津永和大区 </span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/go/" rel="tag"><i class="fa fa-tag"></i> go</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/27/context%E5%8C%85%E4%BD%BF%E7%94%A8/" rel="next" title="context包使用">
+                <i class="fa fa-chevron-left"></i> context包使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/29/flag%E5%8C%85%E4%BD%BF%E7%94%A8/" rel="prev" title="flag包使用">
+                flag包使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mashuyu.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+                <a href="/archives">
+                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/rma-shuyu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1004129700@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%AD%89%E5%BE%85%E7%BB%84-WaitGroup"><span class="nav-number">2.</span> <span class="nav-text">并发等待组(WaitGroup)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%92%E6%96%A5%E9%94%81-Mutex"><span class="nav-number">3.</span> <span class="nav-text">互斥锁(Mutex)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E9%94%81-RWMutex"><span class="nav-number">4.</span> <span class="nav-text">读写锁(RWMutex)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F-Cond"><span class="nav-number">5.</span> <span class="nav-text">条件变量(Cond)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E6%AC%A1-Once"><span class="nav-number">6.</span> <span class="nav-text">一次(Once)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E6%B1%A0-Pool"><span class="nav-number">7.</span> <span class="nav-text">对象池(Pool)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sync-Map"><span class="nav-number">8.</span> <span class="nav-text">sync.Map</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E5%92%8C%E6%96%B0%E5%A2%9E"><span class="nav-number">8.1.</span> <span class="nav-text">查询和新增</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A0%E9%99%A4"><span class="nav-number">8.2.</span> <span class="nav-text">删除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%8D%E5%8E%86"><span class="nav-number">8.3.</span> <span class="nav-text">遍历</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rma-shuyu</span>
+
+  
+</div>
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共90.8k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'D2xdJ1c0QWBntVsHIVyVXtSZ-gzGzoHsz',
+        appKey: 'UGFWDjX2oTi2dIoWPAyisa9S',
+        placeholder: '请在此输入您的留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>
