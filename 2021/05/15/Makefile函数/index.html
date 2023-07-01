@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function () {
+        if ('') {
+            if (prompt('请输入文章密码') !== '') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://rma-shuyu.github.io/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Makefile," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="rma's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="Makefile 函数GNU make 提供了大量的函数用来处理文件名、变量、文本和命令。通过这些函数，用户可以节省很多精力，编写出更加灵活和健壮的Makefile。函数的使用和变量引用的展开方式相同： 12$(function arg1,arg2,arg3)$&amp;#123;function arg1,arg2,arg3&amp;#125;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Makefile函数">
+<meta property="og:url" content="https://rma-shuyu.github.io/2021/05/15/Makefile%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="rma&#39;s Blog">
+<meta property="og:description" content="Makefile 函数GNU make 提供了大量的函数用来处理文件名、变量、文本和命令。通过这些函数，用户可以节省很多精力，编写出更加灵活和健壮的Makefile。函数的使用和变量引用的展开方式相同： 12$(function arg1,arg2,arg3)$&amp;#123;function arg1,arg2,arg3&amp;#125;">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-05-15T12:27:18.000Z">
+<meta property="article:modified_time" content="2023-07-01T09:37:27.342Z">
+<meta property="article:author" content="rma-shuyu">
+<meta property="article:tag" content="Makefile">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rma-shuyu.github.io/2021/05/15/Makefile函数/"/>
+
+
+
+
+
+  <title>Makefile函数 | rma's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a target="_blank" rel="noopener" href="https://github.com/rma-shuyu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">rma's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay hungry, stay foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/15/Makefile%E5%87%BD%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Makefile函数</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-15T20:27:18+08:00">
+                2021-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Makefile/" itemprop="url" rel="index">
+                    <span itemprop="name">Makefile</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/05/15/Makefile%E5%87%BD%E6%95%B0/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/15/Makefile%E5%87%BD%E6%95%B0/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Makefile-函数"><a href="#Makefile-函数" class="headerlink" title="Makefile 函数"></a>Makefile 函数</h2><p>GNU make 提供了大量的函数用来处理文件名、变量、文本和命令。通过这些函数，用户可以节省很多精力，编写出更加灵活和健壮的Makefile。函数的使用和变量引用的展开方式相同：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="keyword">function</span> arg1,arg2,arg3)</span><br><span class="line"><span class="variable">$&#123;function arg1,arg2,arg3&#125;</span></span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>关于函数的使用格式，有以下需要注意的地方：</p>
+<ul>
+<li>函数主要分为两类：make内嵌函数和用户自定义函数。</li>
+<li>对于 GNU make内嵌的函数，直接引用就可以了；对于用户自定义的函数，要通过make的<code>call</code>函数来间接调用。</li>
+<li>函数和参数列表之间要用空格隔开，多个参数之间使用逗号隔开。</li>
+<li>如果在参数中引用了变量，变量的引用建议和函数引用使用统一格式：要么是一对小括号，要么是一对大括号。</li>
+</ul>
+<p><strong>wildcard</strong><br>函数使用示例：如果我们想要获取某个目录下所有的C文件列表，可以使用扩展通配符函数：wildcard</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SRC  = $(wildcard *.c)</span><br><span class="line">HEAD = $(wildcard *.h)</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;SRC = <span class="subst">$(SRC)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;HEAD = <span class="subst">$(HEAD)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>在当前目录下，我们新建一些C文件和H文件，然后使用make命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ls</span></span><br><span class="line">add.c  add.h  hello.c  main.c  makefile  sub.c  sub.h</span><br><span class="line"><span class="comment"># make</span></span><br><span class="line">SRC = hello.c main.c add.c sub.c</span><br><span class="line">HEAD = add.h sub.h</span><br></pre></td></tr></table></figure>
+
+<h3 id="用户自定义函数"><a href="#用户自定义函数" class="headerlink" title="用户自定义函数"></a>用户自定义函数</h3><p>GNU make提供了大量的内嵌函数，大大方便了用户Makefile的编写。但有时候根据需要，用户也可以自定义一些函数，然后在Makefile中引用它们：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">PHONY: all</span><br><span class="line">define func</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;pram1 = <span class="subst">$(0)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;pram2 = <span class="subst">$(1)</span>&quot;</span></span><br><span class="line">endef</span><br><span class="line">all:</span><br><span class="line">    $(call func, hello world)</span><br></pre></td></tr></table></figure>
+<p>用户自定义函以<code>define</code>开头，<code>endef</code>结束，给函数传递的参数在函数中使用$(0)、$(1)引用，分别表示第1个参数、第2个参数…</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">pram1 = func</span><br><span class="line">pram2 =  hello world</span><br></pre></td></tr></table></figure>
+
+<h2 id="文本处理函数"><a href="#文本处理函数" class="headerlink" title="文本处理函数"></a>文本处理函数</h2><p>GNU make提供了一系列文本处理函数：<br><code>subst</code>、<code>patsubst</code>、<code>strip</code>、<code>findstring</code>、<code>filter</code>、<code>filer-out</code>、<code>sort</code>、<code>word</code>、<code>wordlist</code>、<code>words</code>、<code>fistword</code>。接下来我们一一讲解：</p>
+<p><strong>subst函数</strong><br>subst函数用来实现字符串的替换，将字符串text中的old替换为new</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(subst old,new,text)</span><br></pre></td></tr></table></figure>
+<p>编写一个Makefile，将当前目录下的所有c文件的名称xx.c转换为xx.o</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">SRC  = $(wildcard *.c)</span><br><span class="line">OBJ  = $(subst .c,.o,$(SRC))</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;OBJ = <span class="subst">$(OBJ)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> $(subst banana, apple, <span class="string">&quot;banana is good, I like banana&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>执行make命令，可以看到执行结果：字符串中的banana替换成了apple，SRC变量中的所有.c 替换成了 .o：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ls</span></span><br><span class="line">add.c  add.h  hello.c  main.c  makefile  sub.c  sub.h</span><br><span class="line"><span class="comment"># make</span></span><br><span class="line">OBJ = hello.o main.o add.o sub.o</span><br><span class="line">apple is good, I like  apple</span><br></pre></td></tr></table></figure>
+
+<p><strong>patsubst函数</strong><br>patsubst函数主要用来模式替换：使用通配符 <code>%</code> 代表一个单词中的若干字符，在PATTERN和REPLACEMENT如果都包含这个通配符，表示两者表示的是相同的若干个字符，并执行替换操作。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(patsubst PATTERN, REPLACEMENT, TEXT)</span><br></pre></td></tr></table></figure>
+<p>如果我们想把某个目录下的所有.c文件皆为的文件名转换为以.o皆为的目标文件名，相比subst，使用patsubst会更加方便：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">SRC  = $(wildcard *.c)</span><br><span class="line">OBJ  = $(patsubst %.c, %.o, $(SRC))</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;OBJ = <span class="subst">$(OBJ)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>SRC变量中包括多个字符串，代表各个文件名，各个字符串之间使用空格隔开，使用OBJ变量保存转换后的字符串。在当前目录下直接执行make，可以看到运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ls</span></span><br><span class="line">add.c  add.h  hello.c  main.c  makefile  sub.c  sub.h</span><br><span class="line"><span class="comment"># make</span></span><br><span class="line">OBJ =  hello.o  main.o  add.o  sub.o</span><br></pre></td></tr></table></figure>
+<p>在Makefile中，如果我们已经得到了需要编译的C文件，想要得到它们对应的目标文件，经常使用上面的patsubst函数进行转换。</p>
+<p><strong>strip函数</strong><br>strip函数是一个去空格函数：一个字符串通常有多个单词，单词之间使用一个或多个空格进行分割，<br>strip函数用来<strong>将多个连续的空字符合并成一个</strong>，并去掉字符串开头、末尾的空字符。空字符包括：空格、多个空格、tab等不可显示的字符。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">STR =     hello a    b   c   </span><br><span class="line">STRIP_STR = $(strip $(STR))</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;STR = <span class="subst">$(STR)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;STRIP_STR = <span class="subst">$(STRIP_STR)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make后的结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">STR = hello a    b   c   </span><br><span class="line">STRIP_STR = hello a b c</span><br></pre></td></tr></table></figure>
+
+<p><strong>strip函数经常用在条件判断语句的表达式中</strong>，去掉多余的空格等因素，确保表达式比较的可靠和健壮。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ifeq ($(strip $(foo)),)</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;foo is empty&quot;</span></span><br><span class="line">endif</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>findstring 函数</strong><br>findstring函数用来查找一个字符串。使用格式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(findstring FIND, IN)</span><br></pre></td></tr></table></figure>
+
+<p>findstring函数会在字符串IN中查找“FIND”字符串，如果找到，则返回字符串FIND，否则，返回空。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">STR =     hello a    b   c   </span><br><span class="line">FIND = $(findstring hello, $(STR))</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;STR = <span class="subst">$(STR)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;FIND = <span class="subst">$(FIND)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">STR = hello a    b   c   </span><br><span class="line">FIND = hello</span><br></pre></td></tr></table></figure>
+
+<p><strong>filter 函数</strong><br>filter函数用来过滤掉一个指定的字符串，使用格式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(filter PATTERN…,TEXT)</span><br></pre></td></tr></table></figure>
+
+<p>filter函数用来过滤掉字符串TEXT中所有不符合PATTERN模式的单词，只留下符合PATTERN格式的单词。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">FILE = a.c b.h c.s d.cpp   </span><br><span class="line">SRC = $(filter %.c, $(FILE))</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;FILE = <span class="subst">$(FILE)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;SRC = <span class="subst">$(SRC)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">FILE = a.c b.h c.s d.cpp   </span><br><span class="line">SRC = a.c</span><br></pre></td></tr></table></figure>
+
+<p><strong>filter-out 函数</strong><br>filer-out函数是一个反过滤函数，功能和filter函数恰恰相反：该函数会过滤掉所有符合PATTERN模式的单词，保留所有不符合此模式的单词。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">FILE = a.c b.h c.s d.cpp   </span><br><span class="line">SRC = $(filter-out %.c, $(FILE))</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;FILE = <span class="subst">$(FILE)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;SRC = <span class="subst">$(SRC)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>在上面的Makefile中，使用filter-out %.c 过滤掉所有的.c文件。执行make，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">FILE = a.c b.h c.s d.cpp   </span><br><span class="line">SRC = b.h c.s d.cpp</span><br></pre></td></tr></table></figure>
+
+<p><strong>sort函数：单词排序</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="built_in">sort</span> LIST)</span><br></pre></td></tr></table></figure>
+<p>sort函数对字符串LIST中的单词以首字母为准进行排序，并删除重复的单词。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST = banana pear apple peach apple orange  </span><br><span class="line">STR = $(<span class="built_in">sort</span> $(LIST))</span><br><span class="line">all:</span><br><span class="line">	@<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br><span class="line">	@<span class="built_in">echo</span> <span class="string">&quot;STR = <span class="subst">$(STR)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST = banana pear apple peach apple orange </span><br><span class="line">STR = apple banana orange peach pear</span><br></pre></td></tr></table></figure>
+
+<p><strong>word函数：取单词</strong><br>word函数的作用是从一个字符串TEXT中，按照指定的数目N取单词：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(word N,TEXT)</span><br></pre></td></tr></table></figure>
+<p>函数的返回值是字符串TEXT中的第N个单词。如果N的值大于字符串中单词的个数，返回空；如果N为0，则出错。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST = banana pear apple peach orange </span><br><span class="line">word1 = $(word 1, $(LIST))</span><br><span class="line">word2 = $(word 2, $(LIST))</span><br><span class="line">word3 = $(word 3, $(LIST))</span><br><span class="line">word4 = $(word 4, $(LIST))</span><br><span class="line">word5 = $(word 5, $(LIST))</span><br><span class="line">word6 = $(word 6, $(LIST))</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;word1 = <span class="subst">$(word1)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;word2 = <span class="subst">$(word2)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;word3 = <span class="subst">$(word3)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;word4 = <span class="subst">$(word4)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;word5 = <span class="subst">$(word5)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;word6 = <span class="subst">$(word6)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">word1 = banana</span><br><span class="line">word2 = pear</span><br><span class="line">word3 = apple</span><br><span class="line">word4 = peach</span><br><span class="line">word5 = orange</span><br><span class="line">word6 =</span><br></pre></td></tr></table></figure>
+<p>如果N的值为0，则会报错：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">makefile:9: *** first argument to <span class="string">&#x27;word&#x27;</span> <span class="keyword">function</span> must be greater than 0.  Stop.</span><br></pre></td></tr></table></figure>
+
+<p><strong>wordlist函数：取字串</strong><br>wordlist函数用来从一个字符串TEXT中取出从N到M之间的一个单词串：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(wordlist N, M, TEXT)</span><br></pre></td></tr></table></figure>
+<p>N 和 M都是从1开始的一个数字，函数的返回值是字符串TEXT中从N到M的一个单词串。当N比字符串TEXT中的单词个数大时，函数返回空。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST = banana pear apple peach orange </span><br><span class="line">sub_list = $(wordlist 1, 3, $(LIST))</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;sub_list = <span class="subst">$(sub_list)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make时，wordlist函数会将字符串LIST中的前三个单词赋值给sub_list：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST = banana pear apple peach orange </span><br><span class="line">sub_list = banana pear apple</span><br></pre></td></tr></table></figure>
+
+<p><strong>words函数：统计单词数目</strong><br>words函数用来统计一个字符串TEXT中单词的个数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(words TEXT)</span><br></pre></td></tr></table></figure>
+<p>words函数的返回值为字符串TEXT中单词的个数。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST = banana pear apple peach orange </span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST len = <span class="subst">$(words $(LIST)</span>)</span></span><br></pre></td></tr></table></figure>
+<p>执行make，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST = banana pear apple peach orange </span><br><span class="line">LIST len = 5</span><br></pre></td></tr></table></figure>
+
+<p><strong>firstword函数：取首个单词</strong><br>firstword函数用来取一个字符串中的首个单词。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$(firstword NAMES…)</span><br><span class="line">$(word 1,TEXT)</span><br></pre></td></tr></table></figure>
+<p>firstword函数其实就相当于<code>$(word 1,TEXT)</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST = banana pear apple peach orange </span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;first word = <span class="subst">$(firstword $(LIST)</span>)&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST = banana pear apple peach orange </span><br><span class="line">first word = banana</span><br></pre></td></tr></table></figure>
+
+<h2 id="文件名处理函数"><a href="#文件名处理函数" class="headerlink" title="文件名处理函数"></a>文件名处理函数</h2><p>GNU make提供了一系列对文件名进行各种操作的函数：文件名替换、加前缀、去目录等。</p>
+<p><strong>dir函数：取路径名的目录</strong><br>dir函数用来从一个路径名中截取目录的部分。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="built_in">dir</span> NAMES…)</span><br></pre></td></tr></table></figure>
+<p>dir函数会从NAMES文件名序列中，取出各个文件路径名中的目录部分并返回</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST = /home/wit/banana.c /usr/include/stdio.h</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;dir = <span class="subst">$(dir $(LIST)</span>)&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make命令，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST = /home/wit/banana.c /usr/include/stdio.h</span><br><span class="line"><span class="built_in">dir</span> = /home/wit/ /usr/include/</span><br></pre></td></tr></table></figure>
+
+<p><strong>notdir函数：取文件名</strong><br><code>notdir</code>函数和<code>dir</code>函数实现完全相反的功能：从一个文件路径名中去文件名，而不是目录。notdir函数的使用方法和dir函数相同。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST = /home/wit/banana.c /usr/include/stdio.h</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;file = <span class="subst">$(notdir $(LIST)</span>)&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make命令，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST = /home/wit/banana.c /usr/include/stdio.h</span><br><span class="line">file = banana.c stdio.h</span><br></pre></td></tr></table></figure>
+
+<p><strong>suffix函数：取文件名后缀</strong><br>suffix函数从一系列文件名序列中，取出各个文件名的后缀。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(suffix NAMES…)</span><br></pre></td></tr></table></figure>
+<p>文件名的后缀是文件名中以点号 . 开始（包括点号）的部分。<strong>若文件名没有后缀， suffix函数则返回空</strong>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST = /home/wit/banana.c /usr/include/stdio.h</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;suffix = <span class="subst">$(suffix $(LIST)</span>)&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make命令，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST = /home/wit/banana.c /usr/include/stdio.h</span><br><span class="line">suffix = .c .h</span><br></pre></td></tr></table></figure>
+
+<p><strong>basename函数：取文件名前缀</strong><br>basename函数从一系列文件名序列中，取出各个文件名的前缀部分：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="built_in">basename</span> NAMES…)</span><br></pre></td></tr></table></figure>
+
+<p>如果一个文件名中包括多个点号，basename函数返回最后一个点号之前的文件名部分；<strong>如果一个文件名没有前缀，函数返回原字符串</strong>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST = /home/wit/banana.c /usr/include/vmlinux.lds.S</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;basename = <span class="subst">$(basename $(LIST)</span>)&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>执行make命令，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST = /home/wit/banana.c /usr/include/vmlinux.lds.S</span><br><span class="line"><span class="built_in">basename</span> = /home/wit/banana /usr/include/vmlinux.lds</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>addsuffix函数：给文件名加后缀</strong><br>addsuffix函数的作用是：给文件列表中的每个文件名添加后缀SUFFIX</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(addsuffix SUFFIX, NAMES…)</span><br></pre></td></tr></table></figure>
+<p>使用示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST = apple banana peach</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;addsuffix = <span class="subst">$(addsuffix .c, $(LIST)</span>)&quot;</span></span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST = apple banana peach</span><br><span class="line">addsuffix = apple.c banana.c peach.c</span><br></pre></td></tr></table></figure>
+
+<p><strong>addprefix函数：给文件名加前缀</strong><br>addprefix函数的作用是：给文件列表中的每个文件名添加一个前缀PREFIX</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(addprefix PREFIX, NAMES…)</span><br></pre></td></tr></table></figure>
+<p>使用示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST = apple.c banana.c peach.c</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;addsuffix = <span class="subst">$(addprefix /home/wit/, $(LIST)</span>)&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make命令，运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST = apple.c banana.c peach.c</span><br><span class="line">addsuffix = /home/wit/apple.c /home/wit/banana.c /home/wit/peach.c</span><br></pre></td></tr></table></figure>
+
+<p><strong>join函数：单词连接</strong></p>
+<p>join函数的作用是：将字符串LIST1和字符串LIST2的各个单词依次连接，合并为新的单词构成的字符串</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="built_in">join</span> LIST1,LIST2)</span><br></pre></td></tr></table></figure>
+<p>使用示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST1 = apple banana peach</span><br><span class="line">LIST2 = .c .h .s</span><br><span class="line">LIST  = $(<span class="built_in">join</span> $(LIST1), $(LIST2))</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST1 = <span class="subst">$(LIST1)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST2 = <span class="subst">$(LIST2)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST1 = apple banana peach</span><br><span class="line">LIST2 = .c .h .s</span><br><span class="line">LIST = apple.c banana.h peach.s</span><br></pre></td></tr></table></figure>
+<p>如果两个字符串中的单词个数不相等，则只合并前面的单词，剩下的单词不合并。如下面的Makefile：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST1 = apple banana peach</span><br><span class="line">LIST2 = .c .h </span><br><span class="line">LIST  = $(<span class="built_in">join</span> $(LIST1), $(LIST2))</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST1 = <span class="subst">$(LIST1)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST2 = <span class="subst">$(LIST2)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST1 = apple banana peach</span><br><span class="line">LIST2 = .c .h </span><br><span class="line">LIST = apple.c banana.h peach</span><br></pre></td></tr></table></figure>
+<p>因为LIST2中只有2个单词，所以我们可以看到最后一个单词peach没有参与合并，但仍作为一个新的单词合并到LIST变量中。</p>
+<p><strong>wildcard函数：列出所有符号匹配模式的文件</strong><br>wildcard函数的作用是：列出当前目录下所有符合PATTREN模式的文件名</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(wildcard PATTERN)</span><br></pre></td></tr></table></figure>
+<p>其中PATTREN可以使用shell能识别的通配符：？、*等。</p>
+<p>使用示例：列出当前目录下的所有C文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">LIST  = $(wildcard *.c)</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;LIST = <span class="subst">$(LIST)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make命令，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ls</span></span><br><span class="line">add.c  add.h  hello.c  main.c  makefile  sub.c  sub.h</span><br><span class="line"><span class="comment"># make</span></span><br><span class="line">LIST = hello.c main.c add.c sub.c</span><br></pre></td></tr></table></figure>
+
+<h2 id="foreach函数"><a href="#foreach函数" class="headerlink" title="foreach函数"></a>foreach函数</h2><p>在Makefile中如果想做一些循环或遍历操作时，可以使用foreach函数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(foreach VAR,LIST,TEXT)</span><br></pre></td></tr></table></figure>
+<p>foreach函数的工作过程是：把<code>LIST</code>中使用<code>空格</code>分割的单词依次取出并<strong>赋值给变量VAR</strong>，然后<strong>执行TEXT表达式</strong>。<br>重复这个过程，直到遍历完LIST中的最后一个单词。函数的返回值是TEXT多次计算的结果。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># tree</span></span><br><span class="line">.</span><br><span class="line">├── keyboard</span><br><span class="line">│   └── key.c</span><br><span class="line">├── lcd</span><br><span class="line">│   └── lcd.c</span><br><span class="line">├── makefile</span><br><span class="line">├── media</span><br><span class="line">│   └── decode.c</span><br><span class="line">└── usb</span><br><span class="line">    └── usb.c</span><br></pre></td></tr></table></figure>
+<p>现在编写一个Makefile，自动搜索各个目录下的C源文件。Makefile的写法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line"><span class="built_in">dirs</span> = lcd usb media keyboard</span><br><span class="line">srcs = $(foreach <span class="built_in">dir</span>, $(<span class="built_in">dirs</span>), $(wildcard $(<span class="built_in">dir</span>)/*))</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;srcs = <span class="subst">$(srcs)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make命令，运行结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">srcs =  lcd/lcd.c  usb/usb.c  media/decode.c  keyboard/key.c</span><br></pre></td></tr></table></figure>
+<p>当然，我们也可以根据搜索到的这些C源文件名，生成对应的目标文件名，对应的Makefile如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line"><span class="built_in">dirs</span> = lcd usb media keyboard</span><br><span class="line">srcs = $(foreach <span class="built_in">dir</span>, $(<span class="built_in">dirs</span>), $(wildcard $(<span class="built_in">dir</span>)/*.c))</span><br><span class="line">objs = $(foreach src, $(srcs), $(subst .c,.o,$(src)))</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;srcs = <span class="subst">$(srcs)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;objs = <span class="subst">$(objs)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>执行make命令，运行结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">srcs =  lcd/lcd.c  usb/usb.c  media/decode.c  keyboard/key.c</span><br><span class="line">objs =  lcd/lcd.o  usb/usb.o  media/decode.o  keyboard/key.o</span><br></pre></td></tr></table></figure>
+
+<h2 id="if-函数"><a href="#if-函数" class="headerlink" title="if 函数"></a>if 函数</h2><p>Makefile 中的 if 函数提供了在一个函数上下文中实现条件判断的功能，类似于<code>ifeq</code>关键字，if函数的使用格式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="keyword">if</span> CONDITION,THEN-PART)</span><br><span class="line">$(<span class="keyword">if</span> CONDITION,THEN-PART[,ELSE-PART])</span><br></pre></td></tr></table></figure>
+<p>if 函数的第一个参数 CONDITION表示条件判断，展开后如果非空，则条件为真，执行 THEN-PART部分；否则，如果有ELSE-PART部分，则执行ELSE-PART部分。</p>
+<p>if函数的返回值即执行分支（THEN-PART或ELSE-PART）的表达式值。如果没有ELSE-PART，则返回一个空字符串。</p>
+<p>if 函数使用示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">install_path = $(<span class="keyword">if</span> $(install__path), $(install__path), /usr/local)</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;install_path = <span class="subst">$(install_path)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>当我们使用make编译安装一个软件时，通常会指定一个安装路径，如果没有指定的话，则会默认安装在/usr/local目录下。在上面这个Makefile中，我们定义了一个install_path变量，通过if函数来判断这个变量是否为空，来决定最终的安装路径。执行make命令，可以看到运行结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">install_path =  /usr/local</span><br><span class="line"><span class="comment"># make install_path=/opt</span></span><br><span class="line">install_path = /opt</span><br></pre></td></tr></table></figure>
+
+<h2 id="call-函数"><a href="#call-函数" class="headerlink" title="call 函数"></a>call 函数</h2><p>如果想调用用户自定义的函数，则只能使用call函数来间接调用了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(call &lt;expression&gt;,&lt;parm1&gt;,&lt;parm2&gt;,&lt;parm3&gt;...)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">define func</span><br><span class="line">	@<span class="built_in">echo</span> <span class="string">&quot;pram1 = <span class="subst">$(0)</span>&quot;</span></span><br><span class="line">	@<span class="built_in">echo</span> <span class="string">&quot;pram2 = <span class="subst">$(1)</span>&quot;</span></span><br><span class="line">	@<span class="built_in">echo</span> <span class="string">&quot;pram3 = <span class="subst">$(2)</span>&quot;</span></span><br><span class="line">endef</span><br><span class="line">all:</span><br><span class="line">	$(call func,hello world,hahaha)</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">pram1 = func</span><br><span class="line">pram2 = hello world</span><br><span class="line">pram3 = hahaha</span><br></pre></td></tr></table></figure>
+
+<h2 id="origin函数"><a href="#origin函数" class="headerlink" title="origin函数"></a>origin函数</h2><p>origin函数的作用就是告诉你，你所关注的一个变量是从哪里来的。函数的使用格式为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(origin &lt;variable&gt;)</span><br></pre></td></tr></table></figure>
+<p>如果变量没有定义，origin函数的返回值为：<code>undefined</code>，不同的返回值代表变量的类型不同。常见的返回值如下;</p>
+<p><code>default</code>：变量是一个默认的定义，比如 CC 这个变量<br><code>file</code>：这个变量被定义在Makefile中<br><code>command line</code>：这个变量是被命令行定义的<br><code>overrid</code>e：这个变量是被override指示符重新定义过的<br><code>automatic</code>：一个命令运行中的自动化变量<br>使用示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">WEB = www.123.cc</span><br><span class="line">web_type = $(origin WEB)</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;web_type = <span class="subst">$(web_type)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;cc_type  = <span class="subst">$(origin CC)</span>&quot;</span></span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;cmd_type = <span class="subst">$(origin CMD)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make命令，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">web_type = file</span><br><span class="line">cc_type = default</span><br><span class="line">cmd_type = undefined</span><br><span class="line"><span class="comment"># make CMD=pwd</span></span><br><span class="line">web_type = file</span><br><span class="line">cc_type = default</span><br><span class="line">cmd_type = <span class="built_in">command</span> line</span><br></pre></td></tr></table></figure>
+
+<h2 id="shell-函数"><a href="#shell-函数" class="headerlink" title="shell 函数"></a>shell 函数</h2><p>如果你想在Makefile中运行shell命令，可以使用 shell 函数来完成这个功能。shell 函数的参数是shell命令，它和反引号 `` 具有相同的功能。shell命令的运行结果即为shell函数的返回值。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">current_path = $(shell <span class="built_in">pwd</span>)</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;current_path = <span class="subst">$(current_path)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make命令，可以看到运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:/home/makefile/demo<span class="comment"># make</span></span><br><span class="line">current_path = /home/makefile/demo</span><br></pre></td></tr></table></figure>
+
+<h2 id="error-和-warning-函数"><a href="#error-和-warning-函数" class="headerlink" title="error 和 warning 函数"></a>error 和 warning 函数</h2><p>make提供了两个可以控制make运行方式的函数：error和warning。如果这两个函数在Makefile中使用，当make执行过程中检测到某些错误，就可以给用户提供一些信息，并且可以控制make的是否继续执行下去。</p>
+<p><strong>error 函数</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(error TEXT…)</span><br></pre></td></tr></table></figure>
+<p>使用示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;make command start...&quot;</span></span><br><span class="line">    $(error find a error)</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;make command end...&quot;</span></span><br></pre></td></tr></table></figure>
+<p>当执行make命令时，make会执行默认目标all下的命令，当遇到error函数时，就会给用户一个错误提示信息，并终止make的继续执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">makefile:5: *** find a error.  Stop.</span><br></pre></td></tr></table></figure>
+<p>需要注意的是：error函数是在函数被调用时才会提示信息并终止make的继续执行。如果函数出现在命令中，或者出现在一个递归变量的定义里，在读取Makefile时不会出现错误。而只有包含error函数引用的命令执行时，或者包含这个函数的定义变量被展开时，才会提示错误信息TEXT，并终止make的运行。</p>
+<p><strong>warning 函数</strong><br>warning函数跟error函数类似，也会给用户提示信息，唯一的区别是：warning函数不会终止make的运行，make会继续运行下去。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(warning TEXT…)</span><br></pre></td></tr></table></figure>
+<p>使用示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: all</span><br><span class="line">all:</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;make command start...&quot;</span></span><br><span class="line">    $(warning find a error)</span><br><span class="line">    @<span class="built_in">echo</span> <span class="string">&quot;make command end...&quot;</span></span><br></pre></td></tr></table></figure>
+<p>执行make命令，运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make</span></span><br><span class="line">makefile:5: find a error</span><br><span class="line">make <span class="built_in">command</span> start...</span><br><span class="line">make <span class="built_in">command</span> end...</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Makefile/" rel="tag"><i class="fa fa-tag"></i> Makefile</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/14/override-%E6%9D%A1%E4%BB%B6%E5%88%A4%E6%96%AD/" rel="next" title="override+条件判断+通配符">
+                <i class="fa fa-chevron-left"></i> override+条件判断+通配符
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/05/16/cross-compile/" rel="prev" title="cross compile">
+                cross compile <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mashuyu.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+                <a href="/archives">
+                  <span class="site-state-item-count">174</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">109</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/rma-shuyu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1004129700@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Makefile-%E5%87%BD%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">Makefile 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.</span> <span class="nav-text">用户自定义函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">文本处理函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%90%8D%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">文件名处理函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#foreach%E5%87%BD%E6%95%B0"><span class="nav-number">4.</span> <span class="nav-text">foreach函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#if-%E5%87%BD%E6%95%B0"><span class="nav-number">5.</span> <span class="nav-text">if 函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#call-%E5%87%BD%E6%95%B0"><span class="nav-number">6.</span> <span class="nav-text">call 函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#origin%E5%87%BD%E6%95%B0"><span class="nav-number">7.</span> <span class="nav-text">origin函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shell-%E5%87%BD%E6%95%B0"><span class="nav-number">8.</span> <span class="nav-text">shell 函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-%E5%92%8C-warning-%E5%87%BD%E6%95%B0"><span class="nav-number">9.</span> <span class="nav-text">error 和 warning 函数</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rma-shuyu</span>
+
+  
+</div>
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共179k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'D2xdJ1c0QWBntVsHIVyVXtSZ-gzGzoHsz',
+        appKey: 'UGFWDjX2oTi2dIoWPAyisa9S',
+        placeholder: '请在此输入您的留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

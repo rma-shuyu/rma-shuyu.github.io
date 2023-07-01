@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function () {
+        if ('091220') {
+            if (prompt('请输入文章密码') !== '091220') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://rma-shuyu.github.io/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="qemu," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="rma's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="入口123qmp_migrate    migrate_fd_connect        migration_thread">
+<meta property="og:type" content="article">
+<meta property="og:title" content="qemu热迁移代码源端">
+<meta property="og:url" content="https://rma-shuyu.github.io/2022/06/02/qemu%E7%83%AD%E8%BF%81%E7%A7%BB%E4%BB%A3%E7%A0%81%E6%BA%90%E7%AB%AF/index.html">
+<meta property="og:site_name" content="rma&#39;s Blog">
+<meta property="og:description" content="入口123qmp_migrate    migrate_fd_connect        migration_thread">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-06-02T12:02:04.000Z">
+<meta property="article:modified_time" content="2023-07-01T09:37:27.383Z">
+<meta property="article:author" content="rma-shuyu">
+<meta property="article:tag" content="qemu">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rma-shuyu.github.io/2022/06/02/qemu热迁移代码源端/"/>
+
+
+
+
+
+  <title>qemu热迁移代码源端 | rma's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a target="_blank" rel="noopener" href="https://github.com/rma-shuyu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">rma's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay hungry, stay foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2022/06/02/qemu%E7%83%AD%E8%BF%81%E7%A7%BB%E4%BB%A3%E7%A0%81%E6%BA%90%E7%AB%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">qemu热迁移代码源端</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-06-02T20:02:04+08:00">
+                2022-06-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%99%9A%E6%8B%9F%E5%8C%96/" itemprop="url" rel="index">
+                    <span itemprop="name">虚拟化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2022/06/02/qemu%E7%83%AD%E8%BF%81%E7%A7%BB%E4%BB%A3%E7%A0%81%E6%BA%90%E7%AB%AF/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2022/06/02/qemu%E7%83%AD%E8%BF%81%E7%A7%BB%E4%BB%A3%E7%A0%81%E6%BA%90%E7%AB%AF/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="入口"><a href="#入口" class="headerlink" title="入口"></a>入口</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">qmp_migrate</span><br><span class="line">    migrate_fd_connect</span><br><span class="line">        migration_thread</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+
+<p>开启热迁移线程：准备阶段（记录卡侧脏页），循环执行迁移，最后处理</p>
+<h3 id="savevm-ram-handlers"><a href="#savevm-ram-handlers" class="headerlink" title="savevm_ram_handlers"></a>savevm_ram_handlers</h3><p>ram设备在vm初始化时注册的各种handle</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> SaveVMHandlers savevm_ram_handlers = &#123;</span><br><span class="line">    .save_setup = ram_save_setup,</span><br><span class="line">    .save_live_iterate = ram_save_iterate,</span><br><span class="line">    .save_live_complete_postcopy = ram_save_complete,</span><br><span class="line">    .save_live_complete_precopy = ram_save_complete,</span><br><span class="line">    .has_postcopy = ram_has_postcopy,</span><br><span class="line">    .save_live_pending = ram_save_pending,</span><br><span class="line">    .load_state = ram_load,</span><br><span class="line">    .save_cleanup = ram_save_cleanup,</span><br><span class="line">    .load_setup = ram_load_setup,</span><br><span class="line">    .load_cleanup = ram_load_cleanup,</span><br><span class="line">    .resume_prepare = ram_resume_prepare,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>源端迁移处理函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ram_save_setup          <span class="comment">//第一阶段：虚机内存标脏，卡侧脏页记录</span></span><br><span class="line">ram_save_pending        <span class="comment">//第二阶段：kvm脏页记录，同步到qemu</span></span><br><span class="line"><span class="keyword">while</span> (pending_size &gt; threshold_size)</span><br><span class="line">    ram_save_iterate        <span class="comment">//第二阶段：kvm脏页数据同步到目的端</span></span><br><span class="line">ram_save_complete       <span class="comment">//第三阶段：vm stop，卡侧脏页同步qemu，传输剩余脏页</span></span><br></pre></td></tr></table></figure>
+<p>主要做的事：</p>
+<ul>
+<li>用bitmap跟踪脏页</li>
+<li>将脏页传送到对端</li>
+</ul>
+<p>传输的内存有3部分组成：虚机整体内存、卡侧内存、kvm内存<br>这里为何有卡侧内存，这是因为，虚机dma需要将虚机的内存映射给卡侧，这部分内存是旁路内核的</p>
+<p>这里<code>pending_size</code>是kvm获取的脏页大小，<code>threshold_size</code>为临界值：带宽*downtime_limit<br><code>downtime_limit</code>标识最大停机时间，默认为300ms，也可指定</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">migrate_set_parameter downtime_limit 1</span><br></pre></td></tr></table></figure>
+<p>带宽 = 已迁移数据大小/迁移时间<br>在迁移脏页数据时计算临界值，调用栈如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">ram_save_iterate</span><br><span class="line">    ram_find_and_save_block</span><br><span class="line">     ram_save_host_page</span><br><span class="line">        migration_rate_limit</span><br><span class="line">            migration_update_counters</span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">migration_update_counters</span><span class="params">(MigrationState *s,</span></span><br><span class="line"><span class="params">                                      <span class="type">int64_t</span> current_time)</span></span><br><span class="line">&#123;</span><br><span class="line">....</span><br><span class="line">    current_bytes = migration_total_bytes(s);</span><br><span class="line">    transferred = current_bytes - s-&gt;iteration_initial_bytes;</span><br><span class="line">    time_spent = current_time - s-&gt;iteration_start_time;</span><br><span class="line">    bandwidth = (<span class="type">double</span>)transferred / time_spent;</span><br><span class="line">    s-&gt;threshold_size = bandwidth * s-&gt;parameters.downtime_limit;</span><br><span class="line">....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="准备阶段（记录卡侧脏页）"><a href="#准备阶段（记录卡侧脏页）" class="headerlink" title="准备阶段（记录卡侧脏页）"></a>准备阶段（记录卡侧脏页）</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> *<span class="title function_">migration_thread</span><span class="params">(<span class="type">void</span> *opaque)</span></span><br><span class="line">&#123;</span><br><span class="line">.......</span><br><span class="line">    <span class="comment">//第一阶段 分别调用了savevm_handlers中注册的迁移设备准备接口，以ram_save_setup为例</span></span><br><span class="line">    qemu_savevm_state_setup(s-&gt;to_dst_file);</span><br><span class="line">.......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>1、将虚拟机内存全部标脏</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">migration_thread</span><br><span class="line">    qemu_savevm_state_setup</span><br><span class="line">        ram_save_setup</span><br><span class="line">            ram_init_all</span><br><span class="line">                ram_init_bitmaps</span><br><span class="line">                    ram_list_init_bitmaps</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">ram_list_init_bitmaps</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">....</span><br><span class="line">    RAMBLOCK_FOREACH_NOT_IGNORED(block) &#123;</span><br><span class="line">        <span class="comment">//一个RAMBlock最大可以表示8G，</span></span><br><span class="line">        <span class="comment">//max_length取决于qemu启动参数-m 2048的大小，这里为2g</span></span><br><span class="line">        pages = block-&gt;max_length &gt;&gt; TARGET_PAGE_BITS;</span><br><span class="line">        block-&gt;bmap = bitmap_new(pages);</span><br><span class="line">        <span class="comment">//将虚拟机内存全部标脏</span></span><br><span class="line">        bitmap_set(block-&gt;bmap, <span class="number">0</span>, pages);</span><br><span class="line">        block-&gt;clear_bmap_shift = shift;</span><br><span class="line">        block-&gt;clear_bmap = bitmap_new(clear_bmap_size(pages, shift));</span><br><span class="line">    &#125;</span><br><span class="line">....</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>2、记录卡侧脏页</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">migration_thread</span><br><span class="line">    qemu_savevm_state_setup</span><br><span class="line">        ram_save_setup</span><br><span class="line">            ram_init_all</span><br><span class="line">                ram_init_bitmaps</span><br><span class="line">                    memory_global_dirty_log_start</span><br><span class="line">                        vhost_log_global_start</span><br></pre></td></tr></table></figure>
+<p>这里是记录卸载到卡侧的vring内存，desc、avail、used</p>
+<h3 id="vhost-log-global-start"><a href="#vhost-log-global-start" class="headerlink" title="vhost_log_global_start"></a>vhost_log_global_start</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vhost_migration_log</span><br><span class="line">    vhost_dev_log_resize</span><br><span class="line">        vhost_set_log_base</span><br><span class="line">    vhost_dev_set_log</span><br><span class="line">        vhost_set_features</span><br></pre></td></tr></table></figure>
+<p>1、首先设置log_base和log_size，标识后端需要记录的内存基地址和大小<br>如果后端是kernel，则通过ioctl发送VHOST_USER_SET_LOG_BASE消息<br>如果后端是vhost_user，则通过unix socket发送VHOST_USER_SET_LOG_BASE消息</p>
+<p>2、然后通过vhost_set_features，设置VHOST_F_LOG_ALL（26）特性位，通知后端使能log_enabled</p>
+<h2 id="循环执行迁移"><a href="#循环执行迁移" class="headerlink" title="循环执行迁移"></a>循环执行迁移</h2><p>migration_iteration_run</p>
+<h3 id="脏页记录"><a href="#脏页记录" class="headerlink" title="脏页记录"></a>脏页记录</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ram_save_pending</span><br><span class="line">    migration_bitmap_sync</span><br><span class="line">        memory_global_dirty_log_sync</span><br><span class="line">            kvm_log_sync</span><br><span class="line">                kvm_slot_get_dirty_log       <span class="comment">//获取kvm脏页</span></span><br><span class="line">                kvm_slot_sync_dirty_pages    <span class="comment">//同步到qemu</span></span><br></pre></td></tr></table></figure>
+<p>这里记录kvm中的内存，通过ioctl发送KVM_GET_DIRTY_LOG向kvm获取脏页记录</p>
+<h4 id="kvm-slot-sync-dirty-pages"><a href="#kvm-slot-sync-dirty-pages" class="headerlink" title="kvm_slot_sync_dirty_pages"></a>kvm_slot_sync_dirty_pages</h4><p>将kvm获取的脏页设置到qemu，每一个log_chunk是一个unsigned long数据，拥有64bit，<br>每一个bit标识一个4k页<br>这里需要区分start是否是unsigned long对齐，具体算法如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">void</span> <span class="title function_">cpu_physical_memory_set_dirty_lebitmap</span><span class="params">(<span class="type">unsigned</span> <span class="type">long</span> *bitmap,</span></span><br><span class="line"><span class="params">                                                          <span class="type">ram_addr_t</span> start,</span></span><br><span class="line"><span class="params">                                                          <span class="type">ram_addr_t</span> pages)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> i, j;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> page_number, c;</span><br><span class="line">    hwaddr addr;</span><br><span class="line">    <span class="type">ram_addr_t</span> ram_addr;</span><br><span class="line">    <span class="comment">//以64位为单位计算的bitmap的长度</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> len = (pages + HOST_LONG_BITS - <span class="number">1</span>) / HOST_LONG_BITS;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> hpratio = qemu_real_host_page_size / TARGET_PAGE_SIZE;</span><br><span class="line">    <span class="comment">//利用在ramlist中的起始页框号/64 计算出 map位图的索引</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> page = BIT_WORD(start &gt;&gt; TARGET_PAGE_BITS);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* start address is aligned at the start of a word? */</span></span><br><span class="line">    <span class="comment">/* 如果section的起始页框号是64对齐的 */</span></span><br><span class="line">    <span class="keyword">if</span> ((((page * BITS_PER_LONG) &lt;&lt; TARGET_PAGE_BITS) == start) &amp;&amp;</span><br><span class="line">        (hpratio == <span class="number">1</span>)) &#123;</span><br><span class="line">        <span class="type">unsigned</span> <span class="type">long</span> **blocks[DIRTY_MEMORY_NUM];</span><br><span class="line">        <span class="type">unsigned</span> <span class="type">long</span> idx;</span><br><span class="line">        <span class="type">unsigned</span> <span class="type">long</span> offset;</span><br><span class="line">        <span class="type">long</span> k;</span><br><span class="line">        <span class="type">long</span> nr = BITS_TO_LONGS(pages);<span class="comment">//以64位为单位计算bitmap的长度</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//这里的idx和offset就是前面第一个图上的i和j</span></span><br><span class="line">        idx = (start &gt;&gt; TARGET_PAGE_BITS) / DIRTY_MEMORY_BLOCK_SIZE;</span><br><span class="line">        offset = BIT_WORD((start &gt;&gt; TARGET_PAGE_BITS) %</span><br><span class="line">                          DIRTY_MEMORY_BLOCK_SIZE);</span><br><span class="line"></span><br><span class="line">        WITH_RCU_READ_LOCK_GUARD() &#123;</span><br><span class="line">            <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; DIRTY_MEMORY_NUM; i++) &#123;</span><br><span class="line">                blocks[i] =</span><br><span class="line">                    qatomic_rcu_read(&amp;ram_list.dirty_memory[i])-&gt;blocks;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (k = <span class="number">0</span>; k &lt; nr; k++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (bitmap[k]) &#123;<span class="comment">//存在脏页</span></span><br><span class="line">                    <span class="type">unsigned</span> <span class="type">long</span> temp = leul_to_cpu(bitmap[k]);</span><br><span class="line">                    <span class="comment">//直接设置到map的offset对应项中</span></span><br><span class="line">                    qatomic_or(&amp;blocks[DIRTY_MEMORY_VGA][idx][offset], temp);</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (global_dirty_tracking) &#123;</span><br><span class="line">                        qatomic_or(</span><br><span class="line">                                &amp;blocks[DIRTY_MEMORY_MIGRATION][idx][offset],</span><br><span class="line">                                temp);</span><br><span class="line">                        <span class="keyword">if</span> (unlikely(</span><br><span class="line">                            global_dirty_tracking &amp; GLOBAL_DIRTY_DIRTY_RATE)) &#123;</span><br><span class="line">                            total_dirty_pages += ctpopl(temp);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (tcg_enabled()) &#123;</span><br><span class="line">                        qatomic_or(&amp;blocks[DIRTY_MEMORY_CODE][idx][offset],</span><br><span class="line">                                   temp);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//offset对应64bit的第一位对应页框在ramlist上的地址已经超过8G</span></span><br><span class="line">                <span class="keyword">if</span> (++offset &gt;= BITS_TO_LONGS(DIRTY_MEMORY_BLOCK_SIZE)) &#123;</span><br><span class="line">                    offset = <span class="number">0</span>;</span><br><span class="line">                    idx++;<span class="comment">//则换到blocks的下一个map位图</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        xen_hvm_modified_memory(start, pages &lt;&lt; TARGET_PAGE_BITS);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="type">uint8_t</span> clients = tcg_enabled() ? DIRTY_CLIENTS_ALL : DIRTY_CLIENTS_NOCODE;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!global_dirty_tracking) &#123;</span><br><span class="line">            clients &amp;= ~(<span class="number">1</span> &lt;&lt; DIRTY_MEMORY_MIGRATION);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * bitmap-traveling is faster than memory-traveling (for addr...)</span></span><br><span class="line"><span class="comment">         * especially when most of the memory is not dirty.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (bitmap[i] != <span class="number">0</span>) &#123;<span class="comment">//这个64位区间存在脏页</span></span><br><span class="line">                c = leul_to_cpu(bitmap[i]);</span><br><span class="line">                <span class="keyword">if</span> (unlikely(global_dirty_tracking &amp; GLOBAL_DIRTY_DIRTY_RATE)) &#123;</span><br><span class="line">                    total_dirty_pages += ctpopl(c);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">do</span> &#123;</span><br><span class="line">                    j = ctzl(c);<span class="comment">//返回第一个1的位置，方便后面计算page_number</span></span><br><span class="line">                    c &amp;= ~(<span class="number">1ul</span> &lt;&lt; j);<span class="comment">//把c中的第一个1清空</span></span><br><span class="line">                    page_number = (i * HOST_LONG_BITS + j) * hpratio;</span><br><span class="line">                    addr = page_number * TARGET_PAGE_SIZE;</span><br><span class="line">                    ram_addr = start + addr;<span class="comment">//计算出bitmap第一个脏页框在ramlist中的地址</span></span><br><span class="line">                    <span class="comment">//只设置一个脏页的脏页位</span></span><br><span class="line">                    cpu_physical_memory_set_dirty_range(ram_addr,</span><br><span class="line">                                       TARGET_PAGE_SIZE * hpratio, clients);</span><br><span class="line">                &#125; <span class="keyword">while</span> (c != <span class="number">0</span>);<span class="comment">//整个循环能够设置完64位的脏页位</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="comment">//将bitmap整个完整的设置到qemu的blocks位图中</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">void</span> <span class="title function_">cpu_physical_memory_set_dirty_range</span><span class="params">(<span class="type">ram_addr_t</span> start,</span></span><br><span class="line"><span class="params">                                                       <span class="type">ram_addr_t</span> length,</span></span><br><span class="line"><span class="params">                                                       <span class="type">uint8_t</span> mask)</span></span><br><span class="line">&#123;</span><br><span class="line">    DirtyMemoryBlocks *blocks[DIRTY_MEMORY_NUM];</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> end, page;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> idx, offset, base;</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!mask &amp;&amp; !xen_enabled()) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//结束页框号</span></span><br><span class="line">    end = TARGET_PAGE_ALIGN(start + length) &gt;&gt; TARGET_PAGE_BITS;</span><br><span class="line">    <span class="comment">//起始脏页页框号</span></span><br><span class="line">    page = start &gt;&gt; TARGET_PAGE_BITS;</span><br><span class="line"></span><br><span class="line">    WITH_RCU_READ_LOCK_GUARD() &#123;</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; DIRTY_MEMORY_NUM; i++) &#123;</span><br><span class="line">            blocks[i] = qatomic_rcu_read(&amp;ram_list.dirty_memory[i]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//page页框号对应 页框地址 小于8G的情况下，idx = 0,offset = page</span></span><br><span class="line">        <span class="comment">//（这里的offset是不能拿去直接索引map位图的，因为这里的offset是页框号）</span></span><br><span class="line">        idx = page / DIRTY_MEMORY_BLOCK_SIZE;</span><br><span class="line">        offset = page % DIRTY_MEMORY_BLOCK_SIZE;</span><br><span class="line">        base = page - offset;<span class="comment">//base为0</span></span><br><span class="line">        <span class="keyword">while</span> (page &lt; end) &#123;<span class="comment">//这个循环只执行一次</span></span><br><span class="line">            <span class="type">unsigned</span> <span class="type">long</span> next = MIN(end, base + DIRTY_MEMORY_BLOCK_SIZE);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (likely(mask &amp; (<span class="number">1</span> &lt;&lt; DIRTY_MEMORY_MIGRATION))) &#123;</span><br><span class="line">                bitmap_set_atomic(blocks[DIRTY_MEMORY_MIGRATION]-&gt;blocks[idx],</span><br><span class="line">                                  offset, next - page);<span class="comment">//设置脏页位</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (unlikely(mask &amp; (<span class="number">1</span> &lt;&lt; DIRTY_MEMORY_VGA))) &#123;</span><br><span class="line">                bitmap_set_atomic(blocks[DIRTY_MEMORY_VGA]-&gt;blocks[idx],</span><br><span class="line">                                  offset, next - page);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (unlikely(mask &amp; (<span class="number">1</span> &lt;&lt; DIRTY_MEMORY_CODE))) &#123;</span><br><span class="line">                bitmap_set_atomic(blocks[DIRTY_MEMORY_CODE]-&gt;blocks[idx],</span><br><span class="line">                                  offset, next - page);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            page = next;</span><br><span class="line">            idx++;</span><br><span class="line">            offset = <span class="number">0</span>;</span><br><span class="line">            base += DIRTY_MEMORY_BLOCK_SIZE;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    xen_hvm_modified_memory(start, length);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="脏页数据迁移"><a href="#脏页数据迁移" class="headerlink" title="脏页数据迁移"></a>脏页数据迁移</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ram_save_iterate</span><br><span class="line">    ram_find_and_save_block</span><br><span class="line">        ram_save_host_page</span><br><span class="line">            ram_save_target_page</span><br><span class="line">                ram_save_page</span><br><span class="line">                    save_normal_page</span><br></pre></td></tr></table></figure>
+<p>这里通过写socket fd将数据（RAMBlock中，guest映射的host内存，写4k大小的数据），将数据发送到目的端</p>
+<p><strong>注意</strong><br>如果guest写入内存的速度很快，正常的迁移将永远持续下去，可能无法完成，此时需要在热迁移执行命令前，开启auto-converge，对cpu降频</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">migrate_set_capability auto-converge on</span><br></pre></td></tr></table></figure>
+<p>具体参考：<a target="_blank" rel="noopener" href="https://wiki.qemu.org/Features/AutoconvergeLiveMigration">https://wiki.qemu.org/Features/AutoconvergeLiveMigration</a><br>代码中<code>migration_bitmap_sync</code>会判断</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">migration_bitmap_sync</span><span class="params">(RAMState *rs)</span></span><br><span class="line">&#123;</span><br><span class="line">.....</span><br><span class="line"><span class="comment">//大于1秒需要看是否支持auto_converge以及xbzrle的数据统计</span></span><br><span class="line"><span class="keyword">if</span> (end_time &gt; rs-&gt;time_last_bitmap_sync + <span class="number">1000</span>) &#123;</span><br><span class="line">....</span><br><span class="line">&#125;</span><br><span class="line">.....</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="最后处理"><a href="#最后处理" class="headerlink" title="最后处理"></a>最后处理</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">migration_completion</span><br><span class="line">    vm_stop_force_state <span class="comment">//关闭vm，设置虚拟机为迁移完成态</span></span><br><span class="line">    qemu_savevm_state_complete_precopy  <span class="comment">//进行调用最后处理</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="vm-stop-force-state"><a href="#vm-stop-force-state" class="headerlink" title="vm_stop_force_state"></a>vm_stop_force_state</h3><p>1、以队列为粒度，通过vhost_get_vring_base向后端发起stop dev处理</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">vm_stop_force_state</span><br><span class="line">vm_stop</span><br><span class="line">vm_state_notify</span><br><span class="line">virtio_vmstate_change</span><br><span class="line">virtio_net_set_status</span><br><span class="line">virtio_net_vhost_status</span><br><span class="line">vhost_net_stop_one</span><br><span class="line">vhost_dev_stop</span><br><span class="line">vhost_virtqueue_stop</span><br><span class="line">vhost_get_vring_base</span><br></pre></td></tr></table></figure>
+
+<p>2、后端关闭设备后，通过vhost_dev_sync_region将卡侧的脏页同步到qemu，</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">vm_stop_force_state</span><br><span class="line">vm_stop</span><br><span class="line">vm_state_notify</span><br><span class="line">virtio_vmstate_change</span><br><span class="line">virtio_net_set_status</span><br><span class="line">virtio_net_vhost_status</span><br><span class="line">vhost_net_stop_one</span><br><span class="line">vhost_dev_stop</span><br><span class="line">vhost_log_put</span><br><span class="line">vhost_log_sync_range</span><br><span class="line">vhost_sync_dirty_bitmap</span><br><span class="line">vhost_dev_sync_region</span><br><span class="line">cpu_physical_memory_set_dirty_range</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">vhost_dev_sync_region</span><span class="params">(<span class="keyword">struct</span> vhost_dev *dev,</span></span><br><span class="line"><span class="params">                                  MemoryRegionSection *section,</span></span><br><span class="line"><span class="params">                                  <span class="type">uint64_t</span> mfirst, <span class="type">uint64_t</span> mlast,</span></span><br><span class="line"><span class="params">                                  <span class="type">uint64_t</span> rfirst, <span class="type">uint64_t</span> rlast)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span> (;from &lt; to; ++from) &#123;</span><br><span class="line">        <span class="type">vhost_log_chunk_t</span> <span class="built_in">log</span>;</span><br><span class="line">        <span class="comment">/* We first check with non-atomic: much cheaper,</span></span><br><span class="line"><span class="comment">         * and we expect non-dirty to be the common case. */</span></span><br><span class="line">        <span class="keyword">if</span> (!*from) &#123;</span><br><span class="line">            addr += VHOST_LOG_CHUNK;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/* Data must be read atomically. We don&#x27;t really need barrier semantics</span></span><br><span class="line"><span class="comment">         * but it&#x27;s easier to use atomic_* than roll our own. */</span></span><br><span class="line">        <span class="built_in">log</span> = qatomic_xchg(from, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">while</span> (<span class="built_in">log</span>) &#123;</span><br><span class="line">            <span class="type">int</span> bit = ctzl(<span class="built_in">log</span>);</span><br><span class="line">            hwaddr page_addr;</span><br><span class="line">            hwaddr section_offset;</span><br><span class="line">            hwaddr mr_offset;</span><br><span class="line">            page_addr = addr + bit * VHOST_LOG_PAGE;</span><br><span class="line">            <span class="comment">//增加卡侧内存迁移地址打印</span></span><br><span class="line">            <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;vhost log_sync:%lx&quot;</span>, page_addr);</span><br><span class="line">            section_offset = page_addr - section-&gt;offset_within_address_space;</span><br><span class="line">            mr_offset = section_offset + section-&gt;offset_within_region;</span><br><span class="line">            memory_region_set_dirty(section-&gt;mr, mr_offset, VHOST_LOG_PAGE);</span><br><span class="line">            <span class="built_in">log</span> &amp;= ~(<span class="number">0x1</span>ull &lt;&lt; bit);</span><br><span class="line">        &#125;</span><br><span class="line">        addr += VHOST_LOG_CHUNK;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>打印内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">vhost log_sync:35c63000</span><br><span class="line">vhost log_sync:35c64000</span><br><span class="line">vhost log_sync:35c6b000</span><br><span class="line">vhost log_sync:35c6c000</span><br><span class="line">vhost log_sync:35c73000</span><br><span class="line">vhost log_sync:35c74000</span><br><span class="line">vhost log_sync:35c7b000</span><br><span class="line">vhost log_sync:35c7c000</span><br><span class="line">vhost log_sync:35c83000</span><br><span class="line">vhost log_sync:35c84000</span><br><span class="line">vhost log_sync:35c8b000</span><br><span class="line">vhost log_sync:35c8c000</span><br><span class="line">vhost log_sync:35c93000</span><br><span class="line">vhost log_sync:35c94000</span><br><span class="line">vhost log_sync:43dfb000</span><br><span class="line">vhost log_sync:43dfc000</span><br></pre></td></tr></table></figure>
+
+<h3 id="qemu-savevm-state-complete-precopy"><a href="#qemu-savevm-state-complete-precopy" class="headerlink" title="qemu_savevm_state_complete_precopy"></a>qemu_savevm_state_complete_precopy</h3><p>save_live_complete_precopy，这里以ram_save_complete为例<br>1、将前面同步给qemu的脏页，发送到目的端</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">qemu_savevm_state_complete_precopy_iterable</span><br><span class="line">    <span class="title function_">save_section_header</span><span class="params">(f, se, QEMU_VM_SECTION_END)</span>; <span class="comment">//设置section_type为QEMU_VM_SECTION_END</span></span><br><span class="line">    ram_save_complete</span><br><span class="line">        ram_find_and_save_block <span class="comment">//传输剩下的脏页</span></span><br><span class="line">            ram_save_host_page</span><br><span class="line">                ram_save_target_page</span><br><span class="line">                    ram_save_page</span><br><span class="line">                        save_normal_page</span><br></pre></td></tr></table></figure>
+
+<p>2、将SaveStateEntry发送到目的端</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">qemu_savevm_state_complete_precopy</span><br><span class="line">    qemu_savevm_state_complete_precopy_non_iterable</span><br><span class="line">        <span class="title function_">save_section_header</span><span class="params">(f, se, QEMU_VM_SECTION_FULL)</span>; <span class="comment">//设置section_type为QEMU_VM_SECTION_FULL</span></span><br><span class="line">        vmstate_save</span><br></pre></td></tr></table></figure>
+
+
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/qemu/" rel="tag"><i class="fa fa-tag"></i> qemu</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/06/01/dpdk-vdpa%E7%83%AD%E8%BF%81%E7%A7%BB/" rel="next" title="dpdk-vdpa热迁移">
+                <i class="fa fa-chevron-left"></i> dpdk-vdpa热迁移
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/06/03/qemu%E7%83%AD%E8%BF%81%E7%A7%BB%E4%BB%A3%E7%A0%81%E7%9B%AE%E7%9A%84%E7%AB%AF/" rel="prev" title="qemu热迁移代码目的端">
+                qemu热迁移代码目的端 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mashuyu.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+                <a href="/archives">
+                  <span class="site-state-item-count">174</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">109</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/rma-shuyu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1004129700@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A5%E5%8F%A3"><span class="nav-number">1.</span> <span class="nav-text">入口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#savevm-ram-handlers"><span class="nav-number">1.1.</span> <span class="nav-text">savevm_ram_handlers</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E9%98%B6%E6%AE%B5%EF%BC%88%E8%AE%B0%E5%BD%95%E5%8D%A1%E4%BE%A7%E8%84%8F%E9%A1%B5%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">准备阶段（记录卡侧脏页）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#vhost-log-global-start"><span class="nav-number">2.1.</span> <span class="nav-text">vhost_log_global_start</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E6%89%A7%E8%A1%8C%E8%BF%81%E7%A7%BB"><span class="nav-number">3.</span> <span class="nav-text">循环执行迁移</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%8F%E9%A1%B5%E8%AE%B0%E5%BD%95"><span class="nav-number">3.1.</span> <span class="nav-text">脏页记录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#kvm-slot-sync-dirty-pages"><span class="nav-number">3.1.1.</span> <span class="nav-text">kvm_slot_sync_dirty_pages</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%8F%E9%A1%B5%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB"><span class="nav-number">3.2.</span> <span class="nav-text">脏页数据迁移</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%90%8E%E5%A4%84%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">最后处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#vm-stop-force-state"><span class="nav-number">4.1.</span> <span class="nav-text">vm_stop_force_state</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#qemu-savevm-state-complete-precopy"><span class="nav-number">4.2.</span> <span class="nav-text">qemu_savevm_state_complete_precopy</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rma-shuyu</span>
+
+  
+</div>
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共179k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'D2xdJ1c0QWBntVsHIVyVXtSZ-gzGzoHsz',
+        appKey: 'UGFWDjX2oTi2dIoWPAyisa9S',
+        placeholder: '请在此输入您的留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>
