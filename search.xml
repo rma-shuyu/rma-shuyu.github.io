@@ -45,6 +45,69 @@
       </tags>
   </entry>
   <entry>
+    <title>DPDK+OVS+QEMU前后端启动vm</title>
+    <url>/2023/03/06/DPDK-OVS-QEMU%E5%89%8D%E5%90%8E%E7%AB%AF%E5%90%AF%E5%8A%A8vm/</url>
+    <content><![CDATA[<h2 id="先决条件"><a href="#先决条件" class="headerlink" title="先决条件"></a>先决条件</h2><ul>
+<li><p>DPDK 22.11.1</p>
+</li>
+<li><p>A DPDK supported NIC</p>
+</li>
+</ul>
+<p>Only required when physical ports are in use</p>
+<span id="more"></span>
+<ul>
+<li>A suitable kernel</li>
+</ul>
+<p>On Linux Distros running kernel version &gt;= 3.0, only IOMMU needs to enabled via the grub cmdline, assuming you are using VFIO. For older kernels, ensure the kernel is built with UIO, HUGETLBFS, PROC_PAGE_MONITOR, HPET, HPET_MMAP support. If these are not present, it will be necessary to upgrade your kernel or build a custom kernel with these flags enabled.</p>
+<h2 id="dpdk环境设置"><a href="#dpdk环境设置" class="headerlink" title="dpdk环境设置"></a>dpdk环境设置</h2><p>检查VT-d功能是否打开</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/cmdline | grep iommu=pt</span><br><span class="line"><span class="built_in">cat</span> /proc/cmdline | grep intel_iommu=on</span><br></pre></td></tr></table></figure>
+<p>如果没有开启，那么需要修改/etc/default/grub中GRUB_CMDLINE_LINUX_DEFAULT，重新创建引导grub</p>
+<p>设置大页，加载vfio，绑定物理网卡到vfio</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">huge_set --setup 4g</span><br><span class="line">modprobe vfio-pci</span><br><span class="line">dpdk_bind -b vfio-pci ens33f1</span><br></pre></td></tr></table></figure>
+<p>这里的<code>huge_set</code>、<code>dpdk_bind</code>对应dpdk bin中的<code>dpdk-devbind.py</code>、<code>dpdk-hugepages.py</code></p>
+<h2 id="ovs启动"><a href="#ovs启动" class="headerlink" title="ovs启动"></a>ovs启动</h2><ul>
+<li>创建ovs相关目录</li>
+<li>第一次需要创建ovsdb</li>
+<li>启动ovsdb-server</li>
+<li>检查db.sock是否正常创建</li>
+<li>设置other_config为dpdk模式</li>
+<li>启动ovs-vswitchd</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> /mnt/store/ovs/images/bin</span><br><span class="line"></span><br><span class="line">dpdk_socket_mem=<span class="string">&quot;1024,0&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">mkdir</span> -p /var/run/openvswitch</span><br><span class="line"><span class="built_in">mkdir</span> -p /etc/openvswitch</span><br><span class="line"><span class="built_in">mkdir</span> -p /var/log/openvswitch</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ! <span class="built_in">test</span> -f /etc/openvswitch/conf.db; <span class="keyword">then</span></span><br><span class="line">	./ovsdb-tool create /etc/openvswitch/conf.db /mnt/store/ovs/images/db/vswitch.ovsschema</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">./ovsdb-server /etc/openvswitch/conf.db -vconsole:emer -vsyslog:err -vfile:info --remote=punix:/var/run/openvswitch/db.sock --private-key=db:Open_vSwitch,SSL,private_key --certificate=db:Open_vSwitch,SSL,certificate --bootstrap-ca-cert=db:Open_vSwitch,SSL,ca_cert --no-chdir --log-file=/var/log/openvswitch/ovsdb-server.log --pidfile=/var/run/openvswitch/ovsdb-server.pid --detach --monitor</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> [ ! -S /var/run/openvswitch/db.sock ]</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">sleep</span> 1</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line">./ovs-vsctl --no-wait <span class="built_in">set</span> Open_vSwitch . other_config:dpdk-init=<span class="literal">true</span></span><br><span class="line">./ovs-vsctl --no-wait <span class="built_in">set</span> Open_vSwitch . other_config:dpdk-extra=<span class="string">&quot;--iova-mode=pa&quot;</span></span><br><span class="line">./ovs-vsctl --no-wait <span class="built_in">set</span> Open_vSwitch . other_config:dpdk-socket-mem=<span class="variable">$dpdk_socket_mem</span></span><br><span class="line"></span><br><span class="line">./ovs-vswitchd unix:/var/run/openvswitch/db.sock -vconsole:emer -vsyslog:err -vfile:info --mlockall --no-chdir --log-file=/var/log/openvswitch/ovs-vswitchd.log --pidfile=/var/run/openvswitch/ovs-vswitchd.pid --detach --monitor</span><br></pre></td></tr></table></figure>
+
+<h2 id="ovs停止运行"><a href="#ovs停止运行" class="headerlink" title="ovs停止运行"></a>ovs停止运行</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ovs-appctl -t ovs-vswitchd <span class="built_in">exit</span></span><br><span class="line">ovs-appctl -t ovsdb-server <span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="ovs创建port"><a href="#ovs创建port" class="headerlink" title="ovs创建port"></a>ovs创建port</h2><ul>
+<li>创建网桥</li>
+<li>物理端口绑定网桥</li>
+<li>前后端通信端口绑定网桥</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">/mnt/store/ovs/images/bin/ovs-vsctl --may-exist add-br br0 -- <span class="built_in">set</span> bridge br0 datapath_type=netdev</span><br><span class="line"></span><br><span class="line"><span class="comment"># dpdk-devargs后面跟的是dpdk绑定网卡的pci bdf号</span></span><br><span class="line">/mnt/store/ovs/images/bin/ovs-vsctl --may-exist add-port br0 phy0 -- <span class="built_in">set</span> Interface phy0 <span class="built_in">type</span>=dpdk options:dpdk-devargs=0000:24:00.1</span><br><span class="line"></span><br><span class="line">/mnt/store/ovs/images/bin/ovs-vsctl --may-exist add-port br0 vhost-user-1 -- <span class="built_in">set</span> Interface vhost-user-1 <span class="built_in">type</span>=dpdkvhostuserclient options:vhost-server-path=<span class="string">&quot;/tmp/sock0&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>ovs-vsctl show查看运行结果</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># /mnt/store/ovs/images/bin/ovs-vsctl show</span></span><br><span class="line">90ce12f9-3e63-4fff-b615-ae7e864858db</span><br><span class="line">    Bridge br0</span><br><span class="line">        datapath_type: netdev</span><br><span class="line">        Port br0</span><br><span class="line">            Interface br0</span><br><span class="line">                <span class="built_in">type</span>: internal</span><br><span class="line">        Port vhost-user-1</span><br><span class="line">            Interface vhost-user-1</span><br><span class="line">                <span class="built_in">type</span>: dpdkvhostuserclient</span><br><span class="line">                options: &#123;vhost-server-path=<span class="string">&quot;/tmp/sock0&quot;</span>&#125;</span><br><span class="line">        Port phy0</span><br><span class="line">            Interface phy0</span><br><span class="line">                <span class="built_in">type</span>: dpdk</span><br><span class="line">                options: &#123;dpdk-devargs=<span class="string">&quot;0000:24:00.1&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="qemu启动"><a href="#qemu启动" class="headerlink" title="qemu启动"></a>qemu启动</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">ulimit</span> -l unlimited</span><br><span class="line">/root/pc-bios/qemu-system-x86_64  \</span><br><span class="line">	-enable-kvm -m 2048 -cpu host \</span><br><span class="line">	-hda /mnt/store/vm0-centos8.4-8g-ext4-host-dmar.img \</span><br><span class="line">	-object memory-backend-file,<span class="built_in">id</span>=mem,size=2048M,mem-path=/dev/hugepages,share=on \</span><br><span class="line">	-mem-prealloc \</span><br><span class="line">	-numa node,memdev=mem \</span><br><span class="line">	-chardev socket,<span class="built_in">id</span>=char0,path=/tmp/sock0,server=on \</span><br><span class="line">	-netdev <span class="built_in">type</span>=vhost-user,<span class="built_in">id</span>=vdpa,chardev=char0,queues=4 \</span><br><span class="line">	-device virtio-net-pci,mq=on,rx_queue_size=512,tx_queue_size=512,netdev=vdpa,mac=00:aa:bb:cc:<span class="built_in">dd</span>:ee,page-per-vq=on,disable-modern=on,disable-legacy=off \</span><br><span class="line">	-serial telnet:127.1:4321,server,nowait \</span><br><span class="line">	-monitor stdio \</span><br><span class="line">	-D ./qemu-vm0.<span class="built_in">log</span> \</span><br><span class="line">	-vnc :90 -L /root/pc-bios</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="ping包测试"><a href="#ping包测试" class="headerlink" title="ping包测试"></a>ping包测试</h2><p>host上网桥配置ip，端口up</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ifconfig br0 192.188.1.3/24 up</span><br></pre></td></tr></table></figure>
+
+<p>geust上net口配置同网段ip，端口up</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ifconfig ens3 192.188.1.2/24 up</span><br></pre></td></tr></table></figure>
+
+<p>vm ping host<br><img src="212553173cc3f955da5935e31ed69460df0ad4632296146b4ae845f52fe8edde.png" alt="图 1">  </p>
+]]></content>
+      <categories>
+        <category>虚拟化</category>
+      </categories>
+      <tags>
+        <tag>DPDK</tag>
+        <tag>OVS</tag>
+        <tag>QEMU</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>VSCode使用CodeGPT</title>
     <url>/2023/02/10/VSCode%E4%BD%BF%E7%94%A8CodeGPT/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>CodeGPT</code>允许我们通过官方<code>OpenAI API</code>在<code>VSCode</code>中使用<code>GPT-3</code>，使得我们可以在代码编辑器拥有了<code>ChatGPT</code>。<br>借助 <code>CodeGPT</code>，我们可以生成代码、解释代码、重构代码等等。</p>
@@ -230,6 +293,188 @@
       <tags>
         <tag>AES</tag>
         <tag>OPENSSL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>用户态驱动vfio</title>
+    <url>/2022/06/14/%E7%94%A8%E6%88%B7%E6%80%81%E9%A9%B1%E5%8A%A8vfio/</url>
+    <content><![CDATA[<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><ul>
+<li>将硬件设备寄存器映射至用户态</li>
+<li>iommu</li>
+<li>在用户态处理中断<span id="more"></span></li>
+</ul>
+<h2 id="用户态使用vfio"><a href="#用户态使用vfio" class="headerlink" title="用户态使用vfio"></a>用户态使用vfio</h2><h3 id="启动Vt-d功能"><a href="#启动Vt-d功能" class="headerlink" title="启动Vt-d功能"></a>启动Vt-d功能</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># cat /proc/cmdline</span></span><br><span class="line">BOOT_IMAGE=(hd0,msdos1)/vmlinuz-4.18.0-305.30.1.jmnd2.el8.x86_64 root=UUID=3e50617c-bb11-4b9f-9313-4d070fd14fbc ro crashkernel=auto console=tty0,edd=off intel_iommu=on iommu=pt pci=realloc</span><br></pre></td></tr></table></figure>
+<h3 id="modprobe-vfio-pci"><a href="#modprobe-vfio-pci" class="headerlink" title="modprobe vfio-pci"></a>modprobe vfio-pci</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># lsmod | grep vfio</span></span><br><span class="line">vfio_pci               61440  0</span><br><span class="line">vfio_virqfd            16384  1 vfio_pci</span><br><span class="line">vfio_iommu_type1       36864  0</span><br><span class="line">vfio                   36864  2 vfio_iommu_type1,vfio_pci</span><br><span class="line">irqbypass              16384  2 vfio_pci,kvm</span><br></pre></td></tr></table></figure>
+<p>上述命令将加载vfio_pci.ko, vfio_virqfd.ko, vfio_iommu_type1.ko, vfio.ko内核模块</p>
+<h3 id="绑定设备到vfio-pci"><a href="#绑定设备到vfio-pci" class="headerlink" title="绑定设备到vfio-pci"></a>绑定设备到vfio-pci</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> vfio-pci &gt; /sys/bus/pci/devices/<span class="variable">$1</span>/driver_override</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$1</span> &gt; /sys/bus/pci/devices/<span class="variable">$1</span>/driver/unbind</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$1</span> &gt; /sys/bus/pci/drivers_probe</span><br></pre></td></tr></table></figure>
+
+<h2 id="dpdk中通过vfio映射设备空间"><a href="#dpdk中通过vfio映射设备空间" class="headerlink" title="dpdk中通过vfio映射设备空间"></a>dpdk中通过vfio映射设备空间</h2><ol>
+<li>获取设备所在的iommu group</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">....</span><br><span class="line">	rte_pci_device_name(&amp;dev-&gt;addr, devname, RTE_DEV_NAME_MAX_LEN);</span><br><span class="line">	ret = rte_vfio_get_group_num(rte_pci_get_sysfs_path(), devname,</span><br><span class="line">				     &amp;iommu_group_num);</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+<p>rte_vfio_get_group_num内部实现为，获取sys下设备文件的iommu_group</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># readlink /sys/bus/pci/devices/0000\:24\:00.1/iommu_group</span></span><br><span class="line">../../../../kernel/iommu_groups/40</span><br></pre></td></tr></table></figure>
+
+<p>在bash下可以通过lspci查看</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">lspci -s 0000:24:00.1 -vv | grep IOMMU</span><br><span class="line">	IOMMU group: 40</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>创建container，open /dev/vfio/vfio</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">....</span><br><span class="line">    vfio_container_fd = rte_vfio_container_create();</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+<p>内部实现为，打开设备文件vfio，最大64个container</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> VFIO_CONTAINER_PATH <span class="string">&quot;/dev/vfio/vfio&quot;</span></span></span><br><span class="line">....</span><br><span class="line">    vfio_container_fd = open(VFIO_CONTAINER_PATH, O_RDWR);</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>将iommu_group_num绑定到container</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> VFIO_CONTAINER_PATH <span class="string">&quot;/dev/vfio/vfio&quot;</span></span></span><br><span class="line">....</span><br><span class="line">vfio_group_fd =</span><br><span class="line">		rte_vfio_container_group_bind(vfio_container_fd, iommu_group_num);</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+<p>以vfio_container_fd为key找到全局数组vfio_cfgs元素，</p>
+<p>打开/dev/vfio/group_num设备文件，获取vfio_group_fd</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> VFIO_GROUP_FMT <span class="string">&quot;/dev/vfio/%u&quot;</span></span></span><br><span class="line">....</span><br><span class="line">		<span class="built_in">snprintf</span>(filename, <span class="keyword">sizeof</span>(filename),</span><br><span class="line">				 VFIO_GROUP_FMT, iommu_group_num);</span><br><span class="line">		vfio_group_fd = open(filename, O_RDWR);</span><br></pre></td></tr></table></figure>
+<p>比如：<br>vfio_group_fd = open(“/dev/vfio/40”, O_RDWR)<br>其中40为iommu_group_num</p>
+<p>将iommu_group_num和vfio_group_fd设置到vfio_container_fd对应的vfio_cfgs</p>
+<ol start="4">
+<li>映射设备空间</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">....</span><br><span class="line">rte_pci_map_device(dev)</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+<p>4.1、rte_vfio_setup_device<br>/* add group to a container */<br>ret = ioctl(vfio_group_fd, VFIO_GROUP_SET_CONTAINER,<br>        &amp;vfio_container_fd)</p>
+<p>4.2、vfio_set_iommu_type<br>int ret = ioctl(vfio_container_fd, VFIO_SET_IOMMU,<br>        t-&gt;type_id);</p>
+<p>4.3、VFIO_GROUP_GET_DEVICE_FD<br>*vfio_dev_fd = ioctl(vfio_group_fd, VFIO_GROUP_GET_DEVICE_FD, dev_addr);<br>这个dev_addr为pci的bdf号</p>
+<p>4.4、通过*vfio_dev_fd访问设备空间<br>ret = ioctl(*vfio_dev_fd, VFIO_DEVICE_GET_INFO, device_info);</p>
+<p>把vfio_dev_fd看成一个文件，这个文件的内容包含了设备的所有可访问资源，这包括中断，pci配置空间，扩展配置空间，6个bar空间。这些不同的资源可以看做是文件不同偏移基址处的一段文件内容(region)，可以像读写普通文件一样读写这些资源。6个bar空间对应的region属于可映射区域，可以使用mmap将其映射进用户态空间进行读写，而其他资源则不可映射，只能通过read/write系统调用经内核进行间接的读写。设备的pci配置空间属于不可映射区域，只能read/write系统调用经内核进行间接的读写。</p>
+<h2 id="访问PCI配置空间"><a href="#访问PCI配置空间" class="headerlink" title="访问PCI配置空间"></a>访问PCI配置空间</h2><p>遍历每个bar</p>
+<ol>
+<li>获取region信息</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">....</span><br><span class="line">ret = pci_vfio_get_region_info(vfio_dev_fd, &amp;reg, i);</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+<p>其内部实现为：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">ret = ioctl(vfio_dev_fd, VFIO_DEVICE_GET_REGION_INFO, ri);</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>检查该region是否可map</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">....</span><br><span class="line"><span class="comment">/* skip non-mmappable BARs */</span></span><br><span class="line"><span class="keyword">if</span> ((reg-&gt;flags &amp; VFIO_REGION_INFO_FLAG_MMAP) == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="built_in">free</span>(reg);</span><br><span class="line">    <span class="keyword">continue</span>;</span><br><span class="line">&#125;</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>mmap到用户空间</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">....</span><br><span class="line">	bar_addr = mmap(bar-&gt;addr, bar-&gt;size, <span class="number">0</span>, MAP_PRIVATE |</span><br><span class="line">			MAP_ANONYMOUS | additional_flags, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+
+<h2 id="IOMMU"><a href="#IOMMU" class="headerlink" title="IOMMU"></a>IOMMU</h2><h3 id="DMA-remap"><a href="#DMA-remap" class="headerlink" title="DMA remap"></a>DMA remap</h3><p>guest安全隔离的进行真实设备的DMA，将gpa映射到hpa<br>VFIO_IOMMU_MAP_DMA：将 iova 通过 IOMMU 映射到 vaddr 对应的物理地址上去<br>其中，iova代表gpa，vaddr代表hva</p>
+<p>下面描述一下qemu作为前端，dpdk作为后端时，iommu的过程</p>
+<ol>
+<li>qemu通过VHOST_USER_SET_MEM_TABLE将将gpa，size，mmap的fd带给dpdk</li>
+</ol>
+<p><code>vhost_user_set_mem_table</code></p>
+<ol start="2">
+<li>dpdk mmap 得到hva，并且这一块与qemu共享内存</li>
+</ol>
+<p><code>vhost_user_mmap_region</code></p>
+<ol start="3">
+<li>将hva和gpa通过ioctl 发送VFIO_IOMMU_MAP_DMA命令带给kernel，完成gpa到hpa的映射</li>
+</ol>
+<p><code>rte_vfio_container_dma_map</code><br>    <code>vfio_dma_mem_map</code><br>        <code>vfio_type1_dma_mem_map</code><br>            <code>VFIO_IOMMU_MAP_DMA</code></p>
+<h3 id="中断remap"><a href="#中断remap" class="headerlink" title="中断remap"></a>中断remap</h3><p>主要作用是通过ioctl命令<code>VFIO_DEVICE_SET_IRQS</code>将eventfd绑定到vfio，用户态即可epoll轮询此eventfd<br>用户态驱动创建一个eventfd，并在vfio中将中断绑定此eventfd，这样一旦vfio内核中的中断处理函数收到中断就会触发eventfd变为可读。用户态驱动epoll此eventfd，即可收到中断通知。<br>用户态中断，以dpdk为例</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">....</span><br><span class="line">pci_vfio_setup_interrupts(dev, vfio_dev_fd)</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+<p>内部实现</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">....</span><br><span class="line">    fd = eventfd(<span class="number">0</span>, EFD_NONBLOCK | EFD_CLOEXEC);</span><br><span class="line">    <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        RTE_LOG(ERR, EAL, <span class="string">&quot;Cannot set up eventfd, error &quot;</span></span><br><span class="line">                <span class="string">&quot;%i (%s)\n&quot;</span>, errno, strerror(errno));</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	irq_set = (<span class="keyword">struct</span> vfio_irq_set *)irq_set_buf;</span><br><span class="line">	irq_set-&gt;argsz = <span class="keyword">sizeof</span>(irq_set_buf);</span><br><span class="line">	irq_set-&gt;count = nr_vring + <span class="number">1</span>;</span><br><span class="line">	irq_set-&gt;flags = VFIO_IRQ_SET_DATA_EVENTFD |</span><br><span class="line">			 VFIO_IRQ_SET_ACTION_TRIGGER;</span><br><span class="line">	irq_set-&gt;index = VFIO_PCI_MSIX_IRQ_INDEX;</span><br><span class="line">	irq_set-&gt;start = <span class="number">0</span>;</span><br><span class="line">	fd_ptr = (<span class="type">int</span> *)&amp;irq_set-&gt;data;</span><br><span class="line">	<span class="comment">/* The first interrupt is for the configure space change notification */</span></span><br><span class="line">	fd_ptr[RTE_INTR_VEC_ZERO_OFFSET] =</span><br><span class="line">		rte_intr_fd_get(jmvd-&gt;pdev-&gt;intr_handle);</span><br><span class="line"></span><br><span class="line">	ret = ioctl(jmvd-&gt;vfio_dev_fd, VFIO_DEVICE_SET_IRQS, irq_set);</span><br><span class="line">	<span class="keyword">if</span> (ret) &#123;</span><br><span class="line">		DRV_LOG(ERR, <span class="string">&quot;Error enabling MSI-X interrupts: %s&quot;</span>,</span><br><span class="line">				strerror(errno));</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>DPDK</category>
+      </categories>
+      <tags>
+        <tag>vfio</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DPDK vhost处理流程</title>
+    <url>/2022/06/13/DPDK-vhost%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="初始化流程"><a href="#初始化流程" class="headerlink" title="初始化流程"></a>初始化流程</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rte_eal_init</span><br><span class="line"></span><br><span class="line">    rte_bus_probe</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rte_vdev_bus.probe</span><br><span class="line">    rte_vdev_init</span><br><span class="line">        vdev_probe_all_drivers</span><br><span class="line">                rte_pmd_vhost_probe</span><br><span class="line">                    eth_dev_vhost_create</span><br><span class="line">                        rte_vhost_driver_start</span><br><span class="line">                                1)fdset_event_dispatch thread</span><br><span class="line">                                1) 区分server（vhost_user_start_server）</span><br><span class="line">                                    还是client（vhost_user_start_client)</span><br></pre></td></tr></table></figure>
+
+<h2 id="dpdk-为server"><a href="#dpdk-为server" class="headerlink" title="dpdk 为server"></a>dpdk 为server</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vhost_user_start_server</span><br><span class="line"></span><br><span class="line">       vhost_user_server_new_connection</span><br><span class="line"></span><br><span class="line">              fdset_add (vhost_user_read_cb)</span><br><span class="line"></span><br><span class="line">                     vhost_user_read_cb</span><br><span class="line"></span><br><span class="line">                            vhost_user_msg_handler 消息处理</span><br></pre></td></tr></table></figure>
+<h2 id="dpdk-为client"><a href="#dpdk-为client" class="headerlink" title="dpdk 为client"></a>dpdk 为client</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vhost_user_start_client</span><br><span class="line"></span><br><span class="line">       vhost_user_connect_nonblock</span><br><span class="line"></span><br><span class="line">              vhost_user_add_connection</span><br><span class="line"></span><br><span class="line">                     fdset_add (vhost_user_read_cb)</span><br><span class="line"></span><br><span class="line">                            vhost_user_read_cb</span><br><span class="line"></span><br><span class="line">                                   vhost_user_msg_handler 消息处理</span><br></pre></td></tr></table></figure>
+<h2 id="消息处理流程"><a href="#消息处理流程" class="headerlink" title="消息处理流程"></a>消息处理流程</h2><p>vhost_user_msg_handler</p>
+<p>1）read_vhost_message → read_fd_message →  recvmsg</p>
+<p>2） 获取request = msg.request.master</p>
+<p>3）根据vhost_message_handlers 结构处理消息</p>
+<p>4）处理 post_msg_handle</p>
+<p>5）send_vhost_reply 返回处理结果</p>
+]]></content>
+      <categories>
+        <category>DPDK</category>
+      </categories>
+      <tags>
+        <tag>DPDK</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>qemu chardev启动</title>
+    <url>/2022/06/12/qemu-chardev%E5%90%AF%E5%8A%A8/</url>
+    <content><![CDATA[<h2 id="Qemu-vhost-处理流程"><a href="#Qemu-vhost-处理流程" class="headerlink" title="Qemu vhost 处理流程"></a>Qemu vhost 处理流程</h2><p>初始化流程<br>启动参数 例如 <code>-chardev socket,id=char1,path=/tmp/sock1,server</code></p>
+<span id="more"></span>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/root/pc-bios/qemu-system-x86_64  \</span><br><span class="line">        -enable-kvm -m 2048 -smp 4 -cpu host \</span><br><span class="line">        -hda /mnt/store/vm0-centos8.4-8g-ext4-host-dmar.img \</span><br><span class="line">        -object memory-backend-file,<span class="built_in">id</span>=mem,size=2048M,mem-path=/dev/hugepages,share=on \</span><br><span class="line">        -mem-prealloc \</span><br><span class="line">        -numa node,memdev=mem \</span><br><span class="line">        -chardev socket,<span class="built_in">id</span>=char0,path=/tmp/vdpa-socket8 \</span><br><span class="line">        -netdev <span class="built_in">type</span>=vhost-user,<span class="built_in">id</span>=vdpa0,chardev=char0,queues=4 \</span><br><span class="line">        -device virtio-net-pci,mq=on,rx_queue_size=512,tx_queue_size=512,netdev=vdpa0,page-per-vq=on \</span><br><span class="line">        -chardev socket,<span class="built_in">id</span>=char1,path=/tmp/vdpa-socket9 \</span><br><span class="line">        -netdev <span class="built_in">type</span>=vhost-user,<span class="built_in">id</span>=vdpa1,chardev=char1,queues=4 \</span><br><span class="line">        -device virtio-net-pci,mq=on,rx_queue_size=512,tx_queue_size=512,netdev=vdpa1,page-per-vq=on \</span><br><span class="line">        -chardev socket,<span class="built_in">id</span>=char2,path=/tmp/vdpa-socket10 \</span><br><span class="line">        -netdev <span class="built_in">type</span>=vhost-user,<span class="built_in">id</span>=vdpa2,chardev=char2,queues=4 \</span><br><span class="line">        -device virtio-net-pci,mq=on,rx_queue_size=512,tx_queue_size=512,netdev=vdpa2,page-per-vq=on \</span><br><span class="line">        -chardev socket,<span class="built_in">id</span>=char3,path=/tmp/vdpa-socket11 \</span><br><span class="line">        -netdev <span class="built_in">type</span>=vhost-user,<span class="built_in">id</span>=vdpa3,chardev=char3,queues=4 \</span><br><span class="line">        -device virtio-net-pci,mq=on,rx_queue_size=512,tx_queue_size=512,netdev=vdpa3,page-per-vq=on \</span><br><span class="line">        -chardev socket,<span class="built_in">id</span>=char_data0,path=/tmp/vdpa-socket0,reconnect=1 \</span><br><span class="line">        -device vhost-user-blk-pci,<span class="built_in">id</span>=blk.0,chardev=char_data0,num-queues=2 \</span><br><span class="line">        -chardev socket,<span class="built_in">id</span>=char_data1,path=/tmp/vdpa-socket1,reconnect=1 \</span><br><span class="line">        -device vhost-user-blk-pci,<span class="built_in">id</span>=blk.1,chardev=char_data1,num-queues=2 \</span><br><span class="line">        -chardev socket,<span class="built_in">id</span>=char_data2,path=/tmp/vdpa-socket2,reconnect=1 \</span><br><span class="line">        -device vhost-user-blk-pci,<span class="built_in">id</span>=blk.2,chardev=char_data2,num-queues=2 \</span><br><span class="line">        -chardev socket,<span class="built_in">id</span>=char_data3,path=/tmp/vdpa-socket3,reconnect=1 \</span><br><span class="line">        -device vhost-user-blk-pci,<span class="built_in">id</span>=blk.3,chardev=char_data3,num-queues=2 \</span><br><span class="line">        -serial telnet:127.1:4321,server,nowait \</span><br><span class="line">        -monitor stdio \</span><br><span class="line">        -D ./qemu-vm0.<span class="built_in">log</span> \</span><br><span class="line">        -vnc :90 -L /root/pc-bios \</span><br><span class="line">        -incoming tcp:0:6666</span><br></pre></td></tr></table></figure>
+
+<h2 id="参数启动过程"><a href="#参数启动过程" class="headerlink" title="参数启动过程"></a>参数启动过程</h2><p>如果qemu作为server，则调用栈</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qemu_init-&gt;</span><br><span class="line">    qemu_opts_foreach-&gt;</span><br><span class="line">        chardev_init_func -&gt;</span><br><span class="line">            qemu_chr_new_from_opts -&gt;</span><br><span class="line">                qemu_chardev_new -&gt;</span><br><span class="line">                    chardev_new -&gt;</span><br><span class="line">                        qemu_char_open-&gt;</span><br><span class="line">                            qmp_chardev_open_socket-&gt;</span><br><span class="line">                                qmp_chardev_open_socket_server-&gt;</span><br><span class="line">                                        tcp_chr_accept_server_sync -&gt;</span><br><span class="line">                                            qio_net_listener_wait_client -&gt;</span><br><span class="line">                                            等待客户连接（GMainContext）</span><br></pre></td></tr></table></figure>
+
+<p>如果qemu作为client，则调用栈</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qemu_init</span><br><span class="line">    qemu_create_early_backends</span><br><span class="line">        qemu_opts_foreach</span><br><span class="line">            chardev_init_func</span><br><span class="line">                qemu_chr_new_from_opts</span><br><span class="line">                    qemu_chardev_new</span><br><span class="line">                        chardev_new</span><br><span class="line">                            qemu_char_open</span><br><span class="line">                                qmp_chardev_open_socket</span><br><span class="line">                                    qmp_chardev_open_socket_client</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="连接事件处理"><a href="#连接事件处理" class="headerlink" title="连接事件处理"></a>连接事件处理</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tcp_chr_new_client -&gt;</span><br><span class="line">    tcp_chr_connect -&gt;</span><br><span class="line">            update_ioc_handlers-&gt; tcp_chr_read,tcp_chr_read_poll</span><br><span class="line">                tcp_chr_read -&gt;</span><br><span class="line">                    tcp_chr_recv-&gt;</span><br><span class="line">                        qio_channel_readv_full -&gt;</span><br><span class="line">                            ioc_klass-&gt;io_readv -&gt;</span><br><span class="line">                                    qio_channel_socket_readv- &gt;</span><br><span class="line">                                        recvmsg</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="消息处理流程"><a href="#消息处理流程" class="headerlink" title="消息处理流程"></a>消息处理流程</h2><h3 id="net"><a href="#net" class="headerlink" title="net"></a>net</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qemu_init</span><br><span class="line">    qemu_create_late_backends</span><br><span class="line">        net_init_clients</span><br><span class="line">            qemu_opts_foreach</span><br><span class="line">                net_client_init</span><br><span class="line">                    net_init_vhost_user</span><br><span class="line">                        qemu_chr_fe_set_handlers</span><br><span class="line">                            qemu_chr_be_event</span><br><span class="line">                                net_vhost_user_event</span><br><span class="line">                                    vhost_user_start</span><br><span class="line">                                        vhost_net_init</span><br><span class="line">                                            vhost_dev_init</span><br></pre></td></tr></table></figure>
+
+<h3 id="blk"><a href="#blk" class="headerlink" title="blk"></a>blk</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qemu_init</span><br><span class="line">    qmp_x_exit_preconfig</span><br><span class="line">        qemu_opts_foreach</span><br><span class="line">            device_init_func</span><br><span class="line">                qdev_device_add</span><br><span class="line">                    qdev_realize</span><br><span class="line">                        virtio_pci_dc_realize</span><br><span class="line">                            virtio_pci_realize</span><br><span class="line">                                vhost_user_blk_pci_realize</span><br><span class="line">                                    virtio_device_realize</span><br><span class="line">                                        vhost_user_blk_device_realize</span><br><span class="line">                                            vhost_user_blk_connect</span><br><span class="line">                                                vhost_dev_init</span><br></pre></td></tr></table></figure>
+
+<h2 id="vhost初始化流程"><a href="#vhost初始化流程" class="headerlink" title="vhost初始化流程"></a>vhost初始化流程</h2><h3 id="vhost-dev-init"><a href="#vhost-dev-init" class="headerlink" title="vhost_dev_init"></a>vhost_dev_init</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vhost_dev_init -&gt;</span><br><span class="line"></span><br><span class="line">      vhost_set_backend_type -&gt;</span><br><span class="line"></span><br><span class="line">          1) vhost_backend_init</span><br><span class="line"></span><br><span class="line">          2) vhost_set_owner</span><br><span class="line"></span><br><span class="line">          3) vhost_get_features</span><br><span class="line"></span><br><span class="line">          4) vhost_virtqueue_init</span><br></pre></td></tr></table></figure>
+<h3 id="vhost-dev-start"><a href="#vhost-dev-start" class="headerlink" title="vhost_dev_start"></a>vhost_dev_start</h3><p>guest驱动加载后，vm exit到qemu的vcpu线程处理</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">qemu_thread_start</span><br><span class="line">    kvm_vcpu_thread_fn</span><br><span class="line">        kvm_cpu_exec</span><br><span class="line">            kvm_handle_io</span><br><span class="line">                address_space_rw</span><br><span class="line">                    memory_region_dispatch_write</span><br><span class="line">                        access_with_adjusted_size</span><br><span class="line">                            memory_region_write_accessor</span><br><span class="line">                                virtio_pci_config_write</span><br><span class="line">                                    virtio_ioport_write</span><br><span class="line">                                        virtio_set_status</span><br><span class="line">                                            vhost_user_blk_set_status</span><br><span class="line">                                                vhost_user_blk_start</span><br><span class="line">                                                    vhost_dev_start</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vhost_dev_start -&gt;</span><br><span class="line"></span><br><span class="line">    1) vhost_dev_set_features</span><br><span class="line"></span><br><span class="line">    2) vhost_set_mem_table</span><br><span class="line"></span><br><span class="line">    3) vhost_virtqueue_start</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    vhost_virtqueue_start -&gt;</span><br><span class="line"></span><br><span class="line">       1) vhost_ops-&gt;vhost_get_vq_index</span><br><span class="line"></span><br><span class="line">       2) vhost_ops-&gt;vhost_set_vring_num</span><br><span class="line"></span><br><span class="line">       3) vhost_ops-&gt;vhost_set_vring_base</span><br><span class="line"></span><br><span class="line">       4) vhost_memory_map</span><br><span class="line"></span><br><span class="line">       5) vhost_ops-&gt;vhost_set_vring_kick</span><br><span class="line"></span><br><span class="line">vhost_virtqueue_start-&gt;</span><br><span class="line"></span><br><span class="line">    dev-&gt;vhost_ops-&gt;vhost_set_vring_num -&gt;</span><br><span class="line"></span><br><span class="line">        vhost_user_set_vring_num -&gt;</span><br><span class="line"></span><br><span class="line">            vhost_set_vring--&gt; 设置msg ,发送 vhost_user_write -&gt;</span><br><span class="line"></span><br><span class="line">                qemu_chr_fe_write_all-&gt;</span><br><span class="line"></span><br><span class="line">                    qemu_chr_write -&gt;</span><br><span class="line"></span><br><span class="line">                    qemu_chr_write_buffer--&gt;</span><br><span class="line"></span><br><span class="line">                        ChardevClass 的 chr_write 方法其他的方法类似。</span><br></pre></td></tr></table></figure>
+
+<p>vhost_user.VhostUserState.CharBackend 如何定义的？</p>
+<p>启动参数<br>-chardev socket,id=char1,path=$NETSOCK1,server</p>
+<p>-netdev type=vhost-user,id=hostnet1,queues=$QPS,chardev=char1</p>
+<p>chardev 通过名字char1 查找到chardev 的到相关的操作。</p>
+]]></content>
+      <categories>
+        <category>虚拟化</category>
+      </categories>
+      <tags>
+        <tag>qemu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>qemu&amp;kvm io交互</title>
+    <url>/2022/06/11/qemu-kvm-io%E4%BA%A4%E4%BA%92/</url>
+    <content><![CDATA[<h2 id="qemu初始化"><a href="#qemu初始化" class="headerlink" title="qemu初始化"></a>qemu初始化</h2><p>main函数通过调用kvm_init 和 machine-&gt;init来初始化kvm。 其中, machine-&gt;init会创建vcpu, 用一个线程去模拟vcpu, 该线程执行的函数为kvm_vcpu_thread_fn, 并且该线程调用kvm_cpu_exec,该函数调用kvm_vcpu_ioctl切换到kvm中,下次从kvm中返回时,会接着执行kvm_vcpu_ioctl之后的代码,判断exit_reason,然后进行相应处理。</p>
+<span id="more"></span>
+
+<h2 id="qemu的io处理流程"><a href="#qemu的io处理流程" class="headerlink" title="qemu的io处理流程"></a>qemu的io处理流程</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">start_thread</span><br><span class="line">    qemu_thread_start</span><br><span class="line">        kvm_vcpu_thread_fn</span><br><span class="line">            kvm_cpu_exec</span><br><span class="line">                kvm_vcpu_ioctl</span><br><span class="line">                    ioctl</span><br></pre></td></tr></table></figure>
+
+<p>这里ioctl切换到kvm中，并且阻塞直到有io事件<br>Guest执行io指令 -&gt; 发生vmexit-&gt; 返回qemu -&gt; 处理io</p>
+<h2 id="kvm的io处理流程"><a href="#kvm的io处理流程" class="headerlink" title="kvm的io处理流程"></a>kvm的io处理流程</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">handle_io</span><span class="params">(<span class="keyword">struct</span> kvm_vcpu *vcpu)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> exit_qualification;</span><br><span class="line">    <span class="type">int</span> size, in, <span class="built_in">string</span>;</span><br><span class="line">    <span class="type">unsigned</span> port;</span><br><span class="line"></span><br><span class="line">    exit_qualification = vmcs_readl(EXIT_QUALIFICATION);  <span class="comment">//获取exit qualification</span></span><br><span class="line">    <span class="built_in">string</span> = (exit_qualification &amp; <span class="number">16</span>) != <span class="number">0</span>; <span class="comment">//判断是否为string io (ins, outs)</span></span><br><span class="line">    in = (exit_qualification &amp; <span class="number">8</span>) != <span class="number">0</span>; <span class="comment">//判断io方向，是in  还是out</span></span><br><span class="line"></span><br><span class="line">    ++vcpu-&gt;stat.io_exits;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">string</span> || in) <span class="comment">//如果是输入类的指令，或者是string io，就进入emulator处理</span></span><br><span class="line">            <span class="keyword">return</span> emulate_instruction(vcpu, <span class="number">0</span>) == EMULATE_DONE;</span><br><span class="line"></span><br><span class="line">    port = exit_qualification &gt;&gt; <span class="number">16</span>; <span class="comment">//得到端口号</span></span><br><span class="line">    size = (exit_qualification &amp; <span class="number">7</span>) + <span class="number">1</span>; <span class="comment">//大小</span></span><br><span class="line">    skip_emulated_instruction(vcpu); <span class="comment">//跳过这个指令</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> kvm_fast_pio_out(vcpu, size, port); <span class="comment">//进行out操作</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>1、out指令虚拟：虚拟单个out指令，在KVM中可以直接把out的数据返回给qemu，qemu完成out操作。</p>
+<p>流程：KVM的handle_io-&gt;kvm_fast_pio_out-&gt;emulator_pio_out_emulated后面是vcpu-&gt;arch.pio.count = 0函数中非string类型的 out操作可以一步完成，所以从qemu处理完返回kvm后不需要再进入emulator。在emulator_pio_out_emulated中，将IO数据memcpy到kvm和qemu共享buffer中，然后emulator_pio_in_out，将相应数据保存到kvm_run中就返回到qemu的kvm_cpu_exec的switch看run-&gt;exit_reason，如果是KVM_EXIT_IO则进入kvm_handle_io中和设备交互。</p>
+<p>qemu代码如下</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">kvm_cpu_exec</span><span class="params">(CPUState *cpu)</span></span><br><span class="line">&#123;</span><br><span class="line">...</span><br><span class="line">    trace_kvm_run_exit(cpu-&gt;cpu_index, run-&gt;exit_reason);</span><br><span class="line">    <span class="keyword">switch</span> (run-&gt;exit_reason) &#123;</span><br><span class="line">    <span class="keyword">case</span> KVM_EXIT_IO:</span><br><span class="line">        DPRINTF(<span class="string">&quot;handle_io\n&quot;</span>);</span><br><span class="line">        <span class="comment">/* Called outside BQL */</span></span><br><span class="line">        kvm_handle_io(run-&gt;io.port, attrs,</span><br><span class="line">                        (<span class="type">uint8_t</span> *)run + run-&gt;io.data_offset,</span><br><span class="line">                        run-&gt;io.direction,</span><br><span class="line">                        run-&gt;io.size,</span><br><span class="line">                        run-&gt;io.count);</span><br><span class="line">        ret = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2、String或in指令虚拟：如果是in指令，qemu只能把得到的数据写到kvm_run中，kvm必须在下一次vmentry的时候，将qemu得到的数据放到相应的位置，所以，在handle_io中，如果是in或者string指令，没有调用skip_emulated_instruction，这样，在qemu完成in或者一次out之后，还会在同样的地方发生vmexit，这样再由emulator完成相应的处理，针对string类型的指令，emulator会进行解码等操作，确认io的次数和源操作数、目的操作数等。</p>
+<p>流程：handle_io-&gt;emulate_instruction-&gt;x86_emulate_instruction对指令的decode，在过程中会调用到em_in和em_out（这两个函数最后调用的emulator_pio_in_emulated中先通过和上面PIO一样的函数emulator_pio_in_out，正确返回表明qemu已经将模拟出的数据返回到参数val了，则可直接memcpy完成具体的将从qemu中得到的数据写到正确位置vcpu-&gt;arch.pio_data），设置如果是out，下次到KVM时直接进入emulator，如果是in，注册vcpu-&gt;arch.complete_userspace_io = complete_emulated_pio;需要在下次qemu进入kvm的时候，完成io，实际上就是将qemu得到的数据写到正确的位置。下次进入kvm，如果要完成in指令，会在函数kvm_arch_vcpu_ioctl_run中调用注册的complete_emulated_pio会再次调用emulate_instruction将数据写到正确位置（这次不用解码，而是直接em_in）。</p>
+]]></content>
+      <categories>
+        <category>虚拟化</category>
+      </categories>
+      <tags>
+        <tag>qemu</tag>
+        <tag>kvm</tag>
       </tags>
   </entry>
   <entry>
@@ -440,7 +685,7 @@
 <h2 id="SPDK"><a href="#SPDK" class="headerlink" title="SPDK"></a>SPDK</h2><p>下载SPDK版本V20.10</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> -b V20.10 https:/http://github.com/spdk/spdk</span><br></pre></td></tr></table></figure>
 <p>更新SPDK依赖模块 </p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update –init</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init</span><br></pre></td></tr></table></figure>
 
 <p>进入子目录scripts执行脚本，该脚本会检测环境是否满足编译SDPK </p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sh pkgdep.sh</span><br></pre></td></tr></table></figure>
@@ -753,7 +998,15 @@
 
 
 <h2 id="Rx"><a href="#Rx" class="headerlink" title="Rx"></a>Rx</h2><p><img src="5547b98b9bddfb53de3c0f149e335d9c86e72aae456badf303c4bae0e5a9fd68.png" alt="图 2">  </p>
+<p>当未使能msi-x使能</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">1.device写msix配置空间，触发中断</span><br><span class="line"></span><br><span class="line">2.vfio中预先绑定中断和callfd，触发callfd事件：</span><br><span class="line"></span><br><span class="line">3.qemu收到callfd事件</span><br><span class="line"></span><br><span class="line">virtio_queue_guest_notifier_read→</span><br><span class="line"></span><br><span class="line">virtio_irq→</span><br><span class="line"></span><br><span class="line">virtio_notify_vector(vq-&gt;vdev, vq→vector)→</span><br><span class="line"></span><br><span class="line">virtio_pci_notify→</span><br><span class="line"></span><br><span class="line">msix_notify(&amp;proxy-&gt;pci_dev, vector)→</span><br><span class="line"></span><br><span class="line">kvm entry-&gt;</span><br></pre></td></tr></table></figure>
+
+<p>当使能msi-x使能，通过irqfd机制直接将中断通过KVM注入给虚拟机的vcpu。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">virtio_pci_set_guest_notifiers</span><br><span class="line">    --&gt; kvm_virtio_pci_vector_use</span><br><span class="line">    	-- &gt; kvm_virtio_pci_irqfd_use</span><br><span class="line">    		-- &gt; kvm_irqchip_add_irqfd_notifier_gsi</span><br><span class="line">    			-- &gt; kvm_irqchip_assign_irqfd</span><br></pre></td></tr></table></figure>
+
+<h2 id="qemu设置中断"><a href="#qemu设置中断" class="headerlink" title="qemu设置中断"></a>qemu设置中断</h2><h3 id="blk"><a href="#blk" class="headerlink" title="blk"></a>blk</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">kvm_vcpu_thread_fn</span><br><span class="line">    --&gt; memory_region_dispatch_write</span><br><span class="line">    	-- &gt; virtio_pci_common_write</span><br><span class="line">    		-- &gt; vhost_user_blk_set_status</span><br><span class="line">    			-- &gt; vhost_blk_common_start</span><br><span class="line">                            	-- &gt; virtio_pci_set_guest_notifiers</span><br></pre></td></tr></table></figure>
+
+<h3 id="net"><a href="#net" class="headerlink" title="net"></a>net</h3><p>```bash<br>kvm_vcpu_thread_fn<br>    –&gt; memory_region_dispatch_write<br>        – &gt; virtio_pci_common_write<br>            – &gt; virtio_net_set_status<br>                – &gt; vhost_net_start<br>                                – &gt; virtio_pci_set_guest_notifiers</p>
 ]]></content>
       <categories>
         <category>DPDK</category>
@@ -993,7 +1246,7 @@
 <h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><p><img src="b84cb342a1323d9c654166a8c804f201239c18b30d8d8ef2fb5a8f7727ca8c6d.png" alt="图 2">  </p>
 ]]></content>
       <categories>
-        <category>LIUNX</category>
+        <category>LINUX</category>
       </categories>
       <tags>
         <tag>ioctl</tag>
@@ -2947,7 +3200,7 @@
 <p>windows网络共享文件：cifs （cifs是smbfs的升级版，默认的windows系统都支持的，首先推荐）</p>
 <p>光盘或光盘镜像：iso9660<br>UNIX(LINUX) 文件网络共享：nfs</p>
 <p><code>-o options</code> 主要用来描述设备或档案的挂接方式。常用的参数有：<br>loop：用来把一个文件当成硬盘分区挂接上系统<br>ro：采用只读方式挂接设备<br>rw：采用读写方式挂接设备<br>iocharset：指定访问文件系统所用字符集<br><code>device</code> 要挂接(mount)的设备。<br><code>dir</code>设备在系统上的挂接点(mount point)。 </p>
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>挂载本机的iso：<code>mount -o loop -t iso9660 /home/sunky/mydisk.iso /mnt/vcdrom</code><br>挂载远程的fat32的共享目录：<code>mount //10.167.20.20/shared /mnt/mywinshare</code><br>Windows 的C分区挂到Liunx的/mnt/winc目录下: <code>mount -t vfat /dev/hda1 /mnt/winc</code> ,如果中文显示有问题：<code>#mount -t vfat -o iocharset=cp936 /dev/hda1 /mnt/winc</code>。（要挂载本地的windows分区，在ubuntu下使用命令<code>sudo fdisk -l </code>来查看磁盘分区情况。）<br>当插入闪盘后，闪盘被识别为一个SCSI盘，通常输入以下命令：<code>mount /dev/sda1 /usb</code></p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>挂载本机的iso：<code>mount -o loop -t iso9660 /home/sunky/mydisk.iso /mnt/vcdrom</code><br>挂载远程的fat32的共享目录：<code>mount //10.167.20.20/shared /mnt/mywinshare</code><br>Windows 的C分区挂到linux的/mnt/winc目录下: <code>mount -t vfat /dev/hda1 /mnt/winc</code> ,如果中文显示有问题：<code>#mount -t vfat -o iocharset=cp936 /dev/hda1 /mnt/winc</code>。（要挂载本地的windows分区，在ubuntu下使用命令<code>sudo fdisk -l </code>来查看磁盘分区情况。）<br>当插入闪盘后，闪盘被识别为一个SCSI盘，通常输入以下命令：<code>mount /dev/sda1 /usb</code></p>
 <h2 id="mount的基本用法"><a href="#mount的基本用法" class="headerlink" title="mount的基本用法"></a>mount的基本用法</h2><p>格式：mount [-参数] [设备名称] [挂载点]<br>其中常用的参数有：<br>-a 安装在/etc/fstab文件中类出的所有文件系统。<br>-f 伪装mount，作出检查设备和目录的样子，但并不真正挂载文件系统。<br>-n 不把安装记录在/etc/mtab 文件中。<br>-r 讲文件系统安装为只读。<br>-v 详细显示安装信息。<br>-w 将文件系统安装为可写，为命令默认情况。</p>
 <p>-t &lt;文件系统类型&gt; 指定设备的文件系统类型，常见的有：<br>ext2  linux目前常用的文件系统<br>msdos  MS-DOS的fat，就是fat16<br>vfat  windows98常用的fat32<br>nfs  网络文件系统<br>iso9660  CD-ROM光盘标准文件系统<br>ntfs  windows NT/2000/XP的文件系统<br>auto 自动检测文件系统 </p>
 <p>-o &lt;选项&gt; 指定挂载文件系统时的选项，有些也可写到在/etc/fstab中。常用的有：<br>defaults 使用所有选项的默认值（auto、nouser、rw、suid）<br>auto/noauto 允许/不允许以 –a选项进行安装<br>dev/nodev 对/不对文件系统上的特殊设备进行解释<br>exec/noexec 允许/不允许执行二进制代码<br>suid/nosuid 确认/不确认suid和sgid位<br>user /nouser 允许/不允许一般用户挂载<br>codepage=XXX 代码页<br>iocharset=XXX 字符集<br>ro 以只读方式挂载<br>rw 以读写方式挂载<br>remount 重新安装已经安装了的文件系统<br>loop 挂载回旋设备<br>username/password用来设置有访问权限的用户名和密码</p>
@@ -6522,7 +6775,7 @@
 
 <h2 id="导入"><a href="#导入" class="headerlink" title="导入"></a>导入</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --import &lt;DistributionName&gt;  &lt;安装位置&gt;  &lt;tar文件名&gt;</span><br></pre></td></tr></table></figure>
 <p>例如：<br>在d盘ubuntu目录下导入ubuntu20.04.tar，指定wsl2版本，则命令如下</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --import Ubuntu-20.04 d:\ubuntu d:\ubuntu20.04.tar --version 2</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsl --import Ubuntu-20.04 d:\ubuntu d:\ubuntu20.04.tar --version 2</span><br><span class="line">wsl --import Ubuntu-18.04 D:\jmr\ubuntu C:\Users\Lenovo\jmr\Ubuntu-18.04.tar --version 2</span><br></pre></td></tr></table></figure>
 <p><strong>导入时改变DistributionName(如Ubuntu-20.04改成Ubuntu)，会导致WSL不可用。</strong></p>
 <h2 id="Ubuntu修改默认登陆用户"><a href="#Ubuntu修改默认登陆用户" class="headerlink" title="Ubuntu修改默认登陆用户"></a>Ubuntu修改默认登陆用户</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ubuntu2004.exe config --default-user root</span><br></pre></td></tr></table></figure>
 
@@ -8360,6 +8613,28 @@
       <tags>
         <tag>linux</tag>
         <tag>redhat</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>简化dpdk-devbind.py</title>
+    <url>/2020/09/01/%E7%AE%80%E5%8C%96dpdk-devbind-py/</url>
+    <content><![CDATA[<h2 id="dpdk-devbind-py作用"><a href="#dpdk-devbind-py作用" class="headerlink" title="dpdk-devbind.py作用"></a>dpdk-devbind.py作用</h2><p>用于绑定dpdk驱动、去绑定、显示当前绑定状态</p>
+<span id="more"></span>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">usage: dpdk_bind [-h] [-s]</span><br><span class="line">                 [--status-dev &#123;baseband,compress,crypto,dma,event,mempool,misc,net,regex&#125;]</span><br><span class="line">                 [-b DRIVER | -u] [--force]</span><br><span class="line">                 [DEVICE [DEVICE ...]]</span><br><span class="line">[root@jmnd-246 rma]<span class="comment"># dpdk_bind -h</span></span><br><span class="line">usage: dpdk_bind [-h] [-s]</span><br><span class="line">                 [--status-dev &#123;baseband,compress,crypto,dma,event,mempool,misc,net,regex&#125;]</span><br><span class="line">                 [-b DRIVER | -u] [--force]</span><br><span class="line">                 [DEVICE [DEVICE ...]]</span><br><span class="line"></span><br><span class="line">Utility to <span class="built_in">bind</span> and unbind devices from Linux kernel</span><br><span class="line"></span><br><span class="line">positional arguments:</span><br><span class="line">  DEVICE                Device specified as PCI <span class="string">&quot;domain:bus:slot.func&quot;</span> syntax</span><br><span class="line">                        or <span class="string">&quot;bus:slot.func&quot;</span> syntax. For devices bound to Linux</span><br><span class="line">                        kernel drivers, they may be referred to by interface</span><br><span class="line">                        name.</span><br><span class="line"></span><br><span class="line">optional arguments:</span><br><span class="line">  -h, --<span class="built_in">help</span>            show this <span class="built_in">help</span> message and <span class="built_in">exit</span></span><br><span class="line">  -s, --status          Print the current status of all known devices.</span><br><span class="line">  --status-dev &#123;baseband,compress,crypto,dma,event,mempool,misc,net,regex&#125;</span><br><span class="line">                        Print the status of given device group.</span><br><span class="line">  -b DRIVER, --<span class="built_in">bind</span> DRIVER</span><br><span class="line">                        Select the driver to use or <span class="string">&quot;none&quot;</span> to unbind the</span><br><span class="line">                        device</span><br><span class="line">  -u, --unbind          Unbind a device (equivalent to <span class="string">&quot;-b none&quot;</span>)</span><br><span class="line">  --force               Override restriction on binding devices <span class="keyword">in</span> use by</span><br><span class="line">                        Linux<span class="string">&quot; WARNING: This can lead to loss of network</span></span><br><span class="line"><span class="string">                        connection and should be used with caution.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Examples:</span></span><br><span class="line"><span class="string">---------</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">To display current device status:</span></span><br><span class="line"><span class="string">        dpdk_bind --status</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">To display current network device status:</span></span><br><span class="line"><span class="string">        dpdk_bind --status-dev net</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">To bind eth1 from the current driver and move to use vfio-pci</span></span><br><span class="line"><span class="string">        dpdk_bind --bind=vfio-pci eth1</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">To unbind 0000:01:00.0 from using any driver</span></span><br><span class="line"><span class="string">        dpdk_bind -u 0000:01:00.0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">To bind 0000:02:00.0 and 0000:02:00.1 to the ixgbe kernel driver</span></span><br><span class="line"><span class="string">        dpdk_bind -b ixgbe 02:00.0 02:00.1</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="查看status"><a href="#查看status" class="headerlink" title="查看status"></a>查看status</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># dpdk_bind -s</span></span><br><span class="line"></span><br><span class="line">Network devices using DPDK-compatible driver</span><br><span class="line">============================================</span><br><span class="line">0000:cc:00.1 <span class="string">&#x27;Device 1000&#x27;</span> drv=vfio-pci unused=</span><br><span class="line"></span><br><span class="line">Network devices using kernel driver</span><br><span class="line">===================================</span><br><span class="line">0000:24:00.0 <span class="string">&#x27;I350 Gigabit Network Connection 1521&#x27;</span> <span class="keyword">if</span>=ens33f0 drv=igb unused=vfio-pci *Active*</span><br><span class="line">0000:24:00.1 <span class="string">&#x27;I350 Gigabit Network Connection 1521&#x27;</span> <span class="keyword">if</span>=ens33f1 drv=igb unused=vfio-pci </span><br><span class="line">0000:ca:00.0 <span class="string">&#x27;Virtio network device 1000&#x27;</span> <span class="keyword">if</span>=ens25 drv=virtio-pci unused=vfio-pci *Active*</span><br><span class="line">0000:cb:00.0 <span class="string">&#x27;Virtio network device 1000&#x27;</span> <span class="keyword">if</span>=ens26 drv=virtio-pci unused=vfio-pci </span><br><span class="line">0000:cc:00.0 <span class="string">&#x27;Device 1000&#x27;</span> <span class="keyword">if</span>= drv=jmnd_sriov unused=vfio-pci </span><br><span class="line">0000:cc:00.2 <span class="string">&#x27;Device 1000&#x27;</span> <span class="keyword">if</span>= drv=jmnd_sriov unused=vfio-pci </span><br><span class="line">0000:cc:00.3 <span class="string">&#x27;Device 1000&#x27;</span> <span class="keyword">if</span>= drv=jmnd_sriov unused=vfio-pci </span><br><span class="line">0000:cc:00.4 <span class="string">&#x27;Device 1000&#x27;</span> <span class="keyword">if</span>= drv=jmnd_sriov unused=vfio-pci </span><br><span class="line">0000:cc:00.5 <span class="string">&#x27;Device 1000&#x27;</span> <span class="keyword">if</span>= drv=jmnd_sriov unused=vfio-pci </span><br><span class="line">0000:cc:00.6 <span class="string">&#x27;Device 1000&#x27;</span> <span class="keyword">if</span>= drv=jmnd_sriov unused=vfio-pci </span><br></pre></td></tr></table></figure>
+
+<h2 id="实现机制"><a href="#实现机制" class="headerlink" title="实现机制"></a>实现机制</h2><p>1、将现有驱动设置到driver_override<br>2、unbind原有驱动<br>3、重新probe</p>
+<h2 id="简化脚本"><a href="#简化脚本" class="headerlink" title="简化脚本"></a>简化脚本</h2><p>绑定到dpdk驱动，$1表示设备的bdf，例如0000:b3:00.1</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> vfio-pci &gt; /sys/bus/pci/devices/<span class="variable">$1</span>/driver_override</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$1</span> &gt; /sys/bus/pci/devices/<span class="variable">$1</span>/driver/unbind</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$1</span> &gt; /sys/bus/pci/drivers_probe</span><br></pre></td></tr></table></figure>
+
+<p>绑定到内核驱动，$1表示设备的bdf，例如0000:b3:00.1</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> sriov &gt; /sys/bus/pci/devices/<span class="variable">$1</span>/driver_override</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$1</span> &gt; /sys/bus/pci/devices/<span class="variable">$1</span>/driver/unbind</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$1</span> &gt; /sys/bus/pci/drivers_probe</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>DPDK</category>
+      </categories>
+      <tags>
+        <tag>DPDK</tag>
       </tags>
   </entry>
   <entry>
