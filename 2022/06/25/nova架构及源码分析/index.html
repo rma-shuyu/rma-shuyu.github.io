@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function () {
+        if ('') {
+            if (prompt('请输入文章密码') !== '') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://rma-shuyu.github.io/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="nova," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="rma's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="整体架构   nova 和其他组件之间的交互使用 HTTP 请求   内部组件之间使用 oslo_messaging 库实现 RPC 调用，这里还涉及消息队列 RabbitMQ ，遵循 AMQP 协议   大部分 nova 组件都可以运行在多个服务器上，然后使用一个管理器监听 RPC 消息   而 nova-compute 是运行在计算主机上的单进程，用于管理计算资源 nova 内部组件共享本地数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nova架构及源码分析">
+<meta property="og:url" content="https://rma-shuyu.github.io/2022/06/25/nova%E6%9E%B6%E6%9E%84%E5%8F%8A%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="rma&#39;s Blog">
+<meta property="og:description" content="整体架构   nova 和其他组件之间的交互使用 HTTP 请求   内部组件之间使用 oslo_messaging 库实现 RPC 调用，这里还涉及消息队列 RabbitMQ ，遵循 AMQP 协议   大部分 nova 组件都可以运行在多个服务器上，然后使用一个管理器监听 RPC 消息   而 nova-compute 是运行在计算主机上的单进程，用于管理计算资源 nova 内部组件共享本地数">
+<meta property="og:locale">
+<meta property="og:image" content="https://i.loli.net/2021/06/06/K51XMdUyPrRmupT.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/06/DizGwcpYRQhWKqS.jpg">
+<meta property="og:image" content="https://i.loli.net/2021/06/06/ZvNb61tfPTlF9or.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/06/ApK1vCySXhQE3mW.png">
+<meta property="og:image" content="https://i.loli.net/2021/06/06/3nUaoMlKdHg9BQv.png">
+<meta property="article:published_time" content="2022-06-25T12:25:15.000Z">
+<meta property="article:modified_time" content="2023-09-09T10:33:02.413Z">
+<meta property="article:author" content="rma-shuyu">
+<meta property="article:tag" content="nova">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/06/06/K51XMdUyPrRmupT.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rma-shuyu.github.io/2022/06/25/nova架构及源码分析/"/>
+
+
+
+
+
+  <title>nova架构及源码分析 | rma's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a target="_blank" rel="noopener" href="https://github.com/rma-shuyu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">rma's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay hungry, stay foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2022/06/25/nova%E6%9E%B6%E6%9E%84%E5%8F%8A%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">nova架构及源码分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-06-25T20:25:15+08:00">
+                2022-06-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/openstack/" itemprop="url" rel="index">
+                    <span itemprop="name">openstack</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2022/06/25/nova%E6%9E%B6%E6%9E%84%E5%8F%8A%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2022/06/25/nova%E6%9E%B6%E6%9E%84%E5%8F%8A%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a><a href="about:blank#%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84" title="整体架构"></a>整体架构</h1><ul>
+<li>  nova 和其他组件之间的交互使用 HTTP 请求</li>
+<li>  内部组件之间使用 <a target="_blank" rel="noopener" href="https://github.com/openstack/oslo.messaging">oslo_messaging</a> 库实现 RPC 调用，这里还涉及消息队列 RabbitMQ ，遵循 AMQP 协议</li>
+<li>  大部分 nova 组件都可以运行在多个服务器上，然后使用一个管理器监听 RPC 消息</li>
+<li>  而 nova-compute 是运行在计算主机上的单进程，用于管理计算资源</li>
+<li>nova 内部组件共享本地数据库，通过对象层访问，确保兼容性和安全性<ul>
+<li>  nova-compute 访问数据库由 nova-conductor 代理<span id="more"></span>
+<img src="https://i.loli.net/2021/06/06/K51XMdUyPrRmupT.png"></li>
+</ul>
+</li>
+</ul>
+<p>当用户发起一个新的请求时，该请求会先在 nova-api 中处理。nova-api 会对请求进行一系列检查，包括请求是否合法，配额是否足够等；当检查用过后，nova-api 就会为该请求分配一个唯一的虚拟机 ID ，并在数据库中新建对应的项来记录虚拟机的状态；然后，nova-api 会将请求发送给 nova-conductor 处理。</p>
+<p>nova-conductor 主要管理服务之间的通信并进行任务处理。它在接收到请求之后，会为 nova-scheduler 创建一个 RequestSpec 对象用来包装与调度相关的所有请求信息，然后调用 nova-scheduler 服务的 select_destination 接口。</p>
+<p>nova-scheduler 通过接收到的 RequestSpec 对象，首先将 RequestSpec 对象转换成 ResourceRequest 对象，并将该对象发送给 Placement 进行一次预筛选，然后会根据数据库中最新的系统状态做出调度决定，并告诉 nova-conductor 把该请求调度到合适的计算节点上。</p>
+<p>nova-conductor 在得知调度决定后，会把请求发送给对应的 nova-compute 服务。</p>
+<p>每个 nova-compute 服务都有独立的资源监视器（Resource Tracker）用来监视本地主机的资源使用情况。当计算节点接收到请求时，资源监视器能够检查主机是否有足够的资源。</p>
+<ul>
+<li>  如果对应的资源足够，nova-compute 就会允许在当前主机中启动所要求的虚拟机，并在数据库中更新虚拟机状态，同时将最新的主机资源情况更新到数据库</li>
+<li>  如果当前主机不符合请求的资源要求，nova-compute 会拒绝启动虚拟机，并将请求重新发给 nova-conductor 服务，重试整个调度过程</li>
+</ul>
+<p><img src="https://i.loli.net/2021/06/06/DizGwcpYRQhWKqS.jpg"></p>
+<h2 id="组成部分"><a href="#组成部分" class="headerlink" title="组成部分"></a><a href="about:blank#%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86" title="组成部分"></a>组成部分</h2><ol>
+<li>nova-api 接受和响应用户的计算 API 调用</li>
+<li>nova-api-metadata 接受来自实例的元数据请求 <a target="_blank" rel="noopener" href="https://docs.openstack.org/nova/latest/admin/metadata-service.html">Metadata service</a></li>
+<li>nova-compute 通过 hypervisor API 创建和终止虚拟机实例的守护进程。例如 KVM/QEMU 的 libvirt、VMware 的 VMwareAPI 。 运行在它所管理的 hypervisor 机器上，管理与虚拟机管理程序和虚拟机的通信。</li>
+<li>nova-scheduler 从消息队列中获取虚拟机实例请求，并决定在哪个服务器上运行。</li>
+<li>nova-conductor 处理需要协调的请求（构建/调整）、充当数据库代理或处理对象转换。用于连接 nova-api、nova-scheduler、nova-compute 服务。</li>
+<li>nova-novncproxy 协调 nova-compute 服务和数据库之间的交互。避免 nova-compute 直接访问数据库，为了提供更好的 API 兼容性。建议不要部署在 nova-compute 服务所在的节点上。</li>
+<li>nova-spicehtml5proxy 提供通过 SPICE 连接访问运行实例的代理，支持基于浏览器的 HTML5 客户端。</li>
+<li>The queue 在守护进程之间传递消息的中央消息队列，通常使用 RabbitMQ 。</li>
+<li>SQL database 存储云基础设施的大多数构建时和运行时状态，包括：可用的实例类型、在使用的实例、可用的网络、项目。</li>
+</ol>
+<h1 id="RPC"><a href="#RPC" class="headerlink" title="RPC"></a><a href="about:blank#RPC" title="RPC"></a>RPC</h1><p>消息代理（RabbitMQ AMQP broker）允许 nova 内部组件以低耦合的方式进行通信，建立在发布/订阅（publish/subscribe）模式上</p>
+<ul>
+<li>  解耦客户端和服务端</li>
+<li>  同步客户端和服务端</li>
+<li>  平衡远程调用</li>
+</ul>
+<p>nova 使用 AMQP 中的直连（direct）、扇型（fanout）、主题（topic）交换；</p>
+<p>nova 使用适配器类（adapter）将消息封装和解封从而调用函数，实现了两种 RPC 调用</p>
+<ul>
+<li>  <code>rpc.call</code>：请求 + 响应，api 作为消费者（consumer）</li>
+<li>  <code>rpc.cast</code>：单向，api 作为发布者（publisher）</li>
+</ul>
+<p>每个 nova 服务在初始化时创建两个队列</p>
+<ul>
+<li>  接受路由键 <code>NODE-TYPE.NODE-ID</code>（例如，<code>compute.hostname</code>）：nova-api 需要重定向到特定节点</li>
+<li>  接受路由键 <code>NODE-TYPE</code>（例如，<code>compute</code>）：</li>
+</ul>
+<p><img src="https://i.loli.net/2021/06/06/ZvNb61tfPTlF9or.png"></p>
+<p>每个 nova 内部组件都连接到消息代理，根据不同的作用，把消息队列作为：</p>
+<ul>
+<li>  调用者（Invoker）：nova-api、nova-scheduler；通过 <code>rpc.call</code> 和 <code>rpc.cast</code> 向消息队列发送消息</li>
+<li>  工作者（Worker）：nova-compute；从消息队列接收消息，根据 <code>rpc.call</code> 进行响应</li>
+</ul>
+<h2 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a><a href="about:blank#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5" title="相关概念"></a>相关概念</h2><p><strong>主题发布者（Topic Publisher）</strong></p>
+<p>执行 <code>rpc.call</code> 或 <code>rpc.cast</code> 操作将实例化一个主题发布者，用于将消息发送到消息队列。每个发布者总是连接到相同的主题交换机（topic-based exchange）；生命周期仅限于消息传递。</p>
+<p><strong>直连消费者（Direct Consumer）</strong></p>
+<p>执行 <code>rpc.call</code> 操作将实例化一个直连消费者，用于从消息队列接收响应消息。每个消费者连接到唯一的直连交换机（direct-based exchange）；生命周期仅限于消息传递。</p>
+<p><strong>主题消费者（Topic Consumer）</strong></p>
+<p>当工作者被实例化后将实例化一个主题消费者，并存在于工作者的整个生命周期；主题消费者用于从消息队列接收消息，并调用工作者定义的操作。主题消费者通过共享/排他队列（shared/exclusive queue）连接到相同的主体交换机。每个工作者都有两个主题消费者，一个处理 <code>rpc.cast</code> ，连接到交换键是 <code>topic</code> 的共享队列；另一个处理 <code>rpc.call</code> ，连接到交换键是 <code>topic.host</code> 的独立队列。</p>
+<p><strong>直连发布者（Direct Publisher）</strong></p>
+<p>执行 <code>rpc.call</code> 操作将实例化一个直连发布者，用于返回请求/响应操作所需的消息，连接到直连交换机。</p>
+<p><strong>主题交换机（Topic Exchange）</strong></p>
+<p>存在于虚拟机上下文中的路由表；类型（主题/直连）决定了路由策略；对于 nova 中的每个主题，消息代理节点只有一个主题交换机。</p>
+<p><strong>直连交换机（Direct Exchange）</strong></p>
+<p>在 <code>rpc.call</code> 操作中创建的路由表，消息代理节点的生命周期中有许多该实例，对应每个 <code>rpc.call</code> 调用。</p>
+<p><strong>队列元素（Queue Element）</strong></p>
+<p>消息桶，消息一直保存在队列中，直到消费者（主题/直连）连接到队列获取消息。队列可以是共享的也可以是独立的；路由键是 <code>topic</code> 的队列在相同类型的工作者中共享。</p>
+<h2 id="rpc-call"><a href="#rpc-call" class="headerlink" title="rpc.call"></a><a href="about:blank#rpc-call" title="rpc.call"></a>rpc.call</h2><ol>
+<li>实例化主题发布者，将请求发送到消息队列；在发布操作之前，实例化直连消费者等待响应信息</li>
+<li>一旦消息被交换器分派（dispatch），它就会被路由键（例如，<code>topic.host</code>）指定的主题消费者获取，并传递给负责该任务的工作者</li>
+<li>任务完成后，将分配一个直连发布者将响应消息发送到消息队列</li>
+<li>一旦消息被交换器分派，它就会被路由键（例如，<code>msg_id</code>）指定的直连消费者获取，并传递给调用者</li>
+</ol>
+<p><img src="https://i.loli.net/2021/06/06/ApK1vCySXhQE3mW.png"></p>
+<h2 id="rpc-cast"><a href="#rpc-cast" class="headerlink" title="rpc.cast"></a><a href="about:blank#rpc-cast" title="rpc.cast"></a>rpc.cast</h2><ol>
+<li>实例化主题发布者，将请求发送到消息队列</li>
+<li>一旦消息被交换器分派（dispatch），它就会被路由键（例如，<code>topic</code>）指定的主题消费者获取，并传递给负责该任务的工作者</li>
+</ol>
+<p><img src="https://i.loli.net/2021/06/06/3nUaoMlKdHg9BQv.png"></p>
+<h1 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a><a href="about:blank#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90" title="源码分析"></a>源码分析</h1><p>从 github 下载 Victoria 版本的 Nova 源码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/openstack/nova.git --branch stable/victoria --single-branch</span><br></pre></td></tr></table></figure>
+<p>nova/ 文件夹下的目录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">accelerator/    # Cyborg 加速器</span><br><span class="line">api/            # Nova API 服务</span><br><span class="line">cmd/            # 各个 Nova 服务的入口程序</span><br><span class="line">compute/        # Nova Compute 服务</span><br><span class="line">conductor/      # Nova Conductor 服务</span><br><span class="line">conf/           # 所有的配置选项</span><br><span class="line">console/        # nova-console 服务</span><br><span class="line">db/             # 封装数据库操作</span><br><span class="line">hacking/        # 编码规范检查</span><br><span class="line">image/          # 封装镜像操作，Glance 接口抽象</span><br><span class="line">keymgr/         # 密钥管理器实现</span><br><span class="line">locale/         # 国际化相关文件</span><br><span class="line">network/        # nova-network 服务</span><br><span class="line">notifications/  # 通知相关功能</span><br><span class="line">objects/        # 封装实体对象的 CURD 操作</span><br><span class="line">pci/            # PCI/SR-IOV 支持</span><br><span class="line">policies/       # 所有 Policy 的默认规则</span><br><span class="line">privsep/        # oslo_privsep 相关</span><br><span class="line">scheduler/      # Nova Scheduler 服务</span><br><span class="line">servicegroup/   # 成员服务（membership），服务组</span><br><span class="line">storage/        # Ceph 存储支持</span><br><span class="line">tests/          # 单元测试</span><br><span class="line">virt/           # 支持的 hypervisor 驱动</span><br><span class="line">volume/         # 封装卷访问接口，Cinder 接口抽象</span><br></pre></td></tr></table></figure>
+
+<p>nova/ 文件夹下的 python 文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">__init__.py</span><br><span class="line">availability_zones.py   # 区域设置的工具函数</span><br><span class="line">baserpc.py              # 基础 RPC 客户端/服务端实现</span><br><span class="line">block_device.py         # 块设备映射</span><br><span class="line">cache_utils.py          # oslo_cache 封装</span><br><span class="line">config.py               # 解析命令行参数</span><br><span class="line">context.py              # 贯穿 Nova 的所有请求的上下文</span><br><span class="line">crypto.py               # 包装标准加密数据元素</span><br><span class="line">debugger.py             # pydev 调试</span><br><span class="line">exception.py            # 基础异常类</span><br><span class="line">exception_wrapper.py    # 封装异常类</span><br><span class="line">filters.py              # 基础过滤器</span><br><span class="line">i18n.py                 # 集成 oslo_i18n</span><br><span class="line">loadables.py            # 可加载类</span><br><span class="line">manager.py              # 基础 Manager 类</span><br><span class="line">middleware.py           # 更新 oslo_middleware 的默认配置选项</span><br><span class="line">monkey_patch.py         # eventlet 猴子补丁</span><br><span class="line">policy.py               # 策略引擎</span><br><span class="line">profiler.py             # 调用 OSProfiler</span><br><span class="line">quota.py                # 每个项目的资源配额</span><br><span class="line">rpc.py                  # RPC 操作相关的工具函数</span><br><span class="line">safe_utils.py           # 不会导致循环导入的工具函数</span><br><span class="line">service.py              # 通用节点基类，用于在主机上运行的所有工作者</span><br><span class="line">service_auth.py         # 身份认证插件</span><br><span class="line">test.py                 # 单元测试基础类</span><br><span class="line">utils.py                # 工具函数</span><br><span class="line">version.py              # 版本号管理</span><br><span class="line">weights.py              # 权重插件</span><br><span class="line">wsgi.py                 # 管理 WSGI 应用的服务器类</span><br></pre></td></tr></table></figure>
+
+
+<p>setup.cfg 配置文件，<code>[entry_points]</code> 小节指定了 nova 各个组件入口</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">console_scripts =</span><br><span class="line">    nova-api = nova.cmd.api:main</span><br><span class="line">    nova-api-metadata = nova.cmd.api_metadata:main</span><br><span class="line">    nova-api-os-compute = nova.cmd.api_os_compute:main</span><br><span class="line">    nova-compute = nova.cmd.compute:main</span><br><span class="line">    nova-conductor = nova.cmd.conductor:main</span><br><span class="line">    nova-manage = nova.cmd.manage:main</span><br><span class="line">    nova-novncproxy = nova.cmd.novncproxy:main</span><br><span class="line">    nova-policy = nova.cmd.policy:main</span><br><span class="line">    nova-rootwrap = oslo_rootwrap.cmd:main</span><br><span class="line">    nova-rootwrap-daemon = oslo_rootwrap.cmd:daemon</span><br><span class="line">    nova-scheduler = nova.cmd.scheduler:main</span><br><span class="line">    nova-serialproxy = nova.cmd.serialproxy:main</span><br><span class="line">    nova-spicehtml5proxy = nova.cmd.spicehtml5proxy:main</span><br><span class="line">    nova-status = nova.cmd.status:main</span><br><span class="line">wsgi_scripts =</span><br><span class="line">    nova-api-wsgi = nova.api.openstack.compute.wsgi:init_application</span><br><span class="line">    nova-metadata-wsgi = nova.api.metadata.wsgi:init_application</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="nova-api"><a href="#nova-api" class="headerlink" title="nova-api"></a><a href="about:blank#nova-api" title="nova-api"></a>nova-api</h2><p>nova-api 对外提供 RESTful API，没有对内的 RPC 。</p>
+<p>nova/api/ 目录结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">__init__.py</span><br><span class="line">auth.py             # 身份认证中间件</span><br><span class="line">compute_req_id.py   # x-compute-request-id 中间件（oslo_middleware）</span><br><span class="line">metadata/           # Metadata API</span><br><span class="line">openstack/          # Nova v2.1 API</span><br><span class="line">validation/         # 请求体验证</span><br><span class="line">wsgi.py             # WSGI 原语（请求、应用、中间件、路由、加载器）</span><br></pre></td></tr></table></figure>
+
+
+<p>openstack 目录中包含 WSGI 基础架构的代码，一些 WSGI 中间件，以及如何解析请求与分发请求的核心代码。</p>
+<p>nova/api/openstack/compute/ 包含 Controller 实现，Resource 对象将 API 映射到相应的 Controller 方法上。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">__init__.py</span><br><span class="line">api_version_request.py  # 版本验证</span><br><span class="line">auth.py                 # noauth 中间件</span><br><span class="line">common.py               # 信息查询的工具函数</span><br><span class="line">compute/                # 每个 API 的入口点</span><br><span class="line">identity.py             # 验证项目是否存在</span><br><span class="line">requestlog.py           # 请求日志中间件</span><br><span class="line">urlmap.py               # url 映射</span><br><span class="line">versioned_method.py     # 版本信息</span><br><span class="line">wsgi.py                 # WSGI 相关抽象类</span><br><span class="line">wsgi_app.py             # WSGI 应用程序初始化方法</span><br></pre></td></tr></table></figure>
+
+<h3 id="API-请求路由"><a href="#API-请求路由" class="headerlink" title="API 请求路由"></a><a href="about:blank#API-%E8%AF%B7%E6%B1%82%E8%B7%AF%E7%94%B1" title="API 请求路由"></a>API 请求路由</h3><p>nova-api 读取 etc/nova/api-paste.ini 并加载 WSGI 程序，最终 API 入口点都位于 nova.api.openstack.compute 中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[composite:osapi_compute]</span><br><span class="line">use = call:nova.api.openstack.urlmap:urlmap_factory</span><br><span class="line">/: oscomputeversions                # version API</span><br><span class="line">/v2: oscomputeversion_legacy_v2     # v2 API</span><br><span class="line">/v2.1: oscomputeversion_v2          # v2.1 API</span><br><span class="line"># v21 is an exactly feature match for v2, except it has more stringent</span><br><span class="line"># input validation on the wsgi surface (prevents fuzzing early on the</span><br><span class="line"># API). It also provides new features via API microversions which are</span><br><span class="line"># opt into for clients. Unaware clients will receive the same frozen</span><br><span class="line"># v2 API feature set, but with some relaxed validation</span><br><span class="line">/v2/+: openstack_compute_api_v21_legacy_v2_compatible</span><br><span class="line">/v2.1/+: openstack_compute_api_v21</span><br><span class="line"></span><br><span class="line">[composite:openstack_compute_api_v21]</span><br><span class="line">use = call:nova.api.auth:pipeline_factory_v21       # 加载中间件</span><br><span class="line">keystone = cors http_proxy_to_wsgi compute_req_id faultwrap request_log sizelimit osprofiler bees_profiler authtoken keystonecontext osapi_compute_app_v21</span><br><span class="line"># DEPRECATED: The [api]auth_strategy conf option is deprecated and will be</span><br><span class="line"># removed in a subsequent release, whereupon this pipeline will be unreachable.</span><br><span class="line">noauth2 = cors http_proxy_to_wsgi compute_req_id faultwrap request_log sizelimit osprofiler bees_profiler noauth2 osapi_compute_app_v21</span><br><span class="line"></span><br><span class="line">[app:osapi_compute_app_v21]</span><br><span class="line">paste.app_factory = nova.api.openstack.compute:APIRouterV21.factory  # 入口</span><br></pre></td></tr></table></figure>
+
+<p>nova/api/openstack/compute/routes.py 中的 APIRouterV21 主要用来完成路由规则的创建，其中 ROUTE_LIST 保存了 URL 与 Controller 之间的映射关系。</p>
+<p>APIRouterV21 基于 ROUTE_LIST，使用 Routes 模块作为 URL 映射的工具，将各个模块所实现的 API 对应的 URL 注册到 mapper 中，并把每个资源都封装成 nova.api.openstack.wsgi.Resource 对象，当解析 URL 请求时，可以通过 URL 映射找到 API 对应的 Resource 对象。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"># Router 类对 WSGI routes 模块进行了简单的封装</span><br><span class="line">class APIRouterV21(base_wsgi.Router):</span><br><span class="line">    &quot;&quot;&quot;Routes requests on the OpenStack API to the appropriate controller</span><br><span class="line">    and method. The URL mapping based on the plain list `ROUTE_LIST` is built</span><br><span class="line">    at here.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    def __init__(self, custom_routes=None):</span><br><span class="line">        &quot;&quot;&quot;:param custom_routes: the additional routes can be added by this</span><br><span class="line">               parameter. This parameter is used to test on some fake routes</span><br><span class="line">               primarily.</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        super(APIRouterV21, self).__init__(nova.api.openstack.ProjectMapper())</span><br><span class="line"></span><br><span class="line">        if custom_routes is None:</span><br><span class="line">            custom_routes = tuple()</span><br><span class="line"></span><br><span class="line">        for path, methods in ROUTE_LIST + custom_routes:</span><br><span class="line">            # NOTE(alex_xu): The variable &#x27;methods&#x27; is a dict in normal, since</span><br><span class="line">            # the dict includes all the methods supported in the path. But</span><br><span class="line">            # if the variable &#x27;method&#x27; is a string, it means a redirection.</span><br><span class="line">            # For example, the request to the &#x27;&#x27; will be redirect to the &#x27;/&#x27; in</span><br><span class="line">            # the Nova API. To indicate that, using the target path instead of</span><br><span class="line">            # a dict. The route entry just writes as &quot;(&#x27;&#x27;, &#x27;/)&quot;.</span><br><span class="line">            if isinstance(methods, six.string_types):</span><br><span class="line">                self.map.redirect(path, methods)</span><br><span class="line">                continue</span><br><span class="line"></span><br><span class="line">            for method, controller_info in methods.items():</span><br><span class="line">                # TODO(alex_xu): In the end, I want to create single controller</span><br><span class="line">                # instance instead of create controller instance for each</span><br><span class="line">                # route.</span><br><span class="line">                controller = controller_info[0]()</span><br><span class="line">                action = controller_info[1]</span><br><span class="line">                self.map.create_route(path, method, controller, action)</span><br><span class="line"></span><br><span class="line">    @classmethod</span><br><span class="line">    def factory(cls, global_config, **local_config):</span><br><span class="line">        &quot;&quot;&quot;Simple paste factory, :class:`nova.wsgi.Router` doesn&#x27;t have one.&quot;&quot;&quot;</span><br><span class="line">        return cls()</span><br></pre></td></tr></table></figure>
+
+<p>nova/api/wsgi.py 解析 URL 映射，通过 _dispatch 回调，调用 Resource 对象的 _<em>call</em>_ 方法，最终通过请求调用 API 对应的模块中的方法。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"># 路由</span><br><span class="line">class Router(object):</span><br><span class="line">    &quot;&quot;&quot;WSGI middleware that maps incoming requests to WSGI apps.&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def __init__(self, mapper):</span><br><span class="line">        &quot;&quot;&quot;Create a router for the given routes.Mapper.</span><br><span class="line"></span><br><span class="line">        Each route in `mapper` must specify a &#x27;controller&#x27;, which is a</span><br><span class="line">        WSGI app to call.  You&#x27;ll probably want to specify an &#x27;action&#x27; as</span><br><span class="line">        well and have your controller be an object that can route</span><br><span class="line">        the request to the action-specific method.</span><br><span class="line"></span><br><span class="line">        Examples:</span><br><span class="line">          mapper = routes.Mapper()</span><br><span class="line">          sc = ServerController()</span><br><span class="line"></span><br><span class="line">          # Explicit mapping of one route to a controller+action</span><br><span class="line">          mapper.connect(None, &#x27;/svrlist&#x27;, controller=sc, action=&#x27;list&#x27;)</span><br><span class="line"></span><br><span class="line">          # Actions are all implicitly defined</span><br><span class="line">          mapper.resource(&#x27;server&#x27;, &#x27;servers&#x27;, controller=sc)</span><br><span class="line"></span><br><span class="line">          # Pointing to an arbitrary WSGI app.  You can specify the</span><br><span class="line">          # &#123;path_info:.*&#125; parameter so the target app can be handed just that</span><br><span class="line">          # section of the URL.</span><br><span class="line">          mapper.connect(None, &#x27;/v1.0/&#123;path_info:.*&#125;&#x27;, controller=BlogApp())</span><br><span class="line"></span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        self.map = mapper</span><br><span class="line">        # 使用 routes 模块关联 mapper 和 _dispatch</span><br><span class="line">        # routes.middleware.RoutesMiddleware 设置 environ 信息</span><br><span class="line">        self._router = routes.middleware.RoutesMiddleware(self._dispatch,</span><br><span class="line">                                                          self.map)</span><br><span class="line"></span><br><span class="line">    @webob.dec.wsgify(RequestClass=Request)</span><br><span class="line">    def __call__(self, req):</span><br><span class="line">        &quot;&quot;&quot;Route the incoming request to a controller based on self.map.</span><br><span class="line"></span><br><span class="line">        If no match, return a 404.</span><br><span class="line"></span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        # 根据 mapper 将请求路由到 WSGI 应用（资源）</span><br><span class="line">        # 每个资源会在 __call__ 方法中根据 HTTP 请求的 URL 路由到对应 Controller 上的方法（Action）</span><br><span class="line">        return self._router</span><br><span class="line"></span><br><span class="line">    @staticmethod</span><br><span class="line">    @webob.dec.wsgify(RequestClass=Request)</span><br><span class="line">    def _dispatch(req):</span><br><span class="line">        &quot;&quot;&quot;Dispatch the request to the appropriate controller.</span><br><span class="line"></span><br><span class="line">        Called by self._router after matching the incoming request to a route</span><br><span class="line">        and putting the information into req.environ.  Either returns 404</span><br><span class="line">        or the routed WSGI app&#x27;s response.</span><br><span class="line"></span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        # 根据 HTTP 请求的 environ 信息找到 URL 对应的 Controller</span><br><span class="line">        match = req.environ[&#x27;wsgiorg.routing_args&#x27;][1]</span><br><span class="line">        if not match:</span><br><span class="line">            return webob.exc.HTTPNotFound()</span><br><span class="line">        app = match[&#x27;controller&#x27;]</span><br><span class="line">        return app</span><br></pre></td></tr></table></figure>
+
+<h3 id="API-实现"><a href="#API-实现" class="headerlink" title="API 实现"></a><a href="about:blank#API-%E5%AE%9E%E7%8E%B0" title="API 实现"></a>API 实现</h3><p>nova/api/openstack/compute/ 目录包含每个 API 对应的 Controller 实现，Resource 对象将请求的 API 映射到相应的 Controller 方法上。</p>
+<p>以 keypairs.py （密钥对管理扩展）为例，公共方法包含 create、delete、show、index，多个实现对应不同的 Microversion（使用 <code>@wsgi.Controller.api_version</code> 装饰器）</p>
+<ul>
+<li>  <code>@wsgi.expected_errors</code>：API 允许的错误返回码</li>
+<li>  <code>@validation.query_schema</code>：请求对应的 json schema</li>
+<li>  <code>@wsgi.response</code>：API 请求正常返回码</li>
+<li>  <code>@wsgi.action</code>：注册 action</li>
+</ul>
+<p>Microversion 用于实现兼容性。</p>
+<p>nova/api/openstack/compute/schemas 包含允许的 json schema，表示接受的键值对及其类型。</p>
+<p>通过方法接口可以得到 webob.Request 对象，从 Request 对象中可以获取其他请求参数，用于执行对应的操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class KeypairController(wsgi.Controller):</span><br><span class="line"></span><br><span class="line">    &quot;&quot;&quot;Keypair API controller for the OpenStack API.&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    _view_builder_class = keypairs_view.ViewBuilder</span><br><span class="line"></span><br><span class="line">    def __init__(self):</span><br><span class="line">        super(KeypairController, self).__init__()</span><br><span class="line">        self.api = compute_api.KeypairAPI()</span><br><span class="line"></span><br><span class="line">    @wsgi.Controller.api_version(&quot;2.10&quot;)</span><br><span class="line">    @wsgi.response(201)</span><br><span class="line">    @wsgi.expected_errors((400, 403, 409))</span><br><span class="line">    @validation.schema(keypairs.create_v210)</span><br><span class="line">    def create(self, req, body):</span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">    @wsgi.Controller.api_version(&quot;2.2&quot;, &quot;2.9&quot;)  # noqa</span><br><span class="line">    @wsgi.response(201)</span><br><span class="line">    @wsgi.expected_errors((400, 403, 409))</span><br><span class="line">    @validation.schema(keypairs.create_v22)</span><br><span class="line">    def create(self, req, body):  # noqa</span><br><span class="line">        ...</span><br></pre></td></tr></table></figure>
+
+<h2 id="nova-conductor"><a href="#nova-conductor" class="headerlink" title="nova-conductor"></a><a href="about:blank#nova-conductor" title="nova-conductor"></a>nova-conductor</h2><p>使用 RPC 的子组件通常包含以下文件：</p>
+<ul>
+<li>  api.py 对 RPC 接口进行封装，类似提供 SDK</li>
+<li>  rpcapi.py 暴露给其他内部组件的 RPC 接口，RPC 客户端</li>
+<li>  manager.py 处理 RPC API 调用</li>
+</ul>
+<p>nova-compute 访问数据库的操作都要由 nova-conductor 代理，用 nova/conductor/manager.py 的 ConductorManager 类完成，出于安全性考虑，nova-conductor 和 nova-compute 不能部署在同一服务器上。</p>
+<p>nova/objects 定义了 nova object，封装数据库 CURD 操作，每个类对应数据库中的一张表。</p>
+<h2 id="nova-scheduler"><a href="#nova-scheduler" class="headerlink" title="nova-scheduler"></a><a href="about:blank#nova-scheduler" title="nova-scheduler"></a>nova-scheduler</h2><p>nova-scheduler 执行调度决策，nova-compute 收集并更新主机数据，实时写入数据库（周期任务）。</p>
+<p>nova/scheduler/filters 包含所有的过滤器实现，用于过滤不符合条件的主机；nova/scheduler/weights 包含所有的权重实现，用于计算权重并排序。</p>
+<h1 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a><a href="about:blank#%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B" title="启动流程"></a>启动流程</h1><p><strong>nova-api</strong> 启动入口 <code>nova.cmd.api:main</code></p>
+<ul>
+<li>  <a target="_blank" rel="noopener" href="https://docs.openstack.org/nova/queens/reference/gmr.html">Guru Meditation Reports</a></li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">def main():</span><br><span class="line">    config.parse_args(sys.argv) # 解析参数</span><br><span class="line">    logging.setup(CONF, &quot;nova&quot;) # 设置日志</span><br><span class="line">    objects.register_all()      # 注册 nova object</span><br><span class="line">    gmr_opts.set_defaults(CONF) # 设置 oslo_reports</span><br><span class="line">    if &#x27;osapi_compute&#x27; in CONF.enabled_apis:</span><br><span class="line">        # NOTE(mriedem): This is needed for caching the nova-compute service</span><br><span class="line">        # version.</span><br><span class="line">        objects.Service.enable_min_version_cache()</span><br><span class="line">    log = logging.getLogger(__name__)</span><br><span class="line"></span><br><span class="line">    # 生成报告的机制 Guru Meditation Report (GMR)</span><br><span class="line">    gmr.TextGuruMeditation.setup_autorun(version, conf=CONF)</span><br><span class="line"></span><br><span class="line">    # oslo_service.ProcessLauncher</span><br><span class="line">    launcher = service.process_launcher()</span><br><span class="line">    started = 0</span><br><span class="line">    # 根据 paste-ini 文件创建 WSGI 应用</span><br><span class="line">    for api in CONF.enabled_apis:</span><br><span class="line">        should_use_ssl = api in CONF.enabled_ssl_apis</span><br><span class="line">        try:</span><br><span class="line">            # nova.service.WSGIService 初始化 WSGI 程序</span><br><span class="line">            server = service.WSGIService(api, use_ssl=should_use_ssl)</span><br><span class="line">            # oslo_service.ProcessLauncher 创建子进程启动服务</span><br><span class="line">            launcher.launch_service(server, workers=server.workers or 1)</span><br><span class="line">            started += 1</span><br><span class="line">        except exception.PasteAppNotFound as ex:</span><br><span class="line">            log.warning(&quot;%s. ``enabled_apis`` includes bad values. &quot;</span><br><span class="line">                        &quot;Fix to remove this warning.&quot;, ex)</span><br><span class="line"></span><br><span class="line">    if started == 0:</span><br><span class="line">        log.error(&#x27;No APIs were started. &#x27;</span><br><span class="line">                  &#x27;Check the enabled_apis config option.&#x27;)</span><br><span class="line">        sys.exit(1)</span><br><span class="line"></span><br><span class="line">    # 等待子进程终止</span><br><span class="line">    launcher.wait()</span><br></pre></td></tr></table></figure>
+
+<p>nova.service.WSGIService 的初始化函数实例化 nova.wsgi.Server ，启动函数实际调用了 nova.wsgi.Server 的 start 方法。</p>
+<p>其中的 self._socket 使用 <code>eventlet.listen</code> 创建，最后使用 utils 中封装的 spawn 函数启动 WSGI 程序</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">class Server(service.ServiceBase):</span><br><span class="line">    &quot;&quot;&quot;Server class to manage a WSGI server, serving a WSGI application.&quot;&quot;&quot;</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    def start(self):</span><br><span class="line">        &quot;&quot;&quot;Start serving a WSGI application.</span><br><span class="line"></span><br><span class="line">        :returns: None</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        # The server socket object will be closed after server exits,</span><br><span class="line">        # but the underlying file descriptor will remain open, and will</span><br><span class="line">        # give bad file descriptor error. So duplicating the socket object,</span><br><span class="line">        # to keep file descriptor usable.</span><br><span class="line"></span><br><span class="line">        dup_socket = self._socket.dup()</span><br><span class="line">        dup_socket.setsockopt(socket.SOL_SOCKET,</span><br><span class="line">                              socket.SO_REUSEADDR, 1)</span><br><span class="line">        # sockets can hang around forever without keepalive</span><br><span class="line">        dup_socket.setsockopt(socket.SOL_SOCKET,</span><br><span class="line">                              socket.SO_KEEPALIVE, 1)</span><br><span class="line"></span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">        self._server = utils.spawn(**wsgi_kwargs)</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>nova-conductor</strong> 启动入口 <code>nova.cmd.conductor:main</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">def main():</span><br><span class="line">    config.parse_args(sys.argv)</span><br><span class="line">    logging.setup(CONF, &quot;nova&quot;)</span><br><span class="line">    objects.register_all()</span><br><span class="line">    gmr_opts.set_defaults(CONF)</span><br><span class="line">    objects.Service.enable_min_version_cache()</span><br><span class="line"></span><br><span class="line">    gmr.TextGuruMeditation.setup_autorun(version, conf=CONF)</span><br><span class="line"></span><br><span class="line">    # nova.service.Service 实例化 Service 对象</span><br><span class="line">    server = service.Service.create(binary=&#x27;nova-conductor&#x27;,</span><br><span class="line">                                    topic=rpcapi.RPC_TOPIC)</span><br><span class="line">    workers = CONF.conductor.workers or processutils.get_worker_count()</span><br><span class="line">    # oslo_service.launch 创建 launcher</span><br><span class="line">    service.serve(server, workers=workers)</span><br><span class="line">    # 调用 launcher.wait 等待子进程终止</span><br><span class="line">    service.wait()</span><br></pre></td></tr></table></figure>
+
+<p>nova.service.Service 初始化函数接受 manager 对象，通过监听消息队列启用 RPC 服务；设置定期任务报告状态，并写入数据库。</p>
+<ul>
+<li>  nova-compute</li>
+<li>  nova-conductor</li>
+<li>  nova-scheduler</li>
+</ul>
+<p>RPC 服务启动时创建 rpc_client 用于发送消息，创建 rpc_server 用于接收消息，分派执行。</p>
+<p><strong>1. rpc_client</strong></p>
+<p>nova/cmd/conductor.py 实际创建 Service 实例</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">server = service.Service.create(binary=&#x27;nova-conductor&#x27;,</span><br><span class="line">                                topic=rpcapi.RPC_TOPIC)</span><br></pre></td></tr></table></figure>
+
+
+<p>nova/service.py 初始化函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 创建 _driver</span><br><span class="line">self.servicegroup_api = servicegroup.API()</span><br><span class="line"></span><br><span class="line"># 动态导入 manager 类</span><br><span class="line">manager_class = importutils.import_class(self.manager_class_name)</span><br><span class="line"></span><br><span class="line">if objects_base.NovaObject.indirection_api:</span><br><span class="line">    # 创建 RPCClient</span><br><span class="line">    conductor_api = conductor.API()</span><br><span class="line">    # 等待 nova-conductor 启动</span><br><span class="line">    conductor_api.wait_until_ready(context.get_admin_context())</span><br></pre></td></tr></table></figure>
+
+
+<p>nova/servicegroup/api.py 创建 _driver</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">driver_class = _driver_name_class_mapping[CONF.servicegroup_driver]</span><br><span class="line">self._driver = importutils.import_object(driver_class,</span><br><span class="line">                                         *args, **kwargs)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>nova/conductor/api.py 实际调用 rpcapi.py</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def __init__(self):</span><br><span class="line">    self.conductor_rpcapi = rpcapi.ConductorAPI()</span><br><span class="line">    self.base_rpcapi = baserpc.BaseAPI(topic=rpcapi.RPC_TOPIC)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>nova/conductor/rpcapi.py 设置 rpc_client</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def __init__(self):</span><br><span class="line">    super(ConductorAPI, self).__init__()</span><br><span class="line">    target = messaging.Target(topic=RPC_TOPIC, version=&#x27;3.0&#x27;)</span><br><span class="line">    version_cap = self.VERSION_ALIASES.get(CONF.upgrade_levels.conductor,</span><br><span class="line">                                           CONF.upgrade_levels.conductor)</span><br><span class="line">    serializer = objects_base.NovaObjectSerializer()</span><br><span class="line">    # rpc client</span><br><span class="line">    self.client = rpc.get_client(target,</span><br><span class="line">                                 version_cap=version_cap,</span><br><span class="line">                                 serializer=serializer)</span><br></pre></td></tr></table></figure>
+
+
+<p>nova/baserpc.py 设置 rpc_client</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def __init__(self, topic):</span><br><span class="line">    super(BaseAPI, self).__init__()</span><br><span class="line">    target = messaging.Target(topic=topic,</span><br><span class="line">                              namespace=_NAMESPACE,</span><br><span class="line">                              version=&#x27;1.0&#x27;)</span><br><span class="line">    version_cap = self.VERSION_ALIASES.get(CONF.upgrade_levels.baseapi,</span><br><span class="line">                                           CONF.upgrade_levels.baseapi)</span><br><span class="line">    self.client = rpc.get_client(target, version_cap=version_cap)</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2. rpc_server</strong></p>
+<p>nova/cmd/conductor.py 使用 Service 实例启动服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># oslo_service.launch 创建 launcher</span><br><span class="line">service.serve(server, workers=workers)</span><br><span class="line"># 调用 launcher.wait 等待子进程终止</span><br><span class="line">service.wait()</span><br></pre></td></tr></table></figure>
+
+
+<p>nova/service.py 实际调用 <a target="_blank" rel="noopener" href="https://github.com/openstack/oslo.service">oslo_service</a> 的 launch 函数，创建绿色线程（greenthread）或进程，最终调用 Service 实例的 start 方法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">def serve(server, workers=None):</span><br><span class="line">    global _launcher</span><br><span class="line">    if _launcher:</span><br><span class="line">        raise RuntimeError(_(&#x27;serve() can only be called once&#x27;))</span><br><span class="line"></span><br><span class="line">    _launcher = service.launch(CONF, server, workers=workers,</span><br><span class="line">                               restart_method=&#x27;mutate&#x27;)</span><br></pre></td></tr></table></figure>
+
+
+<p>nova/service.py Service 实例的 start 方法创建 rpc_server 和 dispatcher；设置周期任务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># 创建 rpc server 以及 dispatcher</span><br><span class="line">self.rpcserver = rpc.get_server(target, endpoints, serializer)</span><br><span class="line">self.rpcserver.start()</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">if self.periodic_enable:</span><br><span class="line">    if self.periodic_fuzzy_delay:</span><br><span class="line">        initial_delay = random.randint(0, self.periodic_fuzzy_delay)</span><br><span class="line">    else:</span><br><span class="line">        initial_delay = None</span><br><span class="line"></span><br><span class="line">    self.tg.add_dynamic_timer(self.periodic_tasks,</span><br><span class="line">                             initial_delay=initial_delay,</span><br><span class="line">                             periodic_interval_max=</span><br><span class="line">                                self.periodic_interval_max)</span><br></pre></td></tr></table></figure>
+
+
+<p>收到消息后主要由 <a target="_blank" rel="noopener" href="https://github.com/openstack/oslo.messaging">oslo_messaging</a> 进行解析和处理，核心是 oslo_messaging/rpc/dispatcher.py</p>
+<p>incoming 是 AMQP 消息格式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">def dispatch(self, incoming):</span><br><span class="line">    &quot;&quot;&quot;Dispatch an RPC message to the appropriate endpoint method.</span><br><span class="line"></span><br><span class="line">    :param incoming: incoming message</span><br><span class="line">    :type incoming: IncomingMessage</span><br><span class="line">    :raises: NoSuchMethod, UnsupportedVersion</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    message = incoming.message</span><br><span class="line">    ctxt = incoming.ctxt</span><br><span class="line"></span><br><span class="line">    method = message.get(&#x27;method&#x27;)</span><br><span class="line">    args = message.get(&#x27;args&#x27;, &#123;&#125;)</span><br><span class="line">    namespace = message.get(&#x27;namespace&#x27;)</span><br><span class="line">    version = message.get(&#x27;version&#x27;, &#x27;1.0&#x27;)</span><br><span class="line"></span><br><span class="line">    # NOTE(danms): This event and watchdog thread are used to send</span><br><span class="line">    # call-monitoring heartbeats for this message while the call</span><br><span class="line">    # is executing if it runs for some time. The thread will wait</span><br><span class="line">    # for the event to be signaled, which we do explicitly below</span><br><span class="line">    # after dispatching the method call.</span><br><span class="line">    completion_event = eventletutils.Event()</span><br><span class="line">    watchdog_thread = threading.Thread(target=self._watchdog,</span><br><span class="line">                                       args=(completion_event, incoming))</span><br><span class="line">    if incoming.client_timeout:</span><br><span class="line">        # NOTE(danms): The client provided a timeout, so we start</span><br><span class="line">        # the watchdog thread. If the client is old or didn&#x27;t send</span><br><span class="line">        # a timeout, we just never start the watchdog thread.</span><br><span class="line">        watchdog_thread.start()</span><br><span class="line"></span><br><span class="line">    found_compatible = False</span><br><span class="line">    for endpoint in self.endpoints:</span><br><span class="line">        target = getattr(endpoint, &#x27;target&#x27;, None)</span><br><span class="line">        if not target:</span><br><span class="line">            target = self._default_target</span><br><span class="line"></span><br><span class="line">        if not (self._is_namespace(target, namespace) and</span><br><span class="line">                self._is_compatible(target, version)):</span><br><span class="line">            continue</span><br><span class="line"></span><br><span class="line">        if hasattr(endpoint, method):</span><br><span class="line">            if self.access_policy.is_allowed(endpoint, method):</span><br><span class="line">                try:</span><br><span class="line">                    # 分派，调用函数</span><br><span class="line">                    return self._do_dispatch(endpoint, method, ctxt, args)</span><br><span class="line">                finally:</span><br><span class="line">                    completion_event.set()</span><br><span class="line">                    if incoming.client_timeout:</span><br><span class="line">                        watchdog_thread.join()</span><br><span class="line"></span><br><span class="line">        found_compatible = True</span><br><span class="line"></span><br><span class="line">    if found_compatible:</span><br><span class="line">        raise NoSuchMethod(method)</span><br><span class="line">    else:</span><br><span class="line">        raise UnsupportedVersion(version, method=method)</span><br></pre></td></tr></table></figure>
+
+
+<p>oslo_messaging/rpc/dispatcher.py 调用函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def _do_dispatch(self, endpoint, method, ctxt, args):</span><br><span class="line">    ctxt = self.serializer.deserialize_context(ctxt)</span><br><span class="line">    new_args = dict()</span><br><span class="line">    for argname, arg in args.items():</span><br><span class="line">        new_args[argname] = self.serializer.deserialize_entity(ctxt, arg)</span><br><span class="line">    func = getattr(endpoint, method)</span><br><span class="line">    result = func(ctxt, **new_args)</span><br><span class="line">    return self.serializer.serialize_entity(ctxt, result)</span><br></pre></td></tr></table></figure>
+
+
+<p>发送消息的实现都在 nova/conductor/rpcapi.py 中，cctxt.call 同步调用，cctxt.cast 异步调用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">def object_class_action_versions(self, context, objname, objmethod,</span><br><span class="line">                                 object_versions, args, kwargs):</span><br><span class="line">    cctxt = self.client.prepare()</span><br><span class="line">    return cctxt.call(context, &#x27;object_class_action_versions&#x27;,</span><br><span class="line">                      objname=objname, objmethod=objmethod,</span><br><span class="line">                      object_versions=object_versions,</span><br><span class="line">                      args=args, kwargs=kwargs)</span><br><span class="line"></span><br><span class="line">def cache_images(self, ctxt, aggregate, image_ids):</span><br><span class="line">    version = &#x27;1.21&#x27;</span><br><span class="line">    if not self.client.can_send_version(version):</span><br><span class="line">        raise exception.NovaException(&#x27;Conductor RPC version pin does not &#x27;</span><br><span class="line">                                      &#x27;allow cache_images() to be called&#x27;)</span><br><span class="line">    cctxt = self.client.prepare(version=version)</span><br><span class="line">    cctxt.cast(ctxt, &#x27;cache_images&#x27;, aggregate=aggregate,</span><br><span class="line">               image_ids=image_ids)</span><br></pre></td></tr></table></figure>
+
+
+<p>由 oslo_messaging/rpc/client.py 实现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">def cast(self, ctxt, method, **kwargs):</span><br><span class="line">    &quot;&quot;&quot;Invoke a method and return immediately. See RPCClient.cast().&quot;&quot;&quot;</span><br><span class="line">    msg = self._make_message(ctxt, method, kwargs)</span><br><span class="line">    msg_ctxt = self.serializer.serialize_context(ctxt)</span><br><span class="line"></span><br><span class="line">    self._check_version_cap(msg.get(&#x27;version&#x27;))</span><br><span class="line"></span><br><span class="line">    try:</span><br><span class="line">        self.transport._send(self.target, msg_ctxt, msg,</span><br><span class="line">                             retry=self.retry,</span><br><span class="line">                             transport_options=self.transport_options)</span><br><span class="line">    except driver_base.TransportDriverError as ex:</span><br><span class="line">        raise ClientSendError(self.target, ex)</span><br><span class="line"></span><br><span class="line">def call(self, ctxt, method, **kwargs):</span><br><span class="line">    &quot;&quot;&quot;Invoke a method and wait for a reply. See RPCClient.call().&quot;&quot;&quot;</span><br><span class="line">    if self.target.fanout:</span><br><span class="line">        raise exceptions.InvalidTarget(&#x27;A call cannot be used with fanout&#x27;,</span><br><span class="line">                                       self.target)</span><br><span class="line"></span><br><span class="line">    msg = self._make_message(ctxt, method, kwargs)</span><br><span class="line">    msg_ctxt = self.serializer.serialize_context(ctxt)</span><br><span class="line"></span><br><span class="line">    timeout = self.timeout</span><br><span class="line">    if self.timeout is None:</span><br><span class="line">        timeout = self.conf.rpc_response_timeout</span><br><span class="line"></span><br><span class="line">    cm_timeout = self.call_monitor_timeout</span><br><span class="line"></span><br><span class="line">    self._check_version_cap(msg.get(&#x27;version&#x27;))</span><br><span class="line"></span><br><span class="line">    try:</span><br><span class="line">        result = \</span><br><span class="line">            self.transport._send(self.target, msg_ctxt, msg,</span><br><span class="line">                                 wait_for_reply=True, timeout=timeout,</span><br><span class="line">                                 call_monitor_timeout=cm_timeout,</span><br><span class="line">                                 retry=self.retry,</span><br><span class="line">                                 transport_options=self.transport_options)</span><br><span class="line">    except driver_base.TransportDriverError as ex:</span><br><span class="line">        raise ClientSendError(self.target, ex)</span><br><span class="line"></span><br><span class="line">    return self.serializer.deserialize_entity(ctxt, result)</span><br></pre></td></tr></table></figure>
+
+
+<p>关于周期任务，nova/scheduler/manager.py 中使用 <code>@periodic_task.periodic_task</code> 装饰的方法将会被周期调用，从 scheduler 的调试日志可以看到周期任务的运行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">********************************************************************* log_opt_values /home/jck/.local/lib/python3.6/site-packages/oslo_config/cfg.py:2591</span><br><span class="line">2021-05-18 05:53:17.030 3501 DEBUG oslo_service.periodic_task [req-66b43add-49c7-4f33-8f6b-1e33cb9f0123 - - - - -] Running periodic task SchedulerManager._run_periodic_tasks run_periodic_tasks /home/jck/.local/lib/python3.6/site-packages/oslo_service/periodic_task.py:211</span><br><span class="line">2021-05-18 05:53:39.072 3500 DEBUG oslo_service.periodic_task [req-8436b3e2-96d1-4f15-8ae8-b596cee05536 - - - - -] Running periodic task SchedulerManager._run_periodic_tasks run_periodic_tasks /home/jck/.local/lib/python3.6/site-packages/oslo_service/periodic_task.py:211</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>对应于 nova/scheduler/manager.py</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@periodic_task.periodic_task(spacing=CONF.scheduler.periodic_task_interval,</span><br><span class="line">                             run_immediately=True)</span><br><span class="line">def _run_periodic_tasks(self, context):</span><br><span class="line">    self.driver.run_periodic_tasks(context)</span><br></pre></td></tr></table></figure>
+
+<p>执行周期任务的有 nova-scheduler 和 nova-compute ，主要功能是计算节点 nova-compute 上报资源信息，nova-scheduler 读取数据库，更新资源信息缓存。</p>
+<h1 id="参阅"><a href="#参阅" class="headerlink" title="参阅"></a><a href="about:blank#%E5%8F%82%E9%98%85" title="参阅"></a>参阅</h1><ul>
+<li>  <a target="_blank" rel="noopener" href="https://docs.openstack.org/nova/latest/user/architecture.html">Nova System Architecture</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://docs.openstack.org/nova/latest/install/get-started-compute.html">Compute service overview</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://docs.openstack.org/nova/latest/reference/rpc.html">AMQP and Nova</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://docs.openstack.org/nova/latest/reference/scheduling.html">Scheduling</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://docs.openstack.org/nova/latest/user/cellsv2-layout.html">Cells Layout (v2)</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://www.rabbitmq.com/tutorials/amqp-concepts.html">AMQP 0-9-1 Model Explained</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://rabbitmq.mr-ping.com/AMQP/AMQP_0-9-1_Model_Explained.html">AMQP 0-9-1 简介</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://docs.openstack.org/nova/latest/admin/metadata-service.html">Metadata service</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://docs.openstack.org/nova/queens/reference/gmr.html">Guru Meditation Reports</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nova/" rel="tag"><i class="fa fa-tag"></i> nova</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/06/24/Docker-run-%E5%91%BD%E4%BB%A4%E5%8F%82%E6%95%B0/" rel="next" title="Docker run 命令参数">
+                <i class="fa fa-chevron-left"></i> Docker run 命令参数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/06/26/nova%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="prev" title="nova源码阅读">
+                nova源码阅读 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mashuyu.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+                <a href="/archives">
+                  <span class="site-state-item-count">199</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">123</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/rma-shuyu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1004129700@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">整体架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86"><span class="nav-number">1.1.</span> <span class="nav-text">组成部分</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RPC"><span class="nav-number">2.</span> <span class="nav-text">RPC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="nav-number">2.1.</span> <span class="nav-text">相关概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rpc-call"><span class="nav-number">2.2.</span> <span class="nav-text">rpc.call</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rpc-cast"><span class="nav-number">2.3.</span> <span class="nav-text">rpc.cast</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#nova-api"><span class="nav-number">3.1.</span> <span class="nav-text">nova-api</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#API-%E8%AF%B7%E6%B1%82%E8%B7%AF%E7%94%B1"><span class="nav-number">3.1.1.</span> <span class="nav-text">API 请求路由</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#API-%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.1.2.</span> <span class="nav-text">API 实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nova-conductor"><span class="nav-number">3.2.</span> <span class="nav-text">nova-conductor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nova-scheduler"><span class="nav-number">3.3.</span> <span class="nav-text">nova-scheduler</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">启动流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E9%98%85"><span class="nav-number">5.</span> <span class="nav-text">参阅</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rma-shuyu</span>
+
+  
+</div>
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共221.7k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'D2xdJ1c0QWBntVsHIVyVXtSZ-gzGzoHsz',
+        appKey: 'UGFWDjX2oTi2dIoWPAyisa9S',
+        placeholder: '请在此输入您的留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

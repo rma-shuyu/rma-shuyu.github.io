@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function () {
+        if ('') {
+            if (prompt('请输入文章密码') !== '') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://rma-shuyu.github.io/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Virtio," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="rma's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="Virtio 半虚拟化设备(Virtio Device)在当前云计算虚拟化场景下已经得到了非常广泛的应用， 并且现在也有越来越多的物理设备也开始支持Virtio协议，即所谓的Virtio Offload，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Virtio协议概述">
+<meta property="og:url" content="https://rma-shuyu.github.io/2022/06/22/Virtio%E5%8D%8F%E8%AE%AE%E6%A6%82%E8%BF%B0/index.html">
+<meta property="og:site_name" content="rma&#39;s Blog">
+<meta property="og:description" content="Virtio 半虚拟化设备(Virtio Device)在当前云计算虚拟化场景下已经得到了非常广泛的应用， 并且现在也有越来越多的物理设备也开始支持Virtio协议，即所谓的Virtio Offload，">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-06-22T12:25:15.000Z">
+<meta property="article:modified_time" content="2023-09-09T10:33:02.406Z">
+<meta property="article:author" content="rma-shuyu">
+<meta property="article:tag" content="Virtio">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rma-shuyu.github.io/2022/06/22/Virtio协议概述/"/>
+
+
+
+
+
+  <title>Virtio协议概述 | rma's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a target="_blank" rel="noopener" href="https://github.com/rma-shuyu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">rma's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay hungry, stay foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2022/06/22/Virtio%E5%8D%8F%E8%AE%AE%E6%A6%82%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Virtio协议概述</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-06-22T20:25:15+08:00">
+                2022-06-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%99%9A%E6%8B%9F%E5%8C%96/" itemprop="url" rel="index">
+                    <span itemprop="name">虚拟化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2022/06/22/Virtio%E5%8D%8F%E8%AE%AE%E6%A6%82%E8%BF%B0/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2022/06/22/Virtio%E5%8D%8F%E8%AE%AE%E6%A6%82%E8%BF%B0/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Virtio"><a href="#Virtio" class="headerlink" title="Virtio "></a>Virtio </h2><p>半虚拟化设备(Virtio Device)在当前云计算虚拟化场景下已经得到了非常广泛的应用， 并且现在也有越来越多的物理设备也开始支持Virtio协议，即所谓的<code>Virtio Offload</code>， </p>
+<span id="more"></span>
+<p>通过将virtio协议卸载到硬件上（例如virtio-net网卡卸载，virtio-scsi卸载）让物理机和虚拟机都能够获得加速体验。 本文中我们来重点了解一下virtio技术中的一些关键点，方便我们加深对半虚拟化的理解。 本文适合对IO虚拟化有一定了解的人群阅读，本文的目的是对想要了解virtio内部机制的读者提供帮助。</p>
+<p>在开始了解virtio之前，我们先思考一下几个相关问题：</p>
+<ul>
+<li>  virtio设备有哪几种呈现方式?</li>
+<li>  virtio-pci设备的配置空间都有哪些内容？</li>
+<li>  virtio前端和后端基于共享内存机制进行通信，它是凭什么可以做到无锁的？</li>
+<li>  virtio机制中有那几个关键的数据结构？virtio配置接口存放在哪里？virtio是如何工作的？</li>
+<li>  virtio前后端是如何进行通信的？irqfd和ioeventfd是什么回事儿？在virtio前后端通信中是怎么用到的？</li>
+<li>  virtio设备支持MSIx，在qemu/kvm中具体是怎么实现对MSIx的模拟呢？</li>
+<li>  virtio modern相对于virtio legay多了哪些新特性？</li>
+</ul>
+<h2 id="0-简单了解一下Virtio-Spec协议"><a href="#0-简单了解一下Virtio-Spec协议" class="headerlink" title="0. 简单了解一下Virtio Spec协议 "></a>0. 简单了解一下Virtio Spec协议 </h2><p>virtio协议标准最早由IBM提出，virtio作为一套标准协议现在有专门的技术委员会进行管理， 具体的标准可以访问<a target="_blank" rel="noopener" href="http://docs.oasis-open.org/virtio/virtio/v1.0/virtio-v1.0.html"><code>virtio</code>官网</a>， 开发者可以向技术委员会提供新的virtio设备提案（<code>RFC</code>），经过委员会通过后可以增加新的virtio设备类型。</p>
+<p>组成一个virtio设备的四要素包括： **设备状态域，<code>feature bits</code>，设备配置空间，一个或者多个<code>virtqueue</code>**。 其中设备状态域包含6种状态：</p>
+<ul>
+<li>  ACKNOWLEDGE（1）：GuestOS发现了这个设备，并且认为这是一个有效的virtio设备；</li>
+<li>  DRIVER (2) : GuestOS知道该如何驱动这个设备；</li>
+<li>  FAILED (128) : GuestOS无法正常驱动这个设备，Something is wriong；</li>
+<li>  FEATURES_OK (8) : GuestOS认识所有的feature，并且feature协商一完成；</li>
+<li>  DRIVER_OK (4) : 驱动加载完成，设备可以投入使用了；</li>
+<li>  DEVICE_NEEDS_RESET (64) ：设备触发了错误，需要重置才能继续工作。</li>
+</ul>
+<p><code>feature bits</code>用来标志设备支持那个特性，其中bit0-bit23是特定设备可以使用的<code>feature bits</code>， bit24-bit37预给队列和feature协商机制，bit38以上保留给未来其他用途。 例如：对于virtio-net设备而言，feature bit0表示网卡设备支持checksum校验。 <code>VIRTIO_F_VERSION_1</code>这个feature bit用来表示设备是否支持virtio 1.0 spec标准。</p>
+<p>在virtio协议中，所有的设备都使用virtqueue来进行数据的传输。 <strong>每个设备可以有0个或者多个virtqueue，每个virtqueue占用2个或者更多个4K的物理页</strong>。 virtqueue有<code>Split Virtqueues</code>和<code>Packed Virtqueues</code>两种模式， 在<code>Split virtqueues</code>模式下virtqueue被分成若干个部分， 每个部分都是前端驱动或者后端单向可写的（不能两端同时写）。 每个virtqueue都有一个16bit的queue size参数，表示队列的总长度。 每个virtqueue由3个部分组成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+-------------------+--------------------------------+-----------------------+</span><br><span class="line">| Descriptor Table  |   Available Ring  (padding)    |       Used Ring       |</span><br><span class="line">+-------------------+--------------------------------+-----------------------+</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>  Descriptor Table：存放IO传输请求信息；</li>
+<li>  Available Ring：记录了Descriptor Table表中的哪些项被更新了，前端Driver可写但后端只读；</li>
+<li>  Used Ring：记录Descriptor Table表中哪些请求已经被提交到硬件，前端Driver只读但后端可写。</li>
+</ul>
+<p>整个virtio协议中设备IO请求的工作机制可以简单地概括为：</p>
+<ol>
+<li> 前端驱动将IO请求放到<code>Descriptor Table</code>中，然后将索引更新到<code>Available Ring</code>中，然后kick后端去取数据；</li>
+<li> 后端取出IO请求进行处理，然后结果刷新到<code>Descriptor Table</code>中再更新<code>Used Ring</code>，然后发送中断notify前端。</li>
+</ol>
+<p>从virtio协议可以了解到<strong>virtio设备支持3种设备呈现模式</strong>：</p>
+<ul>
+<li>  Virtio Over PCI BUS，依旧遵循PCI规范，挂在到PCI总线上，作为virtio-pci设备呈现；</li>
+<li>  Virtio Over MMIO，部分不支持PCI协议的虚拟化平台可以使用这种工作模式，直接挂载到系统总线上；</li>
+<li>  Virtio Over Channel I/O：主要用在s390平台上，virtio-ccw使用这种基于channel I/O的机制。</li>
+</ul>
+<p>其中，Virtio Over PCI BUS的使用比较广泛，作为PCI设备需按照规范要通过PCI配置空间来向操作系统报告设备支持的特性集合， 这样操作系统才知道这是一个什么类型的virtio设备，并调用对应的前端驱动和这个设备进行握手，进而将设备驱动起来。 QEMU会给virtio设备模拟PCI配置空间，对于virtio设备来说PCI Vendor ID固定为0x1AF4， PCI Device ID 为 0x1000到0x107F之间的是virtio设备。 同时，在不支持PCI协议的虚拟化平台上，virtio设备也可以直接通过MMIO进行呈现， virtio-spec 4.2 <a target="_blank" rel="noopener" href="https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd01.html#x1-1440002">Virtio Over MMIO</a>有针对virtio-mmio设备呈现方式的详细描述，mmio相关信息可以直接通过内核参数报告给Linux操作系统。 本文主要基于virtio-pci展开讨论。</p>
+<p>前面提到virtio设备有<code>feature bits</code>，<code>virtqueue</code>等四要素，那么在virtio-pci模式下是如何呈现的呢？ 从virtio spec来看，老的virtio协议和新的virtio协议在这一块有很大改动。 virtio legacy（virtio 0.95）协议规定，对应的配置数据结构（virtio common configuration structure） 应该存放在设备的BAR0里面，我们称之为<code>virtio legay interface</code>，其结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">                      virtio legacy ==&gt; Mapped into PCI BAR0 </span><br><span class="line">+------------------------------------------------------------------+ </span><br><span class="line">|                    Host Feature Bits[0:31]                       | </span><br><span class="line">+------------------------------------------------------------------+</span><br><span class="line">|                    Guest Feature Bits[0:31]                      |</span><br><span class="line">+------------------------------------------------------------------+</span><br><span class="line">|                    Virtqueue Address PFN                         |</span><br><span class="line">+---------------------------------+--------------------------------+</span><br><span class="line">|           Queue Select          |           Queue Size           |</span><br><span class="line">+----------------+----------------+--------------------------------+</span><br><span class="line">|   ISR Status   | Device Stat    |           Queue Notify         |</span><br><span class="line">+----------------+----------------+--------------------------------+</span><br><span class="line">|       MSI Config Vector         |         MSI Queue Vector       |</span><br><span class="line">+---------------------------------+--------------------------------+</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>对于新的<code>virtio modern</code>，协议将配置结构划分为5种类型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/* Common configuration */ </span><br><span class="line">#define VIRTIO_PCI_CAP_COMMON_CFG        1 </span><br><span class="line">/* Notifications */ </span><br><span class="line">#define VIRTIO_PCI_CAP_NOTIFY_CFG        2</span><br><span class="line">/* ISR Status */ </span><br><span class="line">#define VIRTIO_PCI_CAP_ISR_CFG           3 </span><br><span class="line">/* Device specific configuration */ </span><br><span class="line">#define VIRTIO_PCI_CAP_DEVICE_CFG        4 </span><br><span class="line">/* PCI configuration access */ </span><br><span class="line">#define VIRTIO_PCI_CAP_PCI_CFG           5 </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>以上的每种配置结构是直接映射到virtio设备的BAR空间内，那么如何指定每种配置结构的位置呢？ 答案是通过<code>PCI Capability list</code>方式去指定，这和物理PCI设备是一样的，体现了virtio-pci的协议兼容性。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">struct virtio_pci_cap &#123; </span><br><span class="line">        u8 cap_vndr;    /* Generic PCI field: PCI_CAP_ID_VNDR */ </span><br><span class="line">        u8 cap_next;    /* Generic PCI field: next ptr. */ </span><br><span class="line">        u8 cap_len;     /* Generic PCI field: capability length */ </span><br><span class="line">        u8 cfg_type;    /* Identifies the structure. */ </span><br><span class="line">        u8 bar;         /* Where to find it. */ </span><br><span class="line">        u8 padding[3];  /* Pad to full dword. */ </span><br><span class="line">        le32 offset;    /* Offset within bar. */ </span><br><span class="line">        le32 length;    /* Length of the structure, in bytes. */ </span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>只是略微不同的是，virtio-pci的Capability有一个统一的结构， 其中<code>cfg_type</code>表示Cap的类型，bar表示这个配置结构被映射到的BAR空间号。 这样每个配置结构都可以通过BAR空间直接访问，或者通过PCI配置空间的<code>VIRTIO_PCI_CAP_PCI_CFG</code>域进行访问。 每个Cap的具体结构定义可以参考virtio spec 4.1.4.3小节。</p>
+<h1 id="1-前后端数据共享"><a href="#1-前后端数据共享" class="headerlink" title="1. 前后端数据共享"></a>1. 前后端数据共享</h1><p>传统的纯模拟设备在工作的时候，会触发频繁的陷入陷出， 而且IO请求的内容要进行多次拷贝传递，严重影响了设备的IO性能。 virtio为了提升设备的IO性能，采用了共享内存机制， _<strong>前端驱动会提前申请好一段物理地址空间用来存放IO请求，然后将这段地址的GPA告诉QEMU</strong>_。 前端驱动在下发IO请求后，QEMU可以直接从共享内存中取出请求，然后将完成后的结果又直接写到虚拟机对应地址上去。 <strong>整个过程中可以做到直投直取，省去了不必要的数据拷贝开销</strong>。</p>
+<p><strong><code>Virtqueue</code>是整个virtio方案的灵魂所在</strong>。每个virtqueue都包含3张表， <code>Descriptor Table</code>存放了IO请求描述符，<code>Available Ring</code>记录了当前哪些描述符是可用的， <code>Used Ring</code>记录了哪些描述符已经被后端使用了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">       +------------------------------------+</span><br><span class="line">       |       virtio  guest driver         |</span><br><span class="line">       +-----------------+------------------+</span><br><span class="line">         /               |              ^</span><br><span class="line">        /                |               \</span><br><span class="line">       put            update             get</span><br><span class="line">      /                  |                 \</span><br><span class="line">     V                   V                  \</span><br><span class="line">+----------+      +------------+        +----------+</span><br><span class="line">|          |      |            |        |          |</span><br><span class="line">+----------+      +------------+        +----------+</span><br><span class="line">| available|      | descriptor |        |   used   |</span><br><span class="line">|   ring   |      |   table    |        |   ring   |</span><br><span class="line">+----------+      +------------+        +----------+</span><br><span class="line">|          |      |            |        |          |</span><br><span class="line">+----------+      +------------+        +----------+</span><br><span class="line">|          |      |            |        |          |</span><br><span class="line">+----------+      +------------+        +----------+</span><br><span class="line">     \                   ^                   ^</span><br><span class="line">      \                  |                  /</span><br><span class="line">      get             update              put</span><br><span class="line">        \                |                /</span><br><span class="line">         V               |               /</span><br><span class="line">        +----------------+-------------------+</span><br><span class="line">        |	   virtio host backend          |</span><br><span class="line">        +------------------------------------+</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>Desriptor Table</code>中存放的是一个一个的<code>virtq_desc</code>元素，每个<code>virq_desc</code>元素占用16个字节。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+-----------------------------------------------------------+</span><br><span class="line">|                        addr/gpa [0:63]                    |</span><br><span class="line">+-------------------------+-----------------+---------------+</span><br><span class="line">|         len [0:31]      |  flags [0:15]   |  next [0:15]  |</span><br><span class="line">+-------------------------+-----------------+---------------+</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>其中，addr占用64bit存放了单个IO请求的GPA地址信息，例如addr可能表示某个DMA buffer的起始地址。 len占用32bit表示IO请求的长度，flags的取值有3种， <code>VIRTQ_DESC_F_NEXT</code>表示这个IO请求和下一个<code>virtq_desc</code>描述的是连续的， <code>IRTQ_DESC_F_WRITE</code>表示这段buffer是write only的， <code>VIRTQ_DESC_F_INDIRECT</code>表示这段buffer里面放的内容是另外一组buffer的<code>virtq_desc</code>（相当于重定向）， next是指向下一个<code>virtq_desc</code>的索引号（前提是<code>VIRTQ_DESC_F_NEXT</code> &amp; flags）。</p>
+<p><code>Available Ring</code>是前端驱动用来告知后端那些IO buffer是的请求需要处理，每个Ring中包含一个<code>virtq_avail</code>占用8个字节。 其中，flags取值为<code>VIRTQ_AVAIL_F_NO_INTERRUPT</code>时表示前端驱动告诉后端： “当你消耗完一个IO buffer的时候，不要立刻给我发中断”（防止中断过多影响效率）。 idx表示下次前端驱动要放置<code>Descriptor Entry</code>的地方。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+--------------+-------------+--------------+---------------------+</span><br><span class="line">| flags [0:15] |  idx [0:15] |  ring[0:15]  |  used_event [0:15]  |</span><br><span class="line">+--------------+-------------+--------------+---------------------+</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Used Ring结构稍微不一样，flags的值如果为<code>VIRTIO_F_EVENT_IDX</code>并且前后端协商<code>VIRTIO_F_EVENT_IDX</code> feature成功, 那么Guest会将used ring index放在available ring的末尾，告诉后端说： “Hi 小老弟，当你处理完这个请求的时候，给我发个中断通知我一下”， 同时host也会将avail_event index放到used ring的末尾，告诉guest说： “Hi 老兄，记得把这个idx的请求kick给我哈”。 <code>VIRTIO_F_EVENT_IDX</code>对virtio通知/中断有一定的优化，在某些场景下能够提升IO性能。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">/* The Guest publishes the used index for which it expects an interrupt</span><br><span class="line"> * at the end of the avail ring. Host should ignore the avail-&gt;flags field. */</span><br><span class="line">/* The Host publishes the avail index for which it expects a kick</span><br><span class="line"> * at the end of the used ring. Guest should ignore the used-&gt;flags field. */</span><br><span class="line"> </span><br><span class="line">struct virtq_used &#123; </span><br><span class="line">#define VIRTQ_USED_F_NO_NOTIFY  1 </span><br><span class="line">        le16 flags; </span><br><span class="line">        le16 idx; </span><br><span class="line">        struct virtq_used_elem ring[ /* Queue Size */]; </span><br><span class="line">        le16 avail_event; /* Only if VIRTIO_F_EVENT_IDX */ </span><br><span class="line">&#125;; </span><br><span class="line"> </span><br><span class="line">/* le32 is used here for ids for padding reasons. */ </span><br><span class="line">struct virtq_used_elem &#123; </span><br><span class="line">        /* Index of start of used descriptor chain. */ </span><br><span class="line">        le32 id; </span><br><span class="line">        /* Total length of the descriptor chain which was used (written to) */ </span><br><span class="line">        le32 len; </span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>原理就到这里，后面会以virtio网卡为例进行详细流程说明。</p>
+<h2 id="2-前后端通信机制（irqfd-与-ioeventfd）"><a href="#2-前后端通信机制（irqfd-与-ioeventfd）" class="headerlink" title="2. 前后端通信机制（irqfd 与 ioeventfd）"></a>2. 前后端通信机制（irqfd 与 ioeventfd）</h2><p>共享内存方式解决了传统设备IO过程中内存拷贝带来的性能损耗问题，除此之外前端驱动和后端驱动的通信问题也是有可以改进的地方。 Virtio前后端通信概括起来只有两个方向，即GuestOS通知QEMU和QEMU通知GuestOS。 当前端驱动准备好IO buffer之后，需要通知后端（QEMU），告诉后端： “小老弟，我有一波IO请求已经准备好了，你帮我处理一下”。 前端通知出去后，就可以等待IO结果了（操作系统可以进行一次调度），这时候vCPU可以去干点其他的事情。 后端收到消息后开始处理IO请求，当IO请求处理完成之后，后端就通过中断机制通知GuestOS： “老哥，你的IO给你处理好了，你来取一下”。 前后端通信机制如下图所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">+-------------+                +-------------+</span><br><span class="line">|             |                |             |</span><br><span class="line">|             |                |             |</span><br><span class="line">|   GuestOS   |                |     QEMU    |</span><br><span class="line">|             |                |             |</span><br><span class="line">|             |                |             |</span><br><span class="line">+---+---------+                +----+--------+</span><br><span class="line">    |     ^                         |    ^</span><br><span class="line">    |     |                         |    |</span><br><span class="line">+---|-----|-------------------------|----|---+</span><br><span class="line">|   |     |                irqfd    |    |   |</span><br><span class="line">|   |     +-------------------------+    |   |</span><br><span class="line">|   |  ioeventfd                         |   |</span><br><span class="line">|   +------------------------------------+   |</span><br><span class="line">|                   KVM                      |</span><br><span class="line">+--------------------------------------------+</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>前端驱动通知后端比较简单，QEMU设置一段特定的MMIO地址空间，前端驱动访问这段MMIO触发VMExit， 退出到KVM后利用<code>ioeventfd</code>机制通知到用户态的QEMU，QEMU主循环（main_loop poll） 检测到ioeventfd事件后调用callback进行处理。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">前端驱动通知后端：</span><br><span class="line">内核流程mark一下，PCI设备驱动流程这个后面可以学习一下，先扫描PCI bus发现是virtio设备再扫描virtio-bus。</span><br><span class="line">worker_thread --&gt; process_one_work --&gt; pciehp_power_thread --&gt; pciehp_enable_slot --&gt; </span><br><span class="line">pciehp_configure_device --&gt; pci_bus_add_devices --&gt; pci_bus_add_device --&gt; device_attach --&gt; </span><br><span class="line">__device_attach --&gt; bus_for_each_drv --&gt; __device_attach_driver --&gt; driver_probe_device --&gt; </span><br><span class="line">pci_device_probe --&gt; local_pci_probe --&gt; virtio_pci_probe --&gt; register_virtio_device --&gt; </span><br><span class="line">device_register --&gt; device_add --&gt; bus_probe_device --&gt; device_initial_probe </span><br><span class="line">--&gt; __device_attach --&gt; bus_for_each_drv --&gt; __device_attach_driver --&gt;</span><br><span class="line">driver_probe_device --&gt; virtio_dev_probe --&gt; virtnet_probe (网卡设备驱动加载的入口)</span><br><span class="line">static int virtnet_probe(struct virtio_device *vdev) </span><br><span class="line">&#123;</span><br><span class="line">    ......</span><br><span class="line">    virtio_device_ready(vdev);</span><br><span class="line">&#125;</span><br><span class="line">/**</span><br><span class="line"> * virtio_device_ready - enable vq use in probe function</span><br><span class="line"> * @vdev: the device</span><br><span class="line"> *</span><br><span class="line"> * Driver must call this to use vqs in the probe function.</span><br><span class="line"> *</span><br><span class="line"> * Note: vqs are enabled automatically after probe returns.</span><br><span class="line"> */</span><br><span class="line">static inline</span><br><span class="line">void virtio_device_ready(struct virtio_device *dev)</span><br><span class="line">&#123;</span><br><span class="line">        unsigned status = dev-&gt;config-&gt;get_status(dev);</span><br><span class="line">        BUG_ON(status &amp; VIRTIO_CONFIG_S_DRIVER_OK);</span><br><span class="line">        dev-&gt;config-&gt;set_status(dev, status | VIRTIO_CONFIG_S_DRIVER_OK);</span><br><span class="line">&#125;</span><br><span class="line"># QEMU/KVM后端的处理流程如下：</span><br><span class="line"># 前端驱动写Status位，val &amp; VIRTIO_CONFIG_S_DRIVER_OK，这时候前端驱动已经ready</span><br><span class="line">virtio_pci_config_write  --&gt; virtio_ioport_write --&gt; virtio_pci_start_ioeventfd</span><br><span class="line">--&gt; virtio_bus_set_host_notifier --&gt; virtio_bus_start_ioeventfd --&gt; virtio_device_start_ioeventfd_impl</span><br><span class="line">--&gt; virtio_bus_set_host_notifier</span><br><span class="line">    --&gt; virtio_pci_ioeventfd_assign</span><br><span class="line">        --&gt; memory_region_add_eventfd</span><br><span class="line">            --&gt; memory_region_transaction_commit</span><br><span class="line">              --&gt; address_space_update_ioeventfds</span><br><span class="line">                --&gt; address_space_add_del_ioeventfds</span><br><span class="line">                  --&gt; kvm_io_ioeventfd_add/vhost_eventfd_add</span><br><span class="line">                    --&gt; kvm_set_ioeventfd_pio</span><br><span class="line">                      --&gt; kvm_vm_ioctl(kvm_state, KVM_IOEVENTFD, &amp;kick)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>其实，这就是QEMU的<code>Fast MMIO</code>实现机制。 我们可以看到，QEMU会为每个设备MMIO对应的MemoryRegion注册一个ioeventfd。 最后调用了一个KVM_IOEVENTFD ioctl到KVM内核里面，而在KVM内核中会将MMIO对应的（gpa,len,eventfd）信息会注册到KVM_FAST_MMIO_BUS上。 这样当Guest访问MMIO地址范围退出后（触发<code>EPT Misconfig</code>），KVM会查询一下访问的GPA是否落在某段MMIO地址空间range内部， 如果是的话就直接写eventfd告知QEMU，QEMU就会从coalesced mmio ring page中取MMIO请求 （注：pio page和 mmio page是QEMU和KVM内核之间的共享内存页，已经提前mmap好了）。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#kvm内核代码virt/kvm/eventfd.c中</span><br><span class="line">kvm_vm_ioctl(KVM_IOEVENTFD)</span><br><span class="line">  --&gt; kvm_ioeventfd</span><br><span class="line">    --&gt; kvm_assign_ioeventfd</span><br><span class="line">      --&gt; kvm_assign_ioeventfd_idx</span><br><span class="line"># MMIO处理流程中（handle_ept_misconfig）最后会调用到ioeventfd_write通知QEMU。</span><br><span class="line">/* MMIO/PIO writes trigger an event if the addr/val match */</span><br><span class="line">static int</span><br><span class="line">ioeventfd_write(struct kvm_vcpu *vcpu, struct kvm_io_device *this, gpa_t addr,</span><br><span class="line">                int len, const void *val)</span><br><span class="line">&#123;</span><br><span class="line">        struct _ioeventfd *p = to_ioeventfd(this);</span><br><span class="line">        if (!ioeventfd_in_range(p, addr, len, val))</span><br><span class="line">                return -EOPNOTSUPP;</span><br><span class="line">        eventfd_signal(p-&gt;eventfd, 1);</span><br><span class="line">        return 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>不了解<code>MMIO</code>是如何模拟的童鞋，可以结合本站的文章<a target="_blank" rel="noopener" href="https://kernelgo.org/mmio.html"><code>MMIO</code>模拟实现分析</a>去了解一下， 如果还是不懂的可以在文章下面评论。</p>
+<p><strong>后端通知前端，是通过中断的方式</strong>，QEMU/KVM中有一套完整的中断模拟实现框架，</p>
+<p>如果对QEMU/KVM中断模拟不熟悉的童鞋， 建议阅读一下这篇文章：<a target="_blank" rel="noopener" href="https://www.binss.me/blog/qemu-note-of-interrupt/"><code>QEMU学习笔记-中断</code></a>。 对于virtio-pci设备，可以通过Cap呈现MSIx给虚拟机，这样在前端驱动加载的时候就会尝试去使能MSIx中断， 后端在这个时候建立起MSIx通道。</p>
+<p>前端驱动加载(probe)的过程中，会去初始化<code>virtqueue</code>，这个时候会去申请MSIx中断并注册中断处理函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">virtnet_probe</span><br><span class="line">  --&gt; init_vqs</span><br><span class="line">    --&gt; virtnet_find_vqs</span><br><span class="line">      --&gt; vi-&gt;vdev-&gt;config-&gt;find_vqs [vp_modern_find_vqs]</span><br><span class="line">        --&gt; vp_find_vqs</span><br><span class="line">          --&gt; vp_find_vqs_msix // 为每virtqueue申请一个MSIx中断，通常收发各一个队列</span><br><span class="line">            --&gt; vp_request_msix_vectors // 主要的MSIx中断申请逻辑都在这个函数里面</span><br><span class="line">              --&gt; pci_alloc_irq_vectors_affinity // 申请MSIx中断描述符(__pci_enable_msix_range)</span><br><span class="line">                --&gt; request_irq  // 注册中断处理函数</span><br><span class="line">               </span><br><span class="line">	       // virtio-net网卡至少申请了3个MSIx中断：</span><br><span class="line">                // 一个是configuration change中断（配置空间发生变化后，QEMU通知前端）</span><br><span class="line">                // 发送队列1个MSIx中断，接收队列1MSIx中断</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在QEMU/KVM这一侧，开始模拟MSIx中断，具体流程大致如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">virtio_pci_config_write</span><br><span class="line">  --&gt; virtio_ioport_write</span><br><span class="line">    --&gt; virtio_set_status</span><br><span class="line">      --&gt; virtio_net_vhost_status</span><br><span class="line">        --&gt; vhost_net_start</span><br><span class="line">          --&gt; virtio_pci_set_guest_notifiers</span><br><span class="line">            --&gt; kvm_virtio_pci_vector_use </span><br><span class="line">              |--&gt; kvm_irqchip_add_msi_route //更新中断路由表</span><br><span class="line">              |--&gt; kvm_virtio_pci_irqfd_use  //使能MSI中断</span><br><span class="line">                 --&gt; kvm_irqchip_add_irqfd_notifier_gsi</span><br><span class="line">                   --&gt; kvm_irqchip_assign_irqfd</span><br><span class="line">                  </span><br><span class="line"># 申请MSIx中断的时候，会为MSIx分配一个gsi，并为这个gsi绑定一个irqfd，然后调用ioctl KVM_IRQFD注册到内核中。               </span><br><span class="line">static int kvm_irqchip_assign_irqfd(KVMState *s, int fd, int rfd, int virq,</span><br><span class="line">                                    bool assign)</span><br><span class="line">&#123;</span><br><span class="line">    struct kvm_irqfd irqfd = &#123;</span><br><span class="line">        .fd = fd,</span><br><span class="line">        .gsi = virq,</span><br><span class="line">        .flags = assign ? 0 : KVM_IRQFD_FLAG_DEASSIGN,</span><br><span class="line">    &#125;;</span><br><span class="line">    if (rfd != -1) &#123;</span><br><span class="line">        irqfd.flags |= KVM_IRQFD_FLAG_RESAMPLE;</span><br><span class="line">        irqfd.resamplefd = rfd;</span><br><span class="line">    &#125;</span><br><span class="line">    if (!kvm_irqfds_enabled()) &#123;</span><br><span class="line">        return -ENOSYS;</span><br><span class="line">    &#125;</span><br><span class="line">    return kvm_vm_ioctl(s, KVM_IRQFD, &amp;irqfd);</span><br><span class="line">&#125;</span><br><span class="line"># KVM内核代码virt/kvm/eventfd.c</span><br><span class="line">kvm_vm_ioctl(s, KVM_IRQFD, &amp;irqfd)</span><br><span class="line">  --&gt; kvm_irqfd_assign</span><br><span class="line">    --&gt; vfs_poll(f.file, &amp;irqfd-&gt;pt) // 在内核中poll这个irqfd</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>从上面的流程可以看出，<strong>QEMU/KVM使用<code>irqfd</code>机制来模拟MSIx中断</strong>， 即设备申请MSIx中断的时候会为MSIx分配一个gsi（这个时候会刷新irq routing table）， 并为这个gsi绑定一个<code>irqfd</code>，最后在内核中去<code>poll</code>这个<code>irqfd</code>。 当QEMU处理完IO之后，就写MSIx对应的irqfd，给前端注入一个MSIx中断，告知前端我已经处理好IO了你可以来取结果了。</p>
+<p>例如，virtio-scsi从前端取出IO请求后会取做DMA操作（DMA是异步的，QEMU协程中负责处理）。 当DMA完成后QEMU需要告知前端IO请求已完成（Complete），那么怎么去投递这个MSIx中断呢？ 答案是调用<code>virtio_notify_irqfd</code>注入一个MSIx中断。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#0  0x00005604798d569b in virtio_notify_irqfd (vdev=0x56047d12d670, vq=0x7fab10006110) at  hw/virtio/virtio.c:1684</span><br><span class="line">#1  0x00005604798adea4 in virtio_scsi_complete_req (req=0x56047d09fa70) at  hw/scsi/virtio-scsi.c:76</span><br><span class="line">#2  0x00005604798aecfb in virtio_scsi_complete_cmd_req (req=0x56047d09fa70) at  hw/scsi/virtio-scsi.c:468</span><br><span class="line">#3  0x00005604798aee9d in virtio_scsi_command_complete (r=0x56047ccb0be0, status=0, resid=0) at  hw/scsi/virtio-scsi.c:495</span><br><span class="line">#4  0x0000560479b397cf in scsi_req_complete (req=0x56047ccb0be0, status=0) at hw/scsi/scsi-bus.c:1404</span><br><span class="line">#5  0x0000560479b2b503 in scsi_dma_complete_noio (r=0x56047ccb0be0, ret=0) at hw/scsi/scsi-disk.c:279</span><br><span class="line">#6  0x0000560479b2b610 in scsi_dma_complete (opaque=0x56047ccb0be0, ret=0) at hw/scsi/scsi-disk.c:300</span><br><span class="line">#7  0x00005604799b89e3 in dma_complete (dbs=0x56047c6e9ab0, ret=0) at dma-helpers.c:118</span><br><span class="line">#8  0x00005604799b8a90 in dma_blk_cb (opaque=0x56047c6e9ab0, ret=0) at dma-helpers.c:136</span><br><span class="line">#9  0x0000560479cf5220 in blk_aio_complete (acb=0x56047cd77d40) at block/block-backend.c:1327</span><br><span class="line">#10 0x0000560479cf5470 in blk_aio_read_entry (opaque=0x56047cd77d40) at block/block-backend.c:1387</span><br><span class="line">#11 0x0000560479df49c4 in coroutine_trampoline (i0=2095821104, i1=22020) at util/coroutine-ucontext.c:115</span><br><span class="line">#12 0x00007fab214d82c0 in __start_context () at /usr/lib64/libc.so.6</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在<code>virtio_notify_irqfd</code> 函数中，会去写<code>irqfd</code>，给内核发送一个信号。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">void virtio_notify_irqfd(VirtIODevice *vdev, VirtQueue *vq)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">     /*</span><br><span class="line">     * virtio spec 1.0 says ISR bit 0 should be ignored with MSI, but</span><br><span class="line">     * windows drivers included in virtio-win 1.8.0 (circa 2015) are</span><br><span class="line">     * incorrectly polling this bit during crashdump and hibernation</span><br><span class="line">     * in MSI mode, causing a hang if this bit is never updated.</span><br><span class="line">     * Recent releases of Windows do not really shut down, but rather</span><br><span class="line">     * log out and hibernate to make the next startup faster.  Hence,</span><br><span class="line">     * this manifested as a more serious hang during shutdown with</span><br><span class="line">     *</span><br><span class="line">     * Next driver release from 2016 fixed this problem, so working around it</span><br><span class="line">     * is not a must, but it&#x27;s easy to do so let&#x27;s do it here.</span><br><span class="line">     *</span><br><span class="line">     * Note: it&#x27;s safe to update ISR from any thread as it was switched</span><br><span class="line">     * to an atomic operation.</span><br><span class="line">     */</span><br><span class="line">    virtio_set_isr(vq-&gt;vdev, 0x1);</span><br><span class="line">    event_notifier_set(&amp;vq-&gt;guest_notifier);   //写vq-&gt;guest_notifier，即irqfd</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>QEMU写了这个<code>irqfd</code>后，KVM内核模块中的irqfd poll就收到一个<code>POLL_IN</code>事件，然后将MSIx中断自动投递给对应的LAPIC。 大致流程是：<code>POLL_IN</code> -&gt; <code>kvm_arch_set_irq_inatomic</code> -&gt; <code>kvm_set_msi_irq</code>, <code>kvm_irq_delivery_to_apic_fast</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">static int</span><br><span class="line">irqfd_wakeup(wait_queue_entry_t *wait, unsigned mode, int sync, void *key)</span><br><span class="line">&#123;</span><br><span class="line">        if (flags &amp; EPOLLIN) &#123;</span><br><span class="line">                idx = srcu_read_lock(&amp;kvm-&gt;irq_srcu);</span><br><span class="line">                do &#123;</span><br><span class="line">                        seq = read_seqcount_begin(&amp;irqfd-&gt;irq_entry_sc);</span><br><span class="line">                        irq = irqfd-&gt;irq_entry;</span><br><span class="line">                &#125; while (read_seqcount_retry(&amp;irqfd-&gt;irq_entry_sc, seq));</span><br><span class="line">                /* An event has been signaled, inject an interrupt */</span><br><span class="line">                if (kvm_arch_set_irq_inatomic(&amp;irq, kvm,</span><br><span class="line">                                             KVM_USERSPACE_IRQ_SOURCE_ID, 1,</span><br><span class="line">                                             false) == -EWOULDBLOCK)</span><br><span class="line">                        schedule_work(&amp;irqfd-&gt;inject);</span><br><span class="line">                srcu_read_unlock(&amp;kvm-&gt;irq_srcu, idx);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这里还有一点没有想明白，结合代码和调试来看，virtio-blk/virtio-scsi的msi中断走irqfd机制， 但是virtio-net（不开启vhost的情况下）不走irqfd，而是直接调用<code>virtio_notify</code>/<code>virtio_pci_notify</code>， 最后通过KVM的ioctl投递中断？ 从代码路径上来看，后者明显路径更长，谁知道原因告诉我一下!!!。 <a target="_blank" rel="noopener" href="https://patchwork.kernel.org/patch/9531577/">https://patchwork.kernel.org/patch/9531577/</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Once in virtio_notify_irqfd, once in virtio_queue_guest_notifier_read.</span><br><span class="line">Unfortunately, for virtio-blk + MSI + KVM + old Windows drivers we need the one in virtio_notify_irqfd.</span><br><span class="line">For virtio-net + vhost + INTx we need the one in virtio_queue_guest_notifier_read. </span><br><span class="line">这显然路径更长啊。 </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Ok，到这里virtio前后端通信机制已经明了，最后一个小节我们以virtio-net为例，梳理一下virtio中的部分核心代码流程。</p>
+<h2 id="3-virtio核心代码分析，以virtio-net为例"><a href="#3-virtio核心代码分析，以virtio-net为例" class="headerlink" title="3. virtio核心代码分析，以virtio-net为例 "></a>3. virtio核心代码分析，以virtio-net为例 </h2><p>这里我们已virtio-net网卡为例，在没有使用vhost的情况下（网卡后端收发包都走QEMU处理）， 后端收发包走vhost的情况下有些不同，后面单独分析。</p>
+<h3 id="3-1-前后端握手流程"><a href="#3-1-前后端握手流程" class="headerlink" title="3.1 前后端握手流程"></a>3.1 前后端握手流程</h3><p>QEM模拟PCI设备对GuestOS进行呈现，设备驱动加载的时候尝试去初始化设备。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"># 先在PCI总线上调用probe设备，调用了virtio_pci_probe，然后再virtio-bus上调用virtio_dev_probe</span><br><span class="line"># virtio_dev_probe最后调用到virtnet_probe</span><br><span class="line">pci_device_probe --&gt; local_pci_probe --&gt; virtio_pci_probe --&gt; register_virtio_device --&gt; </span><br><span class="line">device_register --&gt; device_add --&gt; bus_probe_device --&gt; device_initial_probe </span><br><span class="line">--&gt; __device_attach --&gt; bus_for_each_drv --&gt; __device_attach_driver --&gt; driver_probe_device --&gt; </span><br><span class="line">virtio_dev_probe --&gt; virtnet_probe</span><br><span class="line"># 在virtio_pci_probe里先尝试以virtio modern方式读取设备配置数据结构，如果失败则尝试virio legacy方式。</span><br><span class="line"># 对于virtio legacy，我们前面提到了virtio legacy协议规定设备的配置数据结构放在PCI BAR0里面。</span><br><span class="line">/* the PCI probing function */</span><br><span class="line">int virtio_pci_legacy_probe(struct virtio_pci_device *vp_dev)</span><br><span class="line">&#123;</span><br><span class="line">        rc = pci_request_region(pci_dev, 0, &quot;virtio-pci-legacy&quot;);  //将设备的BAR0映射到物理地址空间</span><br><span class="line">        vp_dev-&gt;ioaddr = pci_iomap(pci_dev, 0, 0);   //获得BAR0的内核地址</span><br><span class="line">&#125;</span><br><span class="line">#对于virtio modern，通过capability方式报告配置数据结构的位置，配置数据结构有5种类型。</span><br><span class="line">int virtio_pci_modern_probe(struct virtio_pci_device *vp_dev)</span><br><span class="line">&#123;</span><br><span class="line">        /* check for a common config: if not, use legacy mode (bar 0). */</span><br><span class="line">        common = virtio_pci_find_capability(pci_dev, VIRTIO_PCI_CAP_COMMON_CFG,</span><br><span class="line">                                            IORESOURCE_IO | IORESOURCE_MEM,</span><br><span class="line">                                            &amp;vp_dev-&gt;modern_bars);</span><br><span class="line">        /* If common is there, these should be too... */</span><br><span class="line">        isr = virtio_pci_find_capability(pci_dev, VIRTIO_PCI_CAP_ISR_CFG,</span><br><span class="line">                                         IORESOURCE_IO | IORESOURCE_MEM,</span><br><span class="line">                                         &amp;vp_dev-&gt;modern_bars);</span><br><span class="line">        notify = virtio_pci_find_capability(pci_dev, VIRTIO_PCI_CAP_NOTIFY_CFG,</span><br><span class="line">                                            IORESOURCE_IO | IORESOURCE_MEM,</span><br><span class="line">                                            &amp;vp_dev-&gt;modern_bars);</span><br><span class="line">                                            </span><br><span class="line">        /* Device capability is only mandatory for devices that have</span><br><span class="line">        * device-specific configuration.</span><br><span class="line">        */</span><br><span class="line">        device = virtio_pci_find_capability(pci_dev, VIRTIO_PCI_CAP_DEVICE_CFG,</span><br><span class="line">                                            IORESOURCE_IO | IORESOURCE_MEM,</span><br><span class="line">                                            &amp;vp_dev-&gt;modern_bars);</span><br><span class="line">        err = pci_request_selected_regions(pci_dev, vp_dev-&gt;modern_bars,</span><br><span class="line">                                            &quot;virtio-pci-modern&quot;);</span><br><span class="line">                                        sizeof(struct virtio_pci_common_cfg), 4,</span><br><span class="line">                                        0, sizeof(struct virtio_pci_common_cfg),</span><br><span class="line">                                        NULL);</span><br><span class="line">        // 将配virtio置结构所在的BAR空间MAP到内核地址空间里                                </span><br><span class="line">        vp_dev-&gt;common = map_capability(pci_dev, common,</span><br><span class="line">                                        sizeof(struct virtio_pci_common_cfg), 4,</span><br><span class="line">                                        0, sizeof(struct virtio_pci_common_cfg),</span><br><span class="line">                                        NULL);</span><br><span class="line">        ......                              </span><br><span class="line">&#125;</span><br><span class="line"># 接着来到virtio_dev_probe里面看下：</span><br><span class="line">static int virtio_dev_probe(struct device *_d)</span><br><span class="line">&#123;</span><br><span class="line">        /* We have a driver! */</span><br><span class="line">        virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER);     // 更新status bit，这里要写配置数据结构</span><br><span class="line">        /* Figure out what features the device supports. */</span><br><span class="line">        device_features = dev-&gt;config-&gt;get_features(dev);   // 查询后端支持哪些feature bits</span><br><span class="line">        </span><br><span class="line">        // feature set协商，取交集</span><br><span class="line">        err = virtio_finalize_features(dev); </span><br><span class="line">        </span><br><span class="line">        // 调用特定virtio设备的驱动程序probe，例如: virtnet_probe, virtblk_probe</span><br><span class="line">        err = drv-&gt;probe(dev); </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>再看下<code>virtnet_probe</code>里面的一些关键的流程，这里包含了virtio-net网卡前端初始化的主要逻辑。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">static int virtnet_probe(struct virtio_device *vdev)</span><br><span class="line">&#123;</span><br><span class="line">       // check后端是否支持多队列，并按情况创建队列</span><br><span class="line">       /* Allocate ourselves a network device with room for our info */</span><br><span class="line">        dev = alloc_etherdev_mq(sizeof(struct virtnet_info), max_queue_pairs);</span><br><span class="line">        </span><br><span class="line">        // 定义一个网络设备并配置一些属性，例如MAC地址</span><br><span class="line">        dev-&gt;ethtool_ops = &amp;virtnet_ethtool_ops;</span><br><span class="line">	       SET_NETDEV_DEV(dev, &amp;vdev-&gt;dev);</span><br><span class="line"> </span><br><span class="line">        // 初始化virtqueue</span><br><span class="line">        err = init_vqs(vi);</span><br><span class="line">        </span><br><span class="line">        // 注册一个网络设备</span><br><span class="line">        err = register_netdev(dev);</span><br><span class="line">        </span><br><span class="line">        // 写状态位DRIVER_OK，告诉后端，前端已经ready</span><br><span class="line">        virtio_device_ready(vdev);</span><br><span class="line">        </span><br><span class="line">        // 将网卡up起来</span><br><span class="line">        netif_carrier_on(dev);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>其中关键的流程是<code>init_vqs</code>，在<code>vp_find_vqs_msix</code>流程中会尝试去申请MSIx中断，这里前面已经有分析过了。 其中，”configuration changed” 中断服务程序<code>vp_config_changed</code>， virtqueue队列的中断服务程序是 <code>vp_vring_interrupt</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">init_vqs --&gt; virtnet_find_vqs --&gt; vi-&gt;vdev-&gt;config-&gt;find_vqs --&gt; vp_modern_find_vqs</span><br><span class="line">--&gt; vp_find_vqs --&gt; vp_find_vqs_msix</span><br><span class="line">static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned nvqs,</span><br><span class="line">		struct virtqueue *vqs[], vq_callback_t *callbacks[],</span><br><span class="line">		const char * const names[], bool per_vq_vectors,</span><br><span class="line">		const bool *ctx,</span><br><span class="line">		struct irq_affinity *desc)</span><br><span class="line">&#123;</span><br><span class="line">        /* 为configuration change申请MSIx中断 */</span><br><span class="line">	err = vp_request_msix_vectors(vdev, nvectors, per_vq_vectors,</span><br><span class="line">			      per_vq_vectors ? desc : NULL);</span><br><span class="line">        for (i = 0; i &lt; nvqs; ++i) &#123;</span><br><span class="line">		 // 创建队列 --&gt; vring_create_virtqueue --&gt; vring_create_virtqueue_split --&gt; vring_alloc_queue</span><br><span class="line">	         vqs[i] = vp_setup_vq(vdev, queue_idx++, callbacks[i], names[i],</span><br><span class="line">                                ctx ? ctx[i] : false,</span><br><span class="line">                                msix_vec);</span><br><span class="line">		// 每个队列申请一个MSIx中断</span><br><span class="line">                err = request_irq(pci_irq_vector(vp_dev-&gt;pci_dev, msix_vec),</span><br><span class="line">                                  vring_interrupt, 0,</span><br><span class="line">                                  vp_dev-&gt;msix_names[msix_vec],</span><br><span class="line">                                  vqs[i]);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>vp_setup_vq</code>流程再往下走就开始分配共享内存页，至此建立起共享内存通信通道。 值得注意的是一路传下来的callbacks参数其实传入了发送队列和接收队列的回调处理函数， 好家伙，从<code>virtnet_find_vqs</code>一路传递到了<code>__vring_new_virtqueue</code>中最终赋值给了<code>vq-&gt;vq.callback</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">static struct virtqueue *vring_create_virtqueue_split(</span><br><span class="line">        unsigned int index,</span><br><span class="line">        unsigned int num,</span><br><span class="line">        unsigned int vring_align,</span><br><span class="line">        struct virtio_device *vdev,</span><br><span class="line">        bool weak_barriers,</span><br><span class="line">        bool may_reduce_num,</span><br><span class="line">        bool context,</span><br><span class="line">        bool (*notify)(struct virtqueue *),</span><br><span class="line">        void (*callback)(struct virtqueue *),</span><br><span class="line">        const char *name)</span><br><span class="line">&#123;</span><br><span class="line">       /* TODO: allocate each queue chunk individually */</span><br><span class="line">        for (; num &amp;&amp; vring_size(num, vring_align) &gt; PAGE_SIZE; num /= 2) &#123;</span><br><span class="line">		// 申请物理页，地址赋值给queue</span><br><span class="line">                queue = vring_alloc_queue(vdev, vring_size(num, vring_align),</span><br><span class="line">                                          &amp;dma_addr,</span><br><span class="line">                                          GFP_KERNEL|__GFP_NOWARN|__GFP_ZERO);</span><br><span class="line">        &#125;</span><br><span class="line">        queue_size_in_bytes = vring_size(num, vring_align);</span><br><span class="line">        vring_init(&amp;vring, num, queue, vring_align); // 确定 descriptor table, available ring, used ring的位置。</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>我们看下如果<code>virtqueue</code>队列如果收到MSIx中断消息后，会调用哪个<code>hook</code>来处理？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">irqreturn_t vring_interrupt(int irq, void *_vq)</span><br><span class="line">&#123;</span><br><span class="line">        struct vring_virtqueue *vq = to_vvq(_vq);</span><br><span class="line">        if (!more_used(vq)) &#123;</span><br><span class="line">                pr_debug(&quot;virtqueue interrupt with no work for %p\n&quot;, vq);</span><br><span class="line">                return IRQ_NONE;</span><br><span class="line">        &#125;</span><br><span class="line">        if (unlikely(vq-&gt;broken))</span><br><span class="line">                return IRQ_HANDLED;</span><br><span class="line">        pr_debug(&quot;virtqueue callback for %p (%p)\n&quot;, vq, vq-&gt;vq.callback);</span><br><span class="line">        if (vq-&gt;vq.callback)</span><br><span class="line">                vq-&gt;vq.callback(&amp;vq-&gt;vq);</span><br><span class="line">        return IRQ_HANDLED;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL_GPL(vring_interrupt);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>不难想到中断服务程序里面会调用队列上的callback。 我们再回过头来看下<code>virtnet_find_vqs</code>，原来接受队列的回调函数是<code>skb_recv_done</code>，发送队列的回调函数是<code>skb_xmit_done</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">static int virtnet_find_vqs(struct virtnet_info *vi)</span><br><span class="line">&#123;</span><br><span class="line">       /* Allocate/initialize parameters for send/receive virtqueues */</span><br><span class="line">        for (i = 0; i &lt; vi-&gt;max_queue_pairs; i++) &#123;</span><br><span class="line">		callbacks[rxq2vq(i)] = skb_recv_done;</span><br><span class="line">		callbacks[txq2vq(i)] = skb_xmit_done;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>OK，这个小节就到这里。Are you clear ?</p>
+<h3 id="3-2-virtio-net网卡收发在virtqueue上的实现"><a href="#3-2-virtio-net网卡收发在virtqueue上的实现" class="headerlink" title="3.2 virtio-net网卡收发在virtqueue上的实现"></a>3.2 virtio-net网卡收发在virtqueue上的实现</h3><p>这里以virtio-net为例（非vhost-net模式）来分析一下网卡收发报文在virtio协议上的具体实现。 virtio-net模式下网卡收发包的流程为：</p>
+<ul>
+<li>  收包：Hardware =&gt; Host Kernel =&gt; Qemu =&gt; Guest</li>
+<li>  发包：Guest =&gt; Host Kernel =&gt; Qemu =&gt; Host Kernel =&gt; Hardware</li>
+</ul>
+<h4 id="3-2-1-virtio-net网卡发包"><a href="#3-2-1-virtio-net网卡发包" class="headerlink" title="3.2.1 virtio-net网卡发包"></a>3.2.1 virtio-net网卡发包</h4><p>前面我们看到virtio-net设备初始化的时候会创建一个<code>net_device</code>设备： <code>virtnet_probe</code> -&gt; <code>alloc_etherdev_mq</code>注册了<code>netdev_ops</code> = <code>&amp;virtnet_netdev</code>， 这里<code>virtnet_netdev</code>是网卡驱动的回调函数集合（收发包和参数设置）。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">static const struct net_device_ops netdev_ops = &#123;</span><br><span class="line">        .ndo_open               = rio_open,</span><br><span class="line">        .ndo_start_xmit = start_xmit,</span><br><span class="line">        .ndo_stop               = rio_close,</span><br><span class="line">        .ndo_get_stats          = get_stats,</span><br><span class="line">        .ndo_validate_addr      = eth_validate_addr,</span><br><span class="line">        .ndo_set_mac_address    = eth_mac_addr,</span><br><span class="line">        .ndo_set_rx_mode        = set_multicast,</span><br><span class="line">        .ndo_do_ioctl           = rio_ioctl,</span><br><span class="line">        .ndo_tx_timeout         = rio_tx_timeout,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>网卡发包的时候调用<code>ndo_start_xmit</code>，将TCP/IP上层协议栈扔下来的数据发送出去。 对应到virtio网卡的回调函数就是<code>start_xmit</code>，从代码看就是将skb发送到virtqueue中， 然后调用virtqueue_kick通知qemu后端将数据包发送出去。</p>
+<p>Guest内核里面的virtio-net驱动发包：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">内核驱动 virtio_net.c</span><br><span class="line">start_xmit</span><br><span class="line">	// 将skb放到virtqueue队列中</span><br><span class="line"> 	-&gt; xmit_skb -&gt; sg_init_table,virtqueue_add_outbuf -&gt; virtqueue_add</span><br><span class="line">	// kick通知qemu后端去取</span><br><span class="line">	virtqueue_kick_prepare &amp;&amp; virtqueue_notify </span><br><span class="line">	// kick次数加1</span><br><span class="line">	sq-&gt;stats.kicks++</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Guest Kick后端从KVM中VMExit出来退出到Qemu用户态（走的是ioeventfd）由Qemu去将数据发送出去。 大致调用的流程是： <code>virtio_queue_host_notifier_read</code> -&gt; <code>virtio_net_handle_tx_bh</code> -&gt; <code>virtio_net_flush_tx</code> -&gt; <code>virtqueue_pop</code>拿到发包(skb) -&gt; <code>qemu_sendv_packet_async</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Qemu代码virtio-net相关代码:</span><br><span class="line">virtio_queue_host_notifier_read -&gt; virtio_queue_notify_vq</span><br><span class="line">    -&gt; vq-&gt;handle_output -&gt; virtio_net_handle_tx_bh 队列注册的时候，回注册回调函数</span><br><span class="line">        -&gt; qemu_bh_schedule -&gt; virtio_net_tx_bh</span><br><span class="line">            -&gt; virtio_net_flush_tx</span><br><span class="line">	        -&gt; virtqueue_pop</span><br><span class="line">		-&gt; qemu_sendv_packet_async // 报文放到发送队列上，写tap设备的fd去发包</span><br><span class="line">		    -&gt; tap_receive_iov -&gt; tap_write_packet</span><br><span class="line">		    </span><br><span class="line">// 最后调用 tap_write_packet 把数据包发给tap设备投递出去</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-2-virtio-net网卡收包"><a href="#3-2-2-virtio-net网卡收包" class="headerlink" title="3.2.2 virtio-net网卡收包"></a>3.2.2 virtio-net网卡收包</h4><p>网卡收包的时候，tap设备先收到报文，对应的virtio-net网卡tap设备fd变为可读， Qemu主循环收到POLL_IN事件调用回调函数收包。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">tap_send -&gt; qemu_send_packet_async -&gt; qemu_send_packet_async_with_flags</span><br><span class="line">    -&gt; qemu_net_queue_send</span><br><span class="line">        -&gt; qemu_net_queue_deliver</span><br><span class="line">	    -&gt; qemu_deliver_packet_iov</span><br><span class="line">	        -&gt; nc_sendv_compat</span><br><span class="line">		    -&gt; virtio_net_receive</span><br><span class="line">		        -&gt; virtio_net_receive_rcu</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>virtio-net网卡收报最终调用了<code>virtio_net_receive_rcu</code>， 和发包类似都是调用<code>virtqueue_pop</code>从前端获取virtqueue element， 将报文数据填充到vring中然后<code>virtio_notify</code>注入中断通知前端驱动取结果。</p>
+<p>这里不得不吐槽一下，为啥收包函数取名要叫<code>tap_send</code>。</p>
+<h2 id="4-参考文献"><a href="#4-参考文献" class="headerlink" title="4. 参考文献 "></a>4. 参考文献 </h2><ol>
+<li> <a target="_blank" rel="noopener" href="https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd01.html">virtio spec v1.1</a></li>
+<li> <a target="_blank" rel="noopener" href="https://ozlabs.org/~rusty/virtio-spec/virtio-paper.pdf">Towards a De-Facto Standard For Virtual</a></li>
+<li> <a target="_blank" rel="noopener" href="https://github.com/qemu/qemu/blob/master/hw/net/virtio-net.c">https://github.com/qemu/qemu/blob/master/hw/net/virtio-net.c</a></li>
+<li> <a target="_blank" rel="noopener" href="https://github.com/torvalds/linux/blob/master/drivers/net/virtio/_net.c">https://github.com/torvalds/linux/blob/master/drivers/net/virtio\_net.c</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Virtio/" rel="tag"><i class="fa fa-tag"></i> Virtio</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/06/21/runlevel%E8%AE%BE%E7%BD%AE/" rel="next" title="runlevel设置">
+                <i class="fa fa-chevron-left"></i> runlevel设置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/06/23/Linux-Kdump/" rel="prev" title="Linux Kdump">
+                Linux Kdump <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mashuyu.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+                <a href="/archives">
+                  <span class="site-state-item-count">199</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">123</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/rma-shuyu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1004129700@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Virtio"><span class="nav-number">1.</span> <span class="nav-text">Virtio </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0-%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8BVirtio-Spec%E5%8D%8F%E8%AE%AE"><span class="nav-number">2.</span> <span class="nav-text">0. 简单了解一下Virtio Spec协议 </span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%89%8D%E5%90%8E%E7%AB%AF%E6%95%B0%E6%8D%AE%E5%85%B1%E4%BA%AB"><span class="nav-number"></span> <span class="nav-text">1. 前后端数据共享</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%89%8D%E5%90%8E%E7%AB%AF%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6%EF%BC%88irqfd-%E4%B8%8E-ioeventfd%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">2. 前后端通信机制（irqfd 与 ioeventfd）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-virtio%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%8C%E4%BB%A5virtio-net%E4%B8%BA%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">3. virtio核心代码分析，以virtio-net为例 </span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%89%8D%E5%90%8E%E7%AB%AF%E6%8F%A1%E6%89%8B%E6%B5%81%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text">3.1 前后端握手流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-virtio-net%E7%BD%91%E5%8D%A1%E6%94%B6%E5%8F%91%E5%9C%A8virtqueue%E4%B8%8A%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.2.</span> <span class="nav-text">3.2 virtio-net网卡收发在virtqueue上的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-virtio-net%E7%BD%91%E5%8D%A1%E5%8F%91%E5%8C%85"><span class="nav-number">2.2.1.</span> <span class="nav-text">3.2.1 virtio-net网卡发包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-virtio-net%E7%BD%91%E5%8D%A1%E6%94%B6%E5%8C%85"><span class="nav-number">2.2.2.</span> <span class="nav-text">3.2.2 virtio-net网卡收包</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">3.</span> <span class="nav-text">4. 参考文献 </span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rma-shuyu</span>
+
+  
+</div>
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共221.7k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'D2xdJ1c0QWBntVsHIVyVXtSZ-gzGzoHsz',
+        appKey: 'UGFWDjX2oTi2dIoWPAyisa9S',
+        placeholder: '请在此输入您的留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

@@ -309,7 +309,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/15/Makefile%E5%87%BD%E6%95%B0/">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/06/03/C-%E4%B8%ADpublic%E3%80%81protected%E3%80%81private%E7%9A%84%E5%8C%BA%E5%88%AB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -328,7 +328,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/05/15/Makefile%E5%87%BD%E6%95%B0/" itemprop="url">Makefile函数</a></h1>
+                <a class="post-title-link" href="/2021/06/03/C-%E4%B8%ADpublic%E3%80%81protected%E3%80%81private%E7%9A%84%E5%8C%BA%E5%88%AB/" itemprop="url">C++中public、protected、private的区别</a></h1>
         
 
         <div class="post-meta">
@@ -340,8 +340,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-15T20:27:18+08:00">
-                2021-05-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-03T20:27:18+08:00">
+                2021-06-03
               </time>
             
 
@@ -363,8 +363,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Makefile/" itemprop="url" rel="index">
-                    <span itemprop="name">Makefile</span>
+                  <a href="/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
                   </a>
                 </span>
 
@@ -381,8 +381,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2021/05/15/Makefile%E5%87%BD%E6%95%B0/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/15/Makefile%E5%87%BD%E6%95%B0/" itemprop="commentCount"></span>
+                <a href="/2021/06/03/C-%E4%B8%ADpublic%E3%80%81protected%E3%80%81private%E7%9A%84%E5%8C%BA%E5%88%AB/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/06/03/C-%E4%B8%ADpublic%E3%80%81protected%E3%80%81private%E7%9A%84%E5%8C%BA%E5%88%AB/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -411,11 +411,10 @@
 
       
         
-          <h2 id="Makefile-函数"><a href="#Makefile-函数" class="headerlink" title="Makefile 函数"></a>Makefile 函数</h2><p>GNU make 提供了大量的函数用来处理文件名、变量、文本和命令。通过这些函数，用户可以节省很多精力，编写出更加灵活和健壮的Makefile。函数的使用和变量引用的展开方式相同：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="keyword">function</span> arg1,arg2,arg3)</span><br><span class="line"><span class="variable">$&#123;function arg1,arg2,arg3&#125;</span></span><br></pre></td></tr></table></figure>
+          <h2 id="private-public-protected的访问范围"><a href="#private-public-protected的访问范围" class="headerlink" title="private,public,protected的访问范围"></a>private,public,protected的访问范围</h2><p><code>private</code>: 只能由该类中的函数、其友元函数访问,不能被任何其他访问，该类的对象也不能访问.<br><code>protected</code>: 可以被该类中的函数、子类的函数、以及其友元函数访问,但不能被该类的对象访问<br><code>public</code>: 可以被该类中的函数、子类的函数、其友元函数访问,也可以由该类的对象访问<br>注：友元函数包括两种：设为友元的全局函数，设为友元类中的成员函数</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2021/05/15/Makefile%E5%87%BD%E6%95%B0/#more" rel="contents">
+            <a class="btn" href="/2021/06/03/C-%E4%B8%ADpublic%E3%80%81protected%E3%80%81private%E7%9A%84%E5%8C%BA%E5%88%AB/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -466,7 +465,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/14/override-%E6%9D%A1%E4%BB%B6%E5%88%A4%E6%96%AD/">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/06/02/friend/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -485,7 +484,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/05/14/override-%E6%9D%A1%E4%BB%B6%E5%88%A4%E6%96%AD/" itemprop="url">override+条件判断+通配符</a></h1>
+                <a class="post-title-link" href="/2021/06/02/friend/" itemprop="url">C++11 friend</a></h1>
         
 
         <div class="post-meta">
@@ -497,8 +496,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-14T20:27:18+08:00">
-                2021-05-14
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-02T20:27:18+08:00">
+                2021-06-02
               </time>
             
 
@@ -520,8 +519,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Makefile/" itemprop="url" rel="index">
-                    <span itemprop="name">Makefile</span>
+                  <a href="/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
                   </a>
                 </span>
 
@@ -538,8 +537,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2021/05/14/override-%E6%9D%A1%E4%BB%B6%E5%88%A4%E6%96%AD/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/14/override-%E6%9D%A1%E4%BB%B6%E5%88%A4%E6%96%AD/" itemprop="commentCount"></span>
+                <a href="/2021/06/02/friend/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/06/02/friend/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -568,10 +567,11 @@
 
       
         
-          <h2 id="Makefile-override-指示符"><a href="#Makefile-override-指示符" class="headerlink" title="Makefile override 指示符"></a>Makefile override 指示符</h2><p>一个在Makefile中定义的变量，如果在执行make命令时又定义了一次，那么它将替代在Makefile中出现的同名变量。</p>
+          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>私有成员只能在类的成员函数内部访问，如果想在别处访问对象的私有成员，只能通过类提供的接口（成员函数）间接地进行。这固然能够带来数据隐藏的好处，利于将来程序的扩充，但也会增加程序书写的麻烦。<br>因此，<code>C++</code> 就有了友元（<code>friend</code>）的概念。</p>
+<p>友元分为两种：友元函数和友元类。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2021/05/14/override-%E6%9D%A1%E4%BB%B6%E5%88%A4%E6%96%AD/#more" rel="contents">
+            <a class="btn" href="/2021/06/02/friend/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -622,7 +622,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/13/Makefile%E9%80%92%E5%BD%92/">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/31/Python%E8%B0%83%E7%94%A8C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -641,7 +641,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/05/13/Makefile%E9%80%92%E5%BD%92/" itemprop="url">Makefile递归</a></h1>
+                <a class="post-title-link" href="/2021/05/31/Python%E8%B0%83%E7%94%A8C/" itemprop="url">Python调用C</a></h1>
         
 
         <div class="post-meta">
@@ -653,8 +653,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-13T20:27:18+08:00">
-                2021-05-13
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-31T20:27:18+08:00">
+                2021-05-31
               </time>
             
 
@@ -676,8 +676,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Makefile/" itemprop="url" rel="index">
-                    <span itemprop="name">Makefile</span>
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
                   </a>
                 </span>
 
@@ -694,8 +694,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2021/05/13/Makefile%E9%80%92%E5%BD%92/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/13/Makefile%E9%80%92%E5%BD%92/" itemprop="commentCount"></span>
+                <a href="/2021/05/31/Python%E8%B0%83%E7%94%A8C/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/31/Python%E8%B0%83%E7%94%A8C/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -724,11 +724,10 @@
 
       
         
-          <h2 id="Makefile-递归执行"><a href="#Makefile-递归执行" class="headerlink" title="Makefile 递归执行"></a>Makefile 递归执行</h2><p>在实际工程项目中，各个源文件通常存放在各个不同的目录中，make在编译工程项目时，会依次遍历各个不同的子目录，编译每个子目录下的源文件：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># make -C subdir1 subdir2 subdir3 ...</span></span><br></pre></td></tr></table></figure>
+          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>一个python项目快速开发完以后，常常针对瓶颈进行优化，其中一种方式就是对于性能至关重要的部分，使用C重写，这已经是一种最佳实践。如果整个项目完全使用C，开发效率就没有保障。python运行环境(CPython)是用C开发的，因此python与C结合起来很容易，而且方式多种多样。使用C重写了关键部分后，需要在python中调用，本文介绍三种最常用的调用C函数的方式，分别是<code>c extension</code>，<code>Cython</code>和<code>ctypes</code></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2021/05/13/Makefile%E9%80%92%E5%BD%92/#more" rel="contents">
+            <a class="btn" href="/2021/05/31/Python%E8%B0%83%E7%94%A8C/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -779,7 +778,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/12/Makefile%E5%8F%98%E9%87%8F/">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/30/C%E8%B0%83%E7%94%A8Python/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -798,7 +797,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/05/12/Makefile%E5%8F%98%E9%87%8F/" itemprop="url">Makefile变量</a></h1>
+                <a class="post-title-link" href="/2021/05/30/C%E8%B0%83%E7%94%A8Python/" itemprop="url">C调用Python</a></h1>
         
 
         <div class="post-meta">
@@ -810,8 +809,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-12T20:27:18+08:00">
-                2021-05-12
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-30T20:27:18+08:00">
+                2021-05-30
               </time>
             
 
@@ -833,8 +832,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Makefile/" itemprop="url" rel="index">
-                    <span itemprop="name">Makefile</span>
+                  <a href="/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
                   </a>
                 </span>
 
@@ -851,8 +850,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2021/05/12/Makefile%E5%8F%98%E9%87%8F/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/12/Makefile%E5%8F%98%E9%87%8F/" itemprop="commentCount"></span>
+                <a href="/2021/05/30/C%E8%B0%83%E7%94%A8Python/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/30/C%E8%B0%83%E7%94%A8Python/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -881,10 +880,10 @@
 
       
         
-          <h2 id="Makefile-变量"><a href="#Makefile-变量" class="headerlink" title="Makefile 变量"></a>Makefile 变量</h2><p>为了更好地编写和维护Makefile，在Makefile中通常会使用很多变量。我们可以在Makefile中定义一个变量val，使用使用 <code>$(val)</code> 或 <code>$&#123;val&#125;</code> 的形式去引用它。</p>
+          <h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>在一个C/C++应用程序中，我们可以用一组插件来实现一些具有统一接口的功能，一般插件都是使用动态链接库实现，如果插件的变化比较频繁，我们可以使用 Python 来代替动态链接库形式的插件，这样可以很方便地更具需要求的变化改写脚本代码（进行不同的数据处理），而不是必须重新编译链接二进制的动态链接库。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2021/05/12/Makefile%E5%8F%98%E9%87%8F/#more" rel="contents">
+            <a class="btn" href="/2021/05/30/C%E8%B0%83%E7%94%A8Python/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -935,7 +934,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/11/Makefile%E8%A7%84%E5%88%99/">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/29/gobject/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -954,7 +953,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/05/11/Makefile%E8%A7%84%E5%88%99/" itemprop="url">Makefile规则</a></h1>
+                <a class="post-title-link" href="/2021/05/29/gobject/" itemprop="url">gobject</a></h1>
         
 
         <div class="post-meta">
@@ -966,8 +965,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-11T20:27:18+08:00">
-                2021-05-11
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-29T20:27:18+08:00">
+                2021-05-29
               </time>
             
 
@@ -989,8 +988,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Makefile/" itemprop="url" rel="index">
-                    <span itemprop="name">Makefile</span>
+                  <a href="/categories/C-C/" itemprop="url" rel="index">
+                    <span itemprop="name">C/C++</span>
                   </a>
                 </span>
 
@@ -1007,164 +1006,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2021/05/11/Makefile%E8%A7%84%E5%88%99/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/11/Makefile%E8%A7%84%E5%88%99/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="Makefile-规则"><a href="#Makefile-规则" class="headerlink" title="Makefile 规则"></a>Makefile 规则</h2><p>在程序编译过程中，Makefile的主要作用就是：构建生成可执行文件的依赖关系树。一个可执行文件需要哪些源文件、哪些库，我们都可以在Makefile里指定。在程序编译阶段，make工具会首先解析这个Makefile，根据Makefile里的指定，构建出编译可执行文件所需要的完整依赖关系。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/05/11/Makefile%E8%A7%84%E5%88%99/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/10/omitempty%E5%85%B3%E9%94%AE%E5%AD%97/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/mashuyu.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="rma's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/05/10/omitempty%E5%85%B3%E9%94%AE%E5%AD%97/" itemprop="url">omitempty关键字</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-10T20:27:18+08:00">
-                2021-05-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/GO/" itemprop="url" rel="index">
-                    <span itemprop="name">GO</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2021/05/10/omitempty%E5%85%B3%E9%94%AE%E5%AD%97/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/10/omitempty%E5%85%B3%E9%94%AE%E5%AD%97/" itemprop="commentCount"></span>
+                <a href="/2021/05/29/gobject/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/29/gobject/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1194,11 +1037,11 @@
       
         
           <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><blockquote>
-<p>结构体有标签名时, 标签名会作为key进行<code>json.Marshal</code>，<br>当结构体某个字段没有赋值时，<code>json.Marshal</code>无需序列化该字段，此时就要用到<code>omitempty</code>关键字</p>
+<p>Gobject , 亦称 Glib 对象系统，是一个程序库，它可以帮助我们使用 C 语言编写面向对象程序；它提供了一个通用的动态类型系统（ GType ）、一个基本类型的实现集（如整型、枚举等）、一个基本对象类型 - Gobject 、一个信号系统以及一个可扩展的参数 / 变量体系</p>
 </blockquote>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2021/05/10/omitempty%E5%85%B3%E9%94%AE%E5%AD%97/#more" rel="contents">
+            <a class="btn" href="/2021/05/29/gobject/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1249,7 +1092,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/09/json%E5%8C%85%E4%BD%BF%E7%94%A8/">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/28/NFS%E4%BD%BF%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -1268,7 +1111,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/05/09/json%E5%8C%85%E4%BD%BF%E7%94%A8/" itemprop="url">json包使用</a></h1>
+                <a class="post-title-link" href="/2021/05/28/NFS%E4%BD%BF%E7%94%A8/" itemprop="url">NFS使用</a></h1>
         
 
         <div class="post-meta">
@@ -1280,8 +1123,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-09T20:27:18+08:00">
-                2021-05-09
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-28T20:27:18+08:00">
+                2021-05-28
               </time>
             
 
@@ -1303,8 +1146,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/GO/" itemprop="url" rel="index">
-                    <span itemprop="name">GO</span>
+                  <a href="/categories/LINUX/" itemprop="url" rel="index">
+                    <span itemprop="name">LINUX</span>
                   </a>
                 </span>
 
@@ -1321,8 +1164,478 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2021/05/09/json%E5%8C%85%E4%BD%BF%E7%94%A8/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/09/json%E5%8C%85%E4%BD%BF%E7%94%A8/" itemprop="commentCount"></span>
+                <a href="/2021/05/28/NFS%E4%BD%BF%E7%94%A8/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/28/NFS%E4%BD%BF%E7%94%A8/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="NFS简介"><a href="#NFS简介" class="headerlink" title="NFS简介"></a>NFS简介</h2><blockquote>
+<p>NFS，是Network File System的简写，即网络文件系统。网络文件系统是FreeBSD支持的文件系统中的一种，也被称为NFS. NFS允许一个系统在网络上与他人共享目录和文件。 通过使用NFS，用户和程序可以像访问本地文件一样访问远端系统上的文件。</p>
+</blockquote>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/05/28/NFS%E4%BD%BF%E7%94%A8/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/27/mount%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/05/27/mount%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/" itemprop="url">mount命令详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-27T20:27:18+08:00">
+                2021-05-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/LINUX/" itemprop="url" rel="index">
+                    <span itemprop="name">LINUX</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/05/27/mount%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/27/mount%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="mount命令（用来挂载硬盘或镜像等）"><a href="#mount命令（用来挂载硬盘或镜像等）" class="headerlink" title="mount命令（用来挂载硬盘或镜像等）"></a>mount命令（用来挂载硬盘或镜像等）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount [-t vfstype] [-o options] device <span class="built_in">dir</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/05/27/mount%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/26/CentOS%E7%BD%91%E7%BB%9C%E8%AE%BE%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/05/26/CentOS%E7%BD%91%E7%BB%9C%E8%AE%BE%E7%BD%AE/" itemprop="url">CentOS网络设置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-26T20:27:18+08:00">
+                2021-05-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/LINUX/" itemprop="url" rel="index">
+                    <span itemprop="name">LINUX</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/05/26/CentOS%E7%BD%91%E7%BB%9C%E8%AE%BE%E7%BD%AE/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/26/CentOS%E7%BD%91%E7%BB%9C%E8%AE%BE%E7%BD%AE/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="设置静态IP"><a href="#设置静态IP" class="headerlink" title="设置静态IP"></a>设置静态IP</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/sysconfig/network-scripts/ifcfg-eth0</span><br><span class="line"></span><br><span class="line">DEVICE=eth0         <span class="comment">#描述网卡对应的设备别名，例如ifcfg-eth0的文件中它为eth0</span></span><br><span class="line">BOOTPROTO=static       <span class="comment">#设置网卡获得ip地址的方式，可能的选项为static，dhcp或bootp，分别对应静态指定的 ip地址，通过dhcp协议获得的ip地址，通过bootp协议获得的ip地址</span></span><br><span class="line">BROADCAST=192.168.0.255   <span class="comment">#对应的子网广播地址</span></span><br><span class="line">HWADDR=00:07:E9:05:E8:B4   <span class="comment">#对应的网卡物理地址</span></span><br><span class="line">IPADDR=12.168.0.33      <span class="comment">#如果设置网卡获得 ip地址的方式为静态指定，此字段就指定了网卡对应的ip地址</span></span><br><span class="line">NETMASK=255.255.255.0    <span class="comment">#网卡对应的网络掩码</span></span><br><span class="line">NETWORK=192.168.0.0     <span class="comment">#网卡对应的网络地址</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/05/26/CentOS%E7%BD%91%E7%BB%9C%E8%AE%BE%E7%BD%AE/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/25/pyinstaller%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/05/25/pyinstaller%E4%BD%BF%E7%94%A8/" itemprop="url">pyinstaller使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-25T20:27:18+08:00">
+                2021-05-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/05/25/pyinstaller%E4%BD%BF%E7%94%A8/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/25/pyinstaller%E4%BD%BF%E7%94%A8/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1352,11 +1665,11 @@
       
         
           <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><blockquote>
-<p>使用 <code>json.Unmarshal</code> 和 <code>json.Marshal</code> 函数，可以将 JSON 格式的二进制数据反序列化到指定的 Go 结构体中，以及将 Go 结构体序列化为二进制流。</p>
+<p>考虑到代码、数据的隐私安全，所以我们就需要使用PyInstaller将自己的运行主程序打包起来，从而创建得到独立应用（自包含该应用的依赖包）。最重要的是可以使用 PyInstaller 将 Python 程序生成可直接运行的程序，这个程序就可以被分发到对应的 Windows 或 Mac OS X 平台上运行。</p>
 </blockquote>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2021/05/09/json%E5%8C%85%E4%BD%BF%E7%94%A8/#more" rel="contents">
+            <a class="btn" href="/2021/05/25/pyinstaller%E4%BD%BF%E7%94%A8/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1407,7 +1720,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/08/go%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C/">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/24/meson%E8%AF%AD%E6%B3%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -1426,7 +1739,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/05/08/go%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C/" itemprop="url">go文件操作</a></h1>
+                <a class="post-title-link" href="/2021/05/24/meson%E8%AF%AD%E6%B3%95/" itemprop="url">meson语法</a></h1>
         
 
         <div class="post-meta">
@@ -1438,8 +1751,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-08T20:27:18+08:00">
-                2021-05-08
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-24T20:27:18+08:00">
+                2021-05-24
               </time>
             
 
@@ -1461,8 +1774,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/GO/" itemprop="url" rel="index">
-                    <span itemprop="name">GO</span>
+                  <a href="/categories/meson/" itemprop="url" rel="index">
+                    <span itemprop="name">meson</span>
                   </a>
                 </span>
 
@@ -1479,8 +1792,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2021/05/08/go%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/08/go%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C/" itemprop="commentCount"></span>
+                <a href="/2021/05/24/meson%E8%AF%AD%E6%B3%95/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/24/meson%E8%AF%AD%E6%B3%95/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1509,328 +1822,10 @@
 
       
         
-          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><blockquote>
-<p>在Go语言中，文件操作的大多数函数都在os包里面，文件的信息包括文件名、文件大小、修改权限、修改时间等。</p>
-</blockquote>
+          <h2 id="手册"><a href="#手册" class="headerlink" title="手册"></a>手册</h2><p><a target="_blank" rel="noopener" href="https://mesonbuild.com/Reference-manual.html">Reference-manual</a></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2021/05/08/go%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/07/os%E7%B3%BB%E7%BB%9F%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C%E5%8C%85%E4%BD%BF%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/mashuyu.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="rma's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/05/07/os%E7%B3%BB%E7%BB%9F%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C%E5%8C%85%E4%BD%BF%E7%94%A8/" itemprop="url">os系统基本操作包使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-07T20:27:18+08:00">
-                2021-05-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/GO/" itemprop="url" rel="index">
-                    <span itemprop="name">GO</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2021/05/07/os%E7%B3%BB%E7%BB%9F%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C%E5%8C%85%E4%BD%BF%E7%94%A8/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/07/os%E7%B3%BB%E7%BB%9F%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C%E5%8C%85%E4%BD%BF%E7%94%A8/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><blockquote>
-<p>os包中提供了操作系统函数的接口，是一个比较重要的包。它的作用主要是在服务器上进行系统的基本操作，如文件操作、目录操作、执行命令、信号与中断、进程、系统状态等等。下面分模块归纳一些常用函数。</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/05/07/os%E7%B3%BB%E7%BB%9F%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C%E5%8C%85%E4%BD%BF%E7%94%A8/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2021/05/06/rune%E5%AD%97%E7%AC%A6%E6%93%8D%E4%BD%9C%E5%8C%85-unicode/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/mashuyu.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="rma's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/05/06/rune%E5%AD%97%E7%AC%A6%E6%93%8D%E4%BD%9C%E5%8C%85-unicode/" itemprop="url">rune字符操作包(unicode)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-06T20:27:18+08:00">
-                2021-05-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/GO/" itemprop="url" rel="index">
-                    <span itemprop="name">GO</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2021/05/06/rune%E5%AD%97%E7%AC%A6%E6%93%8D%E4%BD%9C%E5%8C%85-unicode/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2021/05/06/rune%E5%AD%97%E7%AC%A6%E6%93%8D%E4%BD%9C%E5%8C%85-unicode/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><blockquote>
-<p>unicode包提供了诸多处理rune字符相关功能的函数（比如区分字母和数字，或者是字母的大写和小写转换等)</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/05/06/rune%E5%AD%97%E7%AC%A6%E6%93%8D%E4%BD%9C%E5%8C%85-unicode/#more" rel="contents">
+            <a class="btn" href="/2021/05/24/meson%E8%AF%AD%E6%B3%95/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1872,7 +1867,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/9/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/11/">&gt;</a>
+    <a class="extend prev" rel="prev" href="/page/9/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/11/">&gt;</a>
   </nav>
 
 
@@ -1920,7 +1915,7 @@
             
               <div class="site-state-item site-state-posts">
                 <a href="/archives">
-                  <span class="site-state-item-count">180</span>
+                  <span class="site-state-item-count">199</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1931,7 +1926,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1942,7 +1937,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">113</span>
+                  <span class="site-state-item-count">123</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2027,7 +2022,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共182.9k字</span>
+  <span class="post-count">博客全站共221.7k字</span>
 </div>
         
 

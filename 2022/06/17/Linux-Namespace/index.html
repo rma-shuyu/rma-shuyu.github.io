@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function () {
+        if ('') {
+            if (prompt('请输入文章密码') !== '') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://rma-shuyu.github.io/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Namespace," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="rma's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="Linux Namespace 是 Linux 提供的一种内核级别环境隔离的方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux Namespace">
+<meta property="og:url" content="https://rma-shuyu.github.io/2022/06/17/Linux-Namespace/index.html">
+<meta property="og:site_name" content="rma&#39;s Blog">
+<meta property="og:description" content="Linux Namespace 是 Linux 提供的一种内核级别环境隔离的方法。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-06-17T12:25:15.000Z">
+<meta property="article:modified_time" content="2023-09-09T10:33:02.405Z">
+<meta property="article:author" content="rma-shuyu">
+<meta property="article:tag" content="Namespace">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rma-shuyu.github.io/2022/06/17/Linux-Namespace/"/>
+
+
+
+
+
+  <title>Linux Namespace | rma's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a target="_blank" rel="noopener" href="https://github.com/rma-shuyu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">rma's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay hungry, stay foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2022/06/17/Linux-Namespace/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Linux Namespace</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-06-17T20:25:15+08:00">
+                2022-06-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/LINUX/" itemprop="url" rel="index">
+                    <span itemprop="name">LINUX</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2022/06/17/Linux-Namespace/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2022/06/17/Linux-Namespace/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><code>Linux Namespace</code> 是 Linux 提供的一种内核级别环境隔离的方法。</p>
+<span id="more"></span>
+
+<p>Linux Namespace 将全局系统资源封装在一个抽象中，从而使 namespace 内的进程认为自己具有独立的资源实例。这项技术本来没有掀起多大的波澜，是容器技术的崛起让他重新引起了大家的注意。</p>
+<p>Linux Namespace 有如下 6 个种类：</p>
+<table>
+<thead>
+<tr>
+<th><strong>分类</strong></th>
+<th><strong>系统调用参数</strong></th>
+<th><strong>相关内核版本</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mount namespaces</td>
+<td>CLONE_NEWNS</td>
+<td><a target="_blank" rel="noopener" href="http://lwn.net/2001/0301/a/namespaces.php3">Linux 2.4.19</a></td>
+</tr>
+<tr>
+<td>UTS namespaces</td>
+<td>CLONE_NEWUTS</td>
+<td><a target="_blank" rel="noopener" href="http://lwn.net/Articles/179345/">Linux 2.6.19</a></td>
+</tr>
+<tr>
+<td>IPC namespaces</td>
+<td>CLONE_NEWIPC</td>
+<td><a target="_blank" rel="noopener" href="http://lwn.net/Articles/187274/">Linux 2.6.19</a></td>
+</tr>
+<tr>
+<td>PID namespaces</td>
+<td>CLONE_NEWPID</td>
+<td><a target="_blank" rel="noopener" href="http://lwn.net/Articles/259217/">Linux 2.6.24</a></td>
+</tr>
+<tr>
+<td>Network namespaces</td>
+<td>CLONE_NEWNET</td>
+<td><a target="_blank" rel="noopener" href="http://lwn.net/Articles/219794/">始于Linux 2.6.24 完成于 Linux 2.6.29</a></td>
+</tr>
+<tr>
+<td>User namespaces</td>
+<td>CLONE_NEWUSER</td>
+<td><a target="_blank" rel="noopener" href="http://lwn.net/Articles/528078/">始于 Linux 2.6.23 完成于 Linux 3.8</a></td>
+</tr>
+</tbody></table>
+<p>namespace 的 API 由三个系统调用和一系列 <code>/proc</code> 文件组成，本文将会详细介绍这些系统调用和 <code>/proc</code> 文件。为了指定要操作的 namespace 类型，需要在系统调用的 flag 中通过常量 <code>CLONE_NEW*</code> 指定（包括 <code>CLONE_NEWIPC</code>，<code>CLONE_NEWNS</code>， <code>CLONE_NEWNET</code>，<code>CLONE_NEWPID</code>，<code>CLONE_NEWUSER</code> 和 <code>CLONE_NEWUTS</code>），可以指定多个常量，通过 **|**（位或）操作来实现。</p>
+<p>简单描述一下三个系统调用的功能：</p>
+<ul>
+<li>  <strong>clone()</strong> : 实现线程的系统调用，用来创建一个新的进程，并可以通过设计上述系统调用参数达到隔离的目的。</li>
+<li>  <strong>unshare()</strong> : 使某进程脱离某个 namespace。</li>
+<li>  <strong>setns()</strong> : 把某进程加入到某个 namespace。</li>
+</ul>
+<p>具体的实现原理请往下看。</p>
+<h2 id="1-clone"><a href="#1-clone" class="headerlink" title="1. clone()"></a>1. clone()</h2><hr>
+<p><code>clone()</code> 的原型如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int clone(int (*child_func)(void *), void *child_stack, int flags, void *arg);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>  <strong>child_func</strong> : 传入子进程运行的程序主函数。</li>
+<li>  <strong>child_stack</strong> : 传入子进程使用的栈空间。</li>
+<li>  <strong>flags</strong> : 表示使用哪些 <code>CLONE_*</code> 标志位。</li>
+<li>  <strong>args</strong> : 用于传入用户参数。</li>
+</ul>
+<p><code>clone()</code> 与 <code>fork()</code> 类似，都相当于把当前进程复制了一份，但 <code>clone()</code> 可以更细粒度地控制与子进程共享的资源（其实就是通过 flags 来控制），包括虚拟内存、打开的文件描述符和信号量等等。一旦指定了标志位 <code>CLONE_NEW*</code>，相对应类型的 namespace 就会被创建，新创建的进程也会成为该 namespace 中的一员。</p>
+<p>clone() 的原型并不是最底层的系统调用，而是封装过的，真正的系统调用内核实现函数为 <code>do_fork()</code>，形式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">long do_fork(unsigned long clone_flags,</span><br><span class="line">	      unsigned long stack_start,</span><br><span class="line">	      unsigned long stack_size,</span><br><span class="line">	      int __user *parent_tidptr,</span><br><span class="line">	      int __user *child_tidptr)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>clone_flags</code> 可以赋值为上面提到的标志。</p>
+<p>下面来看一个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">/* demo_uts_namespaces.c</span><br><span class="line">   Copyright 2013, Michael Kerrisk   Licensed under GNU General Public License v2 or later</span><br><span class="line">   Demonstrate the operation of UTS namespaces.</span><br><span class="line">*/</span><br><span class="line">#define _GNU_SOURCE</span><br><span class="line">#include &lt;sys/wait.h&gt;</span><br><span class="line">#include &lt;sys/utsname.h&gt;</span><br><span class="line">#include &lt;sched.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">/* A simple error-handling function: print an error message based</span><br><span class="line">   on the value in &#x27;errno&#x27; and terminate the calling process */</span><br><span class="line">#define errExit(msg)                \</span><br><span class="line">	do                          \</span><br><span class="line">	&#123;                           \</span><br><span class="line">		perror(msg);        \</span><br><span class="line">		exit(EXIT_FAILURE); \</span><br><span class="line">	&#125; while (0)</span><br><span class="line">static int /* Start function for cloned child */</span><br><span class="line">childFunc(void *arg)</span><br><span class="line">&#123;</span><br><span class="line">	struct utsname uts;</span><br><span class="line">	/* 在新的 UTS namespace 中修改主机名 */</span><br><span class="line">	if (sethostname(arg, strlen(arg)) == -1)</span><br><span class="line">		errExit(&quot;sethostname&quot;);</span><br><span class="line">	/* 获取并显示主机名 */</span><br><span class="line">	if (uname(&amp;uts) == -1)</span><br><span class="line">		errExit(&quot;uname&quot;);</span><br><span class="line">	printf(&quot;uts.nodename in child:  %s\n&quot;, uts.nodename);</span><br><span class="line">	/* Keep the namespace open for a while, by sleeping.       This allows some experimentation--for example, another       process might join the namespace. */</span><br><span class="line">	sleep(100);</span><br><span class="line">	return 0; /* Terminates child */</span><br><span class="line">&#125;</span><br><span class="line">/* 定义一个给 clone 用的栈，栈大小1M */</span><br><span class="line">#define STACK_SIZE (1024 * 1024)</span><br><span class="line">static char child_stack[STACK_SIZE];</span><br><span class="line">int main(int argc, char *argv[])</span><br><span class="line">&#123;</span><br><span class="line">	pid_t child_pid;</span><br><span class="line">	struct utsname uts;</span><br><span class="line">	if (argc &lt; 2)</span><br><span class="line">	&#123;</span><br><span class="line">		fprintf(stderr, &quot;Usage: %s &lt;child-hostname&gt;\n&quot;, argv[0]);</span><br><span class="line">		exit(EXIT_FAILURE);</span><br><span class="line">	&#125;</span><br><span class="line">	/* 调用 clone 函数创建一个新的 UTS namespace，其中传出一个函数，还有一个栈空间（为什么传尾指针，因为栈是反着的）;       新的进程将在用户定义的函数 childFunc() 中执行 */</span><br><span class="line">	child_pid = clone(childFunc, child_stack + STACK_SIZE, CLONE_NEWUTS | SIGCHLD, argv[1]);</span><br><span class="line">	if (child_pid == -1)</span><br><span class="line">		errExit(&quot;clone&quot;);</span><br><span class="line">	printf(&quot;PID of child created by clone() is %ld\n&quot;, (long)child_pid);</span><br><span class="line">	/* Parent falls through to here */</span><br><span class="line">	sleep(1); /* 给子进程预留一定的时间来改变主机名 */</span><br><span class="line">	/* 显示当前 UTS namespace 中的主机名，和       子进程所在的 UTS namespace 中的主机名不同 */</span><br><span class="line">	if (uname(&amp;uts) == -1)</span><br><span class="line">		errExit(&quot;uname&quot;);</span><br><span class="line">	printf(&quot;uts.nodename in parent: %s\n&quot;, uts.nodename);</span><br><span class="line">	if (waitpid(child_pid, NULL, 0) == -1) /* 等待子进程结束 */</span><br><span class="line">		errExit(&quot;waitpid&quot;);</span><br><span class="line">	printf(&quot;child has terminated\n&quot;);</span><br><span class="line">	exit(EXIT_SUCCESS);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>该程序通过标志位 <code>CLONE_NEWUTS</code> 调用 <code>clone()</code> 函数创建一个 UTS namespace。UTS namespace 隔离了两个系统标识符 — <strong>主机名</strong>和 <strong>NIS 域名</strong> —它们分别通过 <code>sethostname()</code> 和 <code>setdomainname()</code> 这两个系统调用来设置，并通过系统调用 <code>uname()</code> 来获取。</p>
+<p>下面将对程序中的一些关键部分进行解读（为了简单起见，我们将省略其中的错误检查）。</p>
+<p>程序运行时后面需要跟上一个命令行参数，它将会创建一个在新的 UTS namespace 中执行的子进程，该子进程会在新的 UTS namespace 中将主机名改为命令行参数中提供的值。</p>
+<p>主程序的第一个关键部分是通过系统调用 <code>clone()</code> 来创建子进程：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">child_pid = clone(childFunc, </span><br><span class="line">                  child_stack + STACK_SIZE,   /* Points to start of                                                 downwardly growing stack */                  CLONE_NEWUTS | SIGCHLD, argv[1]);</span><br><span class="line">printf(&quot;PID of child created by clone() is %ld\n&quot;, (long) child_pid);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>子进程将会在用户定义的函数 <code>childFunc()</code> 中开始执行，该函数将会接收 <code>clone()</code> 最后的参数（argv[1]）作为自己的参数，并且标志位包含了 <code>CLONE_NEWUTS</code>，所以子进程会在新创建的 UTS namespace 中执行。</p>
+<p>接下来主进程睡眠一段时间，让子进程能够有时间更改其 UTS namespace 中的主机名。然后调用 <code>uname()</code> 来检索当前 UTS namespace 中的主机名，并显示该主机名：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sleep(1);           /* Give child time to change its hostname */</span><br><span class="line">uname(&amp;uts);</span><br><span class="line">printf(&quot;uts.nodename in parent: %s\n&quot;, uts.nodename);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>与此同时，由 <code>clone()</code> 创建的子进程执行的函数 <code>childFunc()</code> 首先将主机名改为命令行参数中提供的值，然后检索并显示修改后的主机名：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sethostname(arg, strlen(arg);</span><br><span class="line">    </span><br><span class="line">uname(&amp;uts);</span><br><span class="line">printf(&quot;uts.nodename in child:  %s\n&quot;, uts.nodename);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>子进程退出之前也睡眠了一段时间，这样可以防止新的 UTS namespace 不会被关闭，让我们能够有机会进行后续的实验。</p>
+<p>执行程序，观察父进程和子进程是否处于不同的 UTS namespace 中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ su                   # 需要特权才能创建 UTS namespace</span><br><span class="line">Password: </span><br><span class="line"># uname -n</span><br><span class="line">antero</span><br><span class="line"># ./demo_uts_namespaces bizarro</span><br><span class="line">PID of child created by clone() is 27514</span><br><span class="line">uts.nodename in child:  bizarro</span><br><span class="line">uts.nodename in parent: antero</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>除了 User namespace 之外，创建其他的 namespace 都需要特权，更确切地说，是需要相应的 <code>Linux Capabilities</code>，即 <code>CAP_SYS_ADMIN</code>。这样就可以避免设置了 SUID（Set User ID on execution）的程序因为主机名不同而做出一些愚蠢的行为。</p>
+<h2 id="2-proc-文件"><a href="#2-proc-文件" class="headerlink" title="2. proc 文件"></a>2. proc 文件</h2><hr>
+<p>每个进程都有一个 <code>/proc/PID/ns</code> 目录，其下面的文件依次表示每个 namespace, 例如 user 就表示 user namespace。从 3.8 版本的内核开始，该目录下的每个文件都是一个特殊的符号链接，链接指向 <code>$namespace:[$namespace-inode-number]</code>，前半部份为 namespace 的名称，后半部份的数字表示这个 namespace 的句柄号。句柄号用来对进程所关联的 namespace 执行某些操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ ls -l /proc/$$/ns         # $$ 表示当前所在的 shell 的 PID</span><br><span class="line">total 0</span><br><span class="line">lrwxrwxrwx. 1 mtk mtk 0 Jan  8 04:12 ipc -&gt; ipc:[4026531839]</span><br><span class="line">lrwxrwxrwx. 1 mtk mtk 0 Jan  8 04:12 mnt -&gt; mnt:[4026531840]</span><br><span class="line">lrwxrwxrwx. 1 mtk mtk 0 Jan  8 04:12 net -&gt; net:[4026531956]</span><br><span class="line">lrwxrwxrwx. 1 mtk mtk 0 Jan  8 04:12 pid -&gt; pid:[4026531836]</span><br><span class="line">lrwxrwxrwx. 1 mtk mtk 0 Jan  8 04:12 user -&gt; user:[4026531837]</span><br><span class="line">lrwxrwxrwx. 1 mtk mtk 0 Jan  8 04:12 uts -&gt; uts:[4026531838]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这些符号链接的用途之一是用来<strong>确认两个不同的进程是否处于同一 namespace 中</strong>。如果两个进程指向的 namespace inode number 相同，就说明他们在同一个 namespace 下，否则就在不同的 namespace 下。这些符号链接指向的文件比较特殊，不能直接访问，事实上指向的文件存放在被称为 <code>nsfs</code> 的文件系统中，该文件系统用户不可见，可以使用系统调用 <a target="_blank" rel="noopener" href="http://man7.org/linux/man-pages/man2/stat.2.html">stat()</a> 在返回的结构体的 <code>st_ino</code> 字段中获取 inode number。在 shell 终端中可以用命令（实际上就是调用了 stat()）看到指向文件的 inode 信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ stat -L /proc/$$/ns/net</span><br><span class="line">  File: /proc/3232/ns/net  Size: 0         	Blocks: 0          IO Block: 4096   regular empty file</span><br><span class="line">Device: 4h/4d	Inode: 4026531956  Links: 1</span><br><span class="line">Access: (0444/-r--r--r--)  Uid: (    0/    root)   Gid: (    0/    root)</span><br><span class="line">Access: 2020-01-17 15:45:23.783304900 +0800</span><br><span class="line">Modify: 2020-01-17 15:45:23.783304900 +0800</span><br><span class="line">Change: 2020-01-17 15:45:23.783304900 +0800</span><br><span class="line"> Birth: -</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>除了上述用途之外，这些符号链接还有其他的用途，<strong>如果我们打开了其中一个文件，那么只要与该文件相关联的文件描述符处于打开状态，即使该 namespace 中的所有进程都终止了，该 namespace 依然不会被删除</strong>。通过 bind mount 将符号链接挂载到系统的其他位置，也可以获得相同的效果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ touch ~/uts</span><br><span class="line">$ mount --bind /proc/27514/ns/uts ~/uts</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-setns"><a href="#3-setns" class="headerlink" title="3. setns()"></a>3. setns()</h2><hr>
+<p>加入一个已经存在的 namespace 可以通过系统调用 <code>setns()</code> 来完成。它的原型如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int setns(int fd, int nstype);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>更确切的说法是：<code>setns()</code> 将调用的进程与特定类型 namespace 的一个实例分离，并将该进程与该类型 namespace 的另一个实例重新关联。</p>
+<ul>
+<li>  <code>fd</code> 表示要加入的 namespace 的文件描述符，可以通过打开其中一个符号链接来获取，也可以通过打开 bind mount 到其中一个链接的文件来获取。</li>
+<li>  <code>nstype</code> 让调用者可以去检查 fd 指向的 namespace 类型，值可以设置为前文提到的常量 <code>CLONE_NEW*</code>，填 <code>0</code> 表示不检查。如果调用者已经明确知道自己要加入了 namespace 类型，或者不关心 namespace 类型，就可以使用该参数来自动校验。</li>
+</ul>
+<p>结合 <code>setns()</code> 和 <code>execve()</code> 可以实现一个简单但非常有用的功能：将某个进程加入某个特定的 namespace，然后在该 namespace 中执行命令。直接来看例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">/* ns_exec.c</span><br><span class="line">   Copyright 2013, Michael Kerrisk   Licensed under GNU General Public License v2 or later</span><br><span class="line">   Join a namespace and execute a command in the namespace</span><br><span class="line">*/</span><br><span class="line">#define _GNU_SOURCE</span><br><span class="line">#include &lt;fcntl.h&gt;</span><br><span class="line">#include &lt;sched.h&gt;</span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">/* A simple error-handling function: print an error message based</span><br><span class="line">   on the value in &#x27;errno&#x27; and terminate the calling process */</span><br><span class="line">#define errExit(msg)                \</span><br><span class="line">	do                          \</span><br><span class="line">	&#123;                           \</span><br><span class="line">		perror(msg);        \</span><br><span class="line">		exit(EXIT_FAILURE); \</span><br><span class="line">	&#125; while (0)</span><br><span class="line">int main(int argc, char *argv[])</span><br><span class="line">&#123;</span><br><span class="line">	int fd;</span><br><span class="line">	if (argc &lt; 3)</span><br><span class="line">	&#123;</span><br><span class="line">		fprintf(stderr, &quot;%s /proc/PID/ns/FILE cmd [arg...]\n&quot;, argv[0]);</span><br><span class="line">		exit(EXIT_FAILURE);</span><br><span class="line">	&#125;</span><br><span class="line">	fd = open(argv[1], O_RDONLY); /* 获取想要加入的 namespace 的文件描述符 */</span><br><span class="line">	if (fd == -1)</span><br><span class="line">		errExit(&quot;open&quot;);</span><br><span class="line">	if (setns(fd, 0) == -1) /* 加入该 namespace */</span><br><span class="line">		errExit(&quot;setns&quot;);</span><br><span class="line">	execvp(argv[2], &amp;argv[2]); /* 在加入的 namespace 中执行相应的命令 */</span><br><span class="line">	errExit(&quot;execvp&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>该程序运行需要两个或两个以上的命令行参数，第一个参数表示特定的 namespace 符号链接的路径（或者 bind mount 到这些符号链接的文件路径）；第二个参数表示要在该符号链接相对应的 namespace 中执行的程序名称，以及执行这个程序所需的命令行参数。关键步骤如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">fd = open(argv[1], O_RDONLY);   /* 获取想要加入的 namespace 的文件描述符 */</span><br><span class="line">setns(fd, 0);                   /* 加入该 namespace */</span><br><span class="line">execvp(argv[2], &amp;argv[2]);      /* 在加入的 namespace 中执行相应的命令 */</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>还记得我们之前已经通过 bind mount 将 <code>demo_uts_namespaces</code> 创建的 UTS namespace 挂载到 <code>~/uts</code> 中了吗？可以将本例中的程序与之结合，让新进程可以在该 UTS namespace 中执行 shell：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ./ns_exec ~/uts /bin/bash     # ~/uts 被 bind mount 到了 /proc/27514/ns/uts    My PID is: 28788</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>验证新的 shell 是否与 <code>demo_uts_namespaces</code> 创建的子进程处于同一个 UTS namespace：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ hostname</span><br><span class="line">bizarro</span><br><span class="line">$ readlink /proc/27514/ns/uts</span><br><span class="line">uts:[4026532338]</span><br><span class="line">$ readlink /proc/$$/ns/uts      # $$ 表示当前 shell 的 PID</span><br><span class="line">uts:[4026532338]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在早期的内核版本中，不能使用 <code>setns()</code> 来加入 mount namespace、PID namespace 和 user namespace，从 3.8 版本的内核开始，<code>setns()</code> 支持加入所有的 namespace。</p>
+<p>util-linux 包里提供了<code>nsenter</code> 命令，其提供了一种方式将新创建的进程运行在指定的 namespace 里面，它的实现很简单，就是通过命令行（-t 参数）指定要进入的 namespace 的符号链接，然后利用 <code>setns()</code> 将当前的进程放到指定的 namespace 里面，再调用 <code>clone()</code> 运行指定的执行文件。我们可以用 <code>strace</code> 来看看它的运行情况：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># strace nsenter -t 27242 -i -m -n -p -u /bin/bash</span><br><span class="line">execve(&quot;/usr/bin/nsenter&quot;, [&quot;nsenter&quot;, &quot;-t&quot;, &quot;27242&quot;, &quot;-i&quot;, &quot;-m&quot;, &quot;-n&quot;, &quot;-p&quot;, &quot;-u&quot;, &quot;/bin/bash&quot;], [/* 21 vars */]) = 0</span><br><span class="line">…………</span><br><span class="line">…………</span><br><span class="line">open(&quot;/proc/27242/ns/ipc&quot;, O_RDONLY)    = 3</span><br><span class="line">open(&quot;/proc/27242/ns/uts&quot;, O_RDONLY)    = 4</span><br><span class="line">open(&quot;/proc/27242/ns/net&quot;, O_RDONLY)    = 5</span><br><span class="line">open(&quot;/proc/27242/ns/pid&quot;, O_RDONLY)    = 6</span><br><span class="line">open(&quot;/proc/27242/ns/mnt&quot;, O_RDONLY)    = 7</span><br><span class="line">setns(3, CLONE_NEWIPC)                  = 0</span><br><span class="line">close(3)                                = 0</span><br><span class="line">setns(4, CLONE_NEWUTS)                  = 0</span><br><span class="line">close(4)                                = 0</span><br><span class="line">setns(5, CLONE_NEWNET)                  = 0</span><br><span class="line">close(5)                                = 0</span><br><span class="line">setns(6, CLONE_NEWPID)                  = 0</span><br><span class="line">close(6)                                = 0</span><br><span class="line">setns(7, CLONE_NEWNS)                   = 0</span><br><span class="line">close(7)                                = 0</span><br><span class="line">clone(child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f4deb1faad0) = 4968</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-unshare"><a href="#4-unshare" class="headerlink" title="4. unshare()"></a>4. unshare()</h2><hr>
+<p>最后一个要介绍的系统调用是 <code>unshare()</code>，它的原型如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int unshare(int flags);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>unshare()</code> 与 <code>clone()</code> 类似，但它运行在原先的进程上，不需要创建一个新进程，即：先通过指定的 flags 参数 <code>CLONE_NEW*</code> 创建一个新的 namespace，然后将调用者加入该 namespace。最后实现的效果其实就是将调用者从当前的 namespace 分离，然后加入一个新的 namespace。</p>
+<p>Linux 中自带的 <code>unshare</code> 命令，就是通过 unshare() 系统调用实现的，使用方法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ unshare [options] program [arguments]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>options</code> 指定要创建的 namespace 类型。</p>
+<p>unshare 命令的主要实现如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/* 通过提供的命令行参数初始化 &#x27;flags&#x27; */</span><br><span class="line">unshare(flags);</span><br><span class="line">/* Now execute &#x27;program&#x27; with &#x27;arguments&#x27;; &#x27;optind&#x27; is the index</span><br><span class="line">   of the next command-line argument after options */</span><br><span class="line">execvp(argv[optind], &amp;argv[optind]);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>unshare 命令的完整实现如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">/* unshare.c</span><br><span class="line">   Copyright 2013, Michael Kerrisk   Licensed under GNU General Public License v2 or later</span><br><span class="line">   A simple implementation of the unshare(1) command: unshare   namespaces and execute a command.</span><br><span class="line">*/</span><br><span class="line">#define _GNU_SOURCE</span><br><span class="line">#include &lt;sched.h&gt;</span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">/* A simple error-handling function: print an error message based</span><br><span class="line">   on the value in &#x27;errno&#x27; and terminate the calling process */</span><br><span class="line">#define errExit(msg)                \</span><br><span class="line">	do                          \</span><br><span class="line">	&#123;                           \</span><br><span class="line">		perror(msg);        \</span><br><span class="line">		exit(EXIT_FAILURE); \</span><br><span class="line">	&#125; while (0)</span><br><span class="line">static void</span><br><span class="line">usage(char *pname)</span><br><span class="line">&#123;</span><br><span class="line">	fprintf(stderr, &quot;Usage: %s [options] program [arg...]\n&quot;, pname);</span><br><span class="line">	fprintf(stderr, &quot;Options can be:\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;    -i   unshare IPC namespace\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;    -m   unshare mount namespace\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;    -n   unshare network namespace\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;    -p   unshare PID namespace\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;    -u   unshare UTS namespace\n&quot;);</span><br><span class="line">	fprintf(stderr, &quot;    -U   unshare user namespace\n&quot;);</span><br><span class="line">	exit(EXIT_FAILURE);</span><br><span class="line">&#125;</span><br><span class="line">int main(int argc, char *argv[])</span><br><span class="line">&#123;</span><br><span class="line">	int flags, opt;</span><br><span class="line">	flags = 0;</span><br><span class="line">	while ((opt = getopt(argc, argv, &quot;imnpuU&quot;)) != -1)</span><br><span class="line">	&#123;</span><br><span class="line">		switch (opt)</span><br><span class="line">		&#123;</span><br><span class="line">		case &#x27;i&#x27;:</span><br><span class="line">			flags |= CLONE_NEWIPC;</span><br><span class="line">			break;</span><br><span class="line">		case &#x27;m&#x27;:</span><br><span class="line">			flags |= CLONE_NEWNS;</span><br><span class="line">			break;</span><br><span class="line">		case &#x27;n&#x27;:</span><br><span class="line">			flags |= CLONE_NEWNET;</span><br><span class="line">			break;</span><br><span class="line">		case &#x27;p&#x27;:</span><br><span class="line">			flags |= CLONE_NEWPID;</span><br><span class="line">			break;</span><br><span class="line">		case &#x27;u&#x27;:</span><br><span class="line">			flags |= CLONE_NEWUTS;</span><br><span class="line">			break;</span><br><span class="line">		case &#x27;U&#x27;:</span><br><span class="line">			flags |= CLONE_NEWUSER;</span><br><span class="line">			break;</span><br><span class="line">		default:</span><br><span class="line">			usage(argv[0]);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	if (optind &gt;= argc)</span><br><span class="line">		usage(argv[0]);</span><br><span class="line">	if (unshare(flags) == -1)</span><br><span class="line">		errExit(&quot;unshare&quot;);</span><br><span class="line">	execvp(argv[optind], &amp;argv[optind]);</span><br><span class="line">	errExit(&quot;execvp&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>下面我们执行 <code>unshare.c</code> 程序在一个新的 mount namespace 中执行 shell：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ echo $$                             # 显示当前 shell 的 PID</span><br><span class="line">8490</span><br><span class="line">$ cat /proc/8490/mounts | grep mq     # 显示当前 namespace 中的某个挂载点</span><br><span class="line">mqueue /dev/mqueue mqueue rw,seclabel,relatime 0 0</span><br><span class="line">$ readlink /proc/8490/ns/mnt          # 显示当前 namespace 的 ID </span><br><span class="line">mnt:[4026531840]</span><br><span class="line">$ ./unshare -m /bin/bash              # 在新创建的 mount namespace 中执行新的 shell</span><br><span class="line">$ readlink /proc/$$/ns/mnt            # 显示新 namespace 的 ID </span><br><span class="line">mnt:[4026532325]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>对比两个 <code>readlink</code> 命令的输出，可以知道两个shell 处于不同的 mount namespace 中。改变新的 namespace 中的某个挂载点，然后观察两个 namespace 的挂载点是否有变化：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ umount /dev/mqueue                  # 移除新 namespace 中的挂载点</span><br><span class="line">$ cat /proc/$$/mounts | grep mq       # 检查是否生效</span><br><span class="line">$ cat /proc/8490/mounts | grep mq     # 查看原来的 namespace 中的挂载点是否依然存在?</span><br><span class="line">mqueue /dev/mqueue mqueue rw,seclabel,relatime 0 0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>可以看出，新的 namespace 中的挂载点 <code>/dev/mqueue</code> 已经消失了，但在原来的 namespace 中依然存在。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Namespace/" rel="tag"><i class="fa fa-tag"></i> Namespace</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/06/16/docker%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%BC%8F/" rel="next" title="docker网络模式">
+                <i class="fa fa-chevron-left"></i> docker网络模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/06/18/brctl%E5%91%BD%E4%BB%A4%E7%AE%80%E4%BB%8B/" rel="prev" title="brctl命令简介">
+                brctl命令简介 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mashuyu.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+                <a href="/archives">
+                  <span class="site-state-item-count">199</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">123</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/rma-shuyu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1004129700@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-clone"><span class="nav-number">1.</span> <span class="nav-text">1. clone()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-proc-%E6%96%87%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">2. proc 文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-setns"><span class="nav-number">3.</span> <span class="nav-text">3. setns()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-unshare"><span class="nav-number">4.</span> <span class="nav-text">4. unshare()</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rma-shuyu</span>
+
+  
+</div>
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共221.7k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'D2xdJ1c0QWBntVsHIVyVXtSZ-gzGzoHsz',
+        appKey: 'UGFWDjX2oTi2dIoWPAyisa9S',
+        placeholder: '请在此输入您的留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>
