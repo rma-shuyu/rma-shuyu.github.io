@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function () {
+        if ('') {
+            if (prompt('请输入文章密码') !== '') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://rma-shuyu.github.io/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="libvirt," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="rma's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="libvirtd daemon初始化流程比较复杂，本文对代码流程进行初步分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="libvirtd初始化流程">
+<meta property="og:url" content="https://rma-shuyu.github.io/2022/07/04/libvirtd%E5%88%9D%E5%A7%8B%E5%8C%96%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:site_name" content="rma&#39;s Blog">
+<meta property="og:description" content="libvirtd daemon初始化流程比较复杂，本文对代码流程进行初步分析。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-07-04T11:55:44.000Z">
+<meta property="article:modified_time" content="2023-10-21T07:21:41.637Z">
+<meta property="article:author" content="rma-shuyu">
+<meta property="article:tag" content="libvirt">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rma-shuyu.github.io/2022/07/04/libvirtd初始化流程/"/>
+
+
+
+
+
+  <title>libvirtd初始化流程 | rma's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a target="_blank" rel="noopener" href="https://github.com/rma-shuyu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">rma's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay hungry, stay foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2022/07/04/libvirtd%E5%88%9D%E5%A7%8B%E5%8C%96%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">libvirtd初始化流程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-04T19:55:44+08:00">
+                2022-07-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/LIBVIRT/" itemprop="url" rel="index">
+                    <span itemprop="name">LIBVIRT</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2022/07/04/libvirtd%E5%88%9D%E5%A7%8B%E5%8C%96%E6%B5%81%E7%A8%8B/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2022/07/04/libvirtd%E5%88%9D%E5%A7%8B%E5%8C%96%E6%B5%81%E7%A8%8B/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>libvirtd daemon初始化流程比较复杂，本文对代码流程进行初步分析。</p>
+<span id="more"></span>
+<h2 id="总体代码流程"><a href="#总体代码流程" class="headerlink" title="总体代码流程"></a>总体代码流程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">main&#123;remote/remote_deamon.c&#125;</span><br><span class="line">	|</span><br><span class="line">	|--daemonConfigLoadFile&#123;读取libvirtd.conf配置项&#125;</span><br><span class="line">	|</span><br><span class="line">	|--Decided on pid file path &#x27;/usr/local/var/run/libvirtd.pid&#x27;</span><br><span class="line">	|</span><br><span class="line">	|--virDaemonUnixSocketPaths&#123;获取unix对应的socket文件名字，例如：/usr/local/var/run/libvirt/libvirt-sock&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virDaemonForkIntoBackground&#123;如果设置-d参数的话，将启动的libvirtd进程变成后台的daemon进程&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virPidFileAcquirePath&#123;&#x27;/usr/local/var/run/libvirtd.pid&#x27;&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virNetDaemonNew&#123;生成的是daemon变量&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virNetServerNew&#123;初始化的是libvirtd server变量，里面是一堆rpc-worker的线程&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virNetDaemonAddServer&#123;把server变量放进daemon中的hash表中&#125;</span><br><span class="line">	|</span><br><span class="line">	|--daemonSetupSignals&#123;daemon的一些回调函数注册，例如SIGINT，SIGQUIT，SIGTERM，SIGHUP&#125;</span><br><span class="line">	|</span><br><span class="line">	|--daemonSetupNetworking&#123;前面已经启动线程，这里对socket进行监听和消息接收函数注册&#125;</span><br><span class="line">	|</span><br><span class="line">	|--daemonInitialize&#123;动态库添加，例如qemu驱动&#125;</span><br><span class="line">	|</span><br><span class="line">	|--daemonStateInit&#123;驱动初始化，例如qemu驱动的初始化&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virNetServerProgramNew</span><br><span class="line">	|</span><br><span class="line">	|--virNetServerAddProgram(srv, qemuProgram)</span><br><span class="line">	|</span><br><span class="line">	|--virNetDaemonRun&#123;Run event loop&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="各个流程代码分析"><a href="#各个流程代码分析" class="headerlink" title="各个流程代码分析"></a>各个流程代码分析</h2><h3 id="子进程创建"><a href="#子进程创建" class="headerlink" title="子进程创建"></a>子进程创建</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">virDaemonForkIntoBackground&#123;如果启动libvirtd进程的时候，以-d启动，则会创建一个子进程来启动，之后在后台运行，否则libvirtd进程就会一直卡在终端界面上&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virPipeQuiet(statuspipe)</span><br><span class="line">	|</span><br><span class="line">	|--fork()</span><br><span class="line">		|</span><br><span class="line">		|--child</span><br><span class="line">		|	|</span><br><span class="line">		|	|--VIR_FORCE_CLOSE(statuspipe[0])&#123;关闭读通道&#125;</span><br><span class="line">		|	|</span><br><span class="line">		|	|--setsid()&#123;为啥在这里设置，child后面就会关掉，为啥不在grand child中设置呢？&#125;</span><br><span class="line">		|	|</span><br><span class="line">		|	|--fork()&#123;继续创建进程&#125;</span><br><span class="line">		|		|</span><br><span class="line">		|		|--grand</span><br><span class="line">		|		|	|</span><br><span class="line">		|		|	|-statuspipe[1]&#123;返回写通道，用grand child作为daemon进程，如果初始化成功，则会向管道中写数据&#125;</span><br><span class="line">		|		|</span><br><span class="line">		|		|--child</span><br><span class="line">		|			|</span><br><span class="line">		|			|--_exit(EXIT_SUCCESS)&#123;child进程退出，但是是不是没有清理资源statuspipe[1]？&#125;</span><br><span class="line">		|</span><br><span class="line">		|--parent</span><br><span class="line">			|</span><br><span class="line">			|--VIR_FORCE_CLOSE(statuspipe[1])&#123;关闭写通道&#125;</span><br><span class="line">			|</span><br><span class="line">			|--waitpid(pid, &amp;exitstatus, 0)&#123;等到child退出&#125;</span><br><span class="line">			|</span><br><span class="line">			|--saferead(statuspipe[0], &amp;status, 1)&#123;grand child后面初始化成功之后会发送消息，但是这个是非阻塞的，难道会等待吗？&#125;</span><br><span class="line">			|</span><br><span class="line">			|--VIR_FORCE_CLOSE(statuspipe[0])&#123;关闭读通道&#125;</span><br><span class="line">			|</span><br><span class="line">			|--_exit(EXIT_SUCCESS)&#123;退出父进程&#125;</span><br><span class="line"></span><br><span class="line">virPidFileAcquirePath的目的是为了防止重复运行libvirtd进程；在该函数中会设置独占锁给pid_file；如果失败，则说明已经有libvirtd运行了，反之则将pid写入到pid_file中(pid_file=/usr/local/var/run/libvirtd.pid)</span><br><span class="line">virPidFileAcquirePath</span><br><span class="line">	|</span><br><span class="line">	|--open(path, O_WRONLY|O_CREAT, 0644)</span><br><span class="line">	|</span><br><span class="line">	|--&#123;Ensuring run dir &#x27;/usr/local/var/run/libvirt&#x27; exists&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="daemon对象创建"><a href="#daemon对象创建" class="headerlink" title="daemon对象创建"></a>daemon对象创建</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">virNetDaemonNew</span><br><span class="line">	|</span><br><span class="line">	|--virNetDaemonInitialize</span><br><span class="line">	|</span><br><span class="line">	|--dmn = virObjectLockableNew&#123;生成一个virNetDaemon对象，后续对该对象中的各个成员变量进行初始化&#125;</span><br><span class="line">	|</span><br><span class="line">	|--dmn-&gt;servers = virHashNew(virObjectFreeHashData)&#123;这里分配HASH表，并对哈希表进行初始化&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virEventRegisterDefaultImpl</span><br><span class="line">		|</span><br><span class="line">		|--virInitialize&#123;所调用的函数只执行一次，pthread_once&#125;</span><br><span class="line">		|	|</span><br><span class="line">		|	|--virGlobalInit&#123;相应的driver注册&#125;</span><br><span class="line">		|		|</span><br><span class="line">		|		|--remoteRegister&#123;这个函数为啥没有日志打印？难道没有执行&#125;</span><br><span class="line">		|			|</span><br><span class="line">		|			|--virRegisterConnectDriver(&amp;connect_driver)</span><br><span class="line">		|			|</span><br><span class="line">		|			|--virRegisterStateDriver(&amp;state_driver)</span><br><span class="line">		|</span><br><span class="line">		|--virResetLastError</span><br><span class="line">		|</span><br><span class="line">		|--virEventGLibRegister</span><br><span class="line">			|</span><br><span class="line">			|--virEventGLibRegisterOnce&#123;函数只执行一次&#125;</span><br><span class="line">				|</span><br><span class="line">				|--virEventRegisterImpl&#123;这个是event事件相关函数句柄注册&#125;</span><br><span class="line">					|</span><br><span class="line">					|--removeHandleImpl=virEventGLibHandleRemove</span><br><span class="line">					|--updateHandleImpl=virEventGLibHandleUpdate</span><br><span class="line">					|--addHandleImpl=virEventGLibHandleAdd</span><br><span class="line">						|</span><br><span class="line">						|--GSource</span><br><span class="line">						|--g_source_new</span><br><span class="line">						|--g_source_add_poll</span><br><span class="line">						|--g_source_set_callback</span><br><span class="line">						|--g_source_attach</span><br></pre></td></tr></table></figure>
+
+<h3 id="virNetServerNew创建"><a href="#virNetServerNew创建" class="headerlink" title="virNetServerNew创建"></a>virNetServerNew创建</h3><p>这个就是初始化一组worker pool,等待信号量，然后再调用消息处理函数处理具体的消息</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">virNetServerNew&#123;这个是rpc-worker服务端的初始化函数&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virObjectLockableNew(virNetServerClass)&#123;生成一个virNetServerPtr对象指针&#125;</span><br><span class="line">	|</span><br><span class="line">	|--srv-&gt;workers = virThreadPoolNewFull(virNetServerHandleJob, &quot;rpc-worker&quot;)</span><br><span class="line">	|	|</span><br><span class="line">	|	|--分配virThreadPoolPtr pool</span><br><span class="line">	|	|</span><br><span class="line">	|	|--pool-&gt;jobFunc = func=virNetServerHandleJob&#123;设置pool中的函数句柄&#125;</span><br><span class="line">	|	|</span><br><span class="line">	|	|--pool-&gt;jobName = name&#123;设置pool中的名字&#125;</span><br><span class="line">	|	|</span><br><span class="line">	|	|--pool-&gt;jobOpaque=server&#123;将server变量指针传入到pool的jobopaque指针变量中&#125;</span><br><span class="line">	|	|</span><br><span class="line">	|	|--virThreadPoolExpand(pool, minWorkers)&#123;如函数名称：线程池扩展函数，就是for循环创建多个线程池&#125;</span><br><span class="line">	|	|	|</span><br><span class="line">	|	|	|--data-&gt;pool = pool</span><br><span class="line">	|	|	|</span><br><span class="line">	|	|	|--virThreadCreateFull(&amp;(*workers)[i],virThreadPoolWorker,data)&#123;创建minWorkers个线程&#125;</span><br><span class="line">	|	|		|</span><br><span class="line">	|	|		|--args-&gt;func=virThreadPoolWorker</span><br><span class="line">	|	|		|</span><br><span class="line">	|	|		|--args-&gt;opaque=data</span><br><span class="line">	|	|		|</span><br><span class="line">	|	|		|--pthread_create(&amp;thread-&gt;thread, &amp;attr, virThreadHelper, args)</span><br><span class="line">	|	|			|</span><br><span class="line">	|	|			|--virThreadHelper(args)&#123;这是最终的线程函数&#125;</span><br><span class="line">	|	|				|</span><br><span class="line">	|	|				|--local = *args</span><br><span class="line">	|	|				|</span><br><span class="line">	|	|				|-local.func(local.opaque)&lt;==&gt;virThreadPoolWorker(data)</span><br><span class="line">	|	|					|</span><br><span class="line">	|	|					|--virThreadPoolWorker&#123;这个是线程的最终执行函数，里面有while循环&#125;</span><br><span class="line">	|	|						|</span><br><span class="line">	|	|						|-virMutexLock(&amp;pool-&gt;mutex)&#123;在进入while循环之前先获取锁&#125;</span><br><span class="line">	|	|						|</span><br><span class="line">	|	|						|--virCondWait(cond, &amp;pool-&gt;mutex)&#123;进入while循环之后，先解锁把cond放入等待队列中(原子动作)，获取信号之后，再加锁&#125;</span><br><span class="line">	|	|						|</span><br><span class="line">	|	|						|--pool-&gt;jobQueueDepth--&#123;队列深度减一&#125;</span><br><span class="line">	|	|						|--virMutexUnlock(&amp;pool-&gt;mutex)&#123;解锁&#125;</span><br><span class="line">	|	|						|--(pool-&gt;jobFunc)(job-&gt;data, pool-&gt;jobOpaque)&lt;===&gt;virNetServerHandleJob(server)&#123;这里是处理具体消息的函数&#125;</span><br><span class="line">	|	|						|--virMutexLock(&amp;pool-&gt;mutex)&#123;加锁，进入下一次等待&#125;</span><br><span class="line">	|	|</span><br><span class="line">	|	|--return pool&#123;server变量中的worker就是pool，即线程池&#125;</span><br><span class="line">	|</span><br><span class="line">	|--继续初始化server，这里的pool是server中的变量，同时也是线程中的变量，两边都可以使用</span><br></pre></td></tr></table></figure>
+
+<h3 id="服务端创建"><a href="#服务端创建" class="headerlink" title="服务端创建"></a>服务端创建</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">daemonSetupNetworking(srv, srvAdm,config,sock_file)</span><br><span class="line">	|</span><br><span class="line">	|--virNetServerAddServiceActivation&#123;No activation FDs present，这个函数没啥作用，直接返回了&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virNetServerAddServiceUNIX&#123;针对的unix的*.socket文件&#125;&#123;这里生成的是virNetServerService对象&#125;</span><br><span class="line">	|	|</span><br><span class="line">	|	|--virNetServerAddServiceActivation</span><br><span class="line">	|	|</span><br><span class="line">	|	|--virNetServerServiceNewUNIX</span><br><span class="line">	|	|	|</span><br><span class="line">	|	|	|--virNetSocketNewListenUNIX&#123;Creating new UNIX server path=&#x27;/usr/local/var/run/libvirt/libvirt-sock&#x27;&#125;</span><br><span class="line">	|	|	|	|</span><br><span class="line">	|	|	|	|--virNetSocketNew&#123;生成一个监听的套接字&#125;</span><br><span class="line">	|	|	|</span><br><span class="line">	|	|	|--virNetServerServiceNewSocket(&amp;sock)&#123;得到virNetServerServicePtr变量&#125;</span><br><span class="line">	|	|		|</span><br><span class="line">	|	|		|--virNetSocketListen(svc-&gt;socks[i], max_queued_clients)&#123;对该socket的fd进行监听&#125;</span><br><span class="line">	|	|		|</span><br><span class="line">	|	|		|--virNetSocketAddIOCallback(svc-&gt;socks[i],virNetServerServiceAccept)&#123;循环调用&#125;</span><br><span class="line">	|	|		|	|</span><br><span class="line">	|	|		|	|--sock-&gt;watch = virEventAddHandle(sock-&gt;fd,virNetSocketEventHandle)</span><br><span class="line">	|	|		|	|	|</span><br><span class="line">	|	|		|	|	|--virNetSocketEventHandle&#123;这里进行event—loop监听，并注册监听函数；添加之后，并没直接进入event-loop&#125;</span><br><span class="line">	|	|		|	|		|</span><br><span class="line">	|	|		|	|		|--virNetServerServiceAccept&#123;如果有客户端连接service，则会调用该函数&#125;</span><br><span class="line">	|	|		|	|</span><br><span class="line">	|	|		|	|--sock-&gt;func = virNetServerServiceAccept&#123;server端处理消息的回调函数&#125;</span><br><span class="line">	|	|		|</span><br><span class="line">	|	|		|--将sock中的值赋值给virNetServerServicePtr变量并返回</span><br><span class="line">	|	|</span><br><span class="line">	|	|--virNetServerAddService&#123;将virNetServerServicePtr变量放进virNetServerPtr变量中，virNetServer对象包含多个virNetServerService对象&#125;</span><br><span class="line">	|		|</span><br><span class="line">	|		|--virNetServerServiceSetDispatcher</span><br><span class="line">	|			|</span><br><span class="line">	|			|--svc-&gt;dispatchFunc=virNetServerDispatchNewClient&#123;注册客户端的回调函数，用于处于从Unix得到的消息&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virNetServerAddServiceTCP(针对的是tcp的socket文件)</span><br></pre></td></tr></table></figure>
+
+<p>后续如果socket套接字接收到client端发送的连接之后，经过glib的event-loop调用，会进入到此函数中创建serverclient对象：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">virNetServerServiceAccept&#123;server端如果接收到客户端的连接，则会调用这个回调函数进行处理创建客户端对象&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virNetSocketAccept(sock, &amp;clientsock)</span><br><span class="line">	|	|</span><br><span class="line">	|	|--fd = accept(sock-&gt;fd, &amp;remoteAddr.data.sa, &amp;remoteAddr.len)</span><br><span class="line">	|	|</span><br><span class="line">	|	|--*clientsock = virNetSocketNew(&amp;localAddr,&amp;remoteAddr, true, fd,)&#123;这里根据得到的客户端创建新的套接字&#125;</span><br><span class="line">	|</span><br><span class="line">	|--svc-&gt;dispatchFunc(svc, clientsock, svc-&gt;dispatchOpaque)</span><br><span class="line">		|</span><br><span class="line">		|--virNetServerDispatchNewClient&#123;这个正是上面注册的回调函数&#125;</span><br><span class="line">			|</span><br><span class="line">			|--virNetServerClientNew&#123;分配_virNetServerClient对象，用于接收socket传来的消息&#125;</span><br><span class="line">			|</span><br><span class="line">			|--virNetServerAddClient(srv, client)</span><br><span class="line">				|</span><br><span class="line">				|--virNetServerClientInit</span><br><span class="line">				|	|</span><br><span class="line">				|	|--virNetServerClientRegisterEvent</span><br><span class="line">				|		|</span><br><span class="line">				|		|--virNetServerClientCalculateHandleMode</span><br><span class="line">				|		|</span><br><span class="line">				|		|--virNetSocketAddIOCallback(client-&gt;sock, virNetServerClientDispatchEvent)</span><br><span class="line">				|			|</span><br><span class="line">				|			|--virEventAddHandle(virNetSocketEventHandle)&#123;添加event-loop事件，对客户端的连接进行监听&#125;</span><br><span class="line">				|</span><br><span class="line">				|--srv-&gt;clients[srv-&gt;nclients-1] = virObjectRef(client)&#123;这里是每来一个client，则就在server中的client指针中新增一个client，释放是在后面的while循环中&#125;</span><br><span class="line">				|</span><br><span class="line">				|--virNetServerClientSetDispatcher(client, virNetServerDispatchNewMessage, srv)</span><br><span class="line">				|	|</span><br><span class="line">				|	|--client-&gt;dispatchFunc=virNetServerDispatchNewMessage&#123;server=0x55882b100880 client=0x55882b1112d0 message=0x55882b114690&#125;</span><br><span class="line">				|</span><br><span class="line">				|--virNetServerClientInitKeepAlive(client, srv-&gt;keepaliveInterval, srv-&gt;keepaliveCount)&#123;设置客户端与服务端之间的连接超时时间&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>client如果向该socket发送消息，则会进入到event事件中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">virNetSocketEventHandle</span><br><span class="line">	|</span><br><span class="line">	|--virNetServerClientDispatchEvent</span><br><span class="line">		|</span><br><span class="line">		|--virNetServerClientDispatchWrite&#123;写&#125;</span><br><span class="line">		|</span><br><span class="line">		|--msg = virNetServerClientDispatchRead(client)&#123;读取消息&#125;</span><br><span class="line">		|</span><br><span class="line">		|--virNetServerClientDispatchMessage(client, msg)</span><br><span class="line">			|</span><br><span class="line">			|--client-&gt;dispatchFunc(client, msg, client-&gt;dispatchOpaque)</span><br><span class="line">				|</span><br><span class="line">				|--virNetServerDispatchNewMessage</span><br><span class="line">					|</span><br><span class="line">					|--virThreadPoolSendJob&#123;发送信号量，调用线程池去处理&#125;</span><br><span class="line">					|</span><br><span class="line">					|--进入到另外一个线程virNetServerHandleJob&#123;server=0x55882b100880 client=0x55882b1112d0 message=0x55882b114690 prog=0x55882b109c10&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>总结：<br>一条消息是如何被处理的？<br>1. 在libvirtd初始化的时候，会创建一个worker-pool(线程池)，在线程池中会等待信号量，如果得到信号量则会调用消息处理函数，进行真正的消息处理；<br>2. 但是谁发送的信号量呢？这个是客户端发来的消息处理的。<br>    在初始化的时候，会针对libvirt.sock文件创建一个监听事件，如果客户端连接这个套接字文件之后，则会调用监听事件注册的回调函数。<br>3. 2中注册的回调函数，会重新建立一个客户端和服务端的连接用于接收客户端发来的消息，并对该连接(socket)进行监听，并注册监听事件。<br>4. 如果客户端发送来消息，则会调用3中注册的事件处理函数，读取socket中的消息，并发送信号量调用1中的worker-pool中的线程处理函数。<br>5. 因为线程处理进程是多个的，因此不会阻塞会并发运行。<br>6. 对于每一个客户端的连接都会新生成一个serverclient对象，并对该对象中的socket进行监听。</p>
+<h3 id="驱动获取"><a href="#驱动获取" class="headerlink" title="驱动获取"></a>驱动获取</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">daemonInitialize</span><br><span class="line">	|</span><br><span class="line">	|--virDriverLoadModule(&quot;network&quot;, &quot;networkRegister&quot;, false)</span><br><span class="line">	|</span><br><span class="line">	|--***</span><br><span class="line">	|</span><br><span class="line">	|--virDriverLoadModule(&quot;qemu&quot;, &quot;qemuRegister&quot;, false)&#123;加载qemu驱动&#125;</span><br><span class="line">		|</span><br><span class="line">		|--virFileFindResourceFull&#123;path=/usr/local/lib/libvirt/connection-driver/libvirt_driver_qemu.so&#125;</span><br><span class="line">		|</span><br><span class="line">		|--virModuleLoad(path,&quot;qemuRegister&quot;,false)</span><br><span class="line">			|</span><br><span class="line">			|--handle=virModuleLoadFile(path)</span><br><span class="line">			|</span><br><span class="line">			|--virModuleLoadFunc(&quot;qemuRegister&quot;)</span><br><span class="line">			|	|</span><br><span class="line">			|	|--regsym = dlsym(handle, &quot;qemuRegister&quot;)</span><br><span class="line">			|</span><br><span class="line">			|--(*regsym)()-&gt;qemuRegister()</span><br><span class="line">				|</span><br><span class="line">				|--virRegisterConnectDriver</span><br><span class="line">				|	|</span><br><span class="line">				|	|--virConnectDriverTab[virConnectDriverTabCount]=qemuConnectDriver&#123;对应的函数句柄&#125;</span><br><span class="line">				|</span><br><span class="line">				|--virRegisterStateDriver</span><br><span class="line">					|</span><br><span class="line">					|--virStateDriverTab[virStateDriverTabCount]=qemuStateDriver&#123;qemu驱动的初始化和终止函数&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="驱动初始化"><a href="#驱动初始化" class="headerlink" title="驱动初始化"></a>驱动初始化</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">daemonStateInit&#123;Initialize drivers &amp; then start accepting new clients from network&#125;</span><br><span class="line">	|</span><br><span class="line">	|--virThreadCreateFull&#123;thread-name=&quot;daemon-init&quot;&#125;</span><br><span class="line">		|</span><br><span class="line">		|--daemonRunStateInit</span><br><span class="line">			|</span><br><span class="line">			|--virIdentitySetCurrent</span><br><span class="line">			|</span><br><span class="line">			|--daemonInhibitCallback</span><br><span class="line">			|</span><br><span class="line">			|-virStateInitialize</span><br><span class="line">				|</span><br><span class="line">				|--virInitialize&#123;只初始化一次&#125;</span><br><span class="line">				|	|</span><br><span class="line">				|	|--virGlobalInit</span><br><span class="line">				|		|</span><br><span class="line">				|		|--testRegister</span><br><span class="line">				|		|</span><br><span class="line">				|		|--openvzRegister</span><br><span class="line">				|		|</span><br><span class="line">				|		|--hypervRegister</span><br><span class="line">				|		|</span><br><span class="line">				|		|--remoteRegister</span><br><span class="line">				|</span><br><span class="line">				|--virStateDriverTab[i]-&gt;stateInitialize&#123;这里是一个for循环，初始化之前注册的driver&#125;</span><br><span class="line">				|	|</span><br><span class="line">				|	|--qemuStateInitialize&#123;qemu_driver.c&#125;&#123;因为前面已经加载了对应的驱动函数&#125;</span><br><span class="line">				|</span><br><span class="line">				|--driversInitialized = true&#123;这里代表驱动的初始化已经完成&#125;</span><br><span class="line">				|</span><br><span class="line">				|--virNetDaemonUpdateServices(dmn, true)&#123;Only now accept clients from network&#125;</span><br><span class="line">					|</span><br><span class="line">					|--virHashForEach(dmn-&gt;servers, daemonServerUpdateServices, &amp;enabled)</span><br><span class="line">						|</span><br><span class="line">						|--daemonServerUpdateServices</span><br><span class="line">							|</span><br><span class="line">							|--virNetServerUpdateServices(srv, *enable)</span><br></pre></td></tr></table></figure>
+
+<h3 id="event事件运行"><a href="#event事件运行" class="headerlink" title="event事件运行"></a>event事件运行</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">virNetDaemonRun</span><br><span class="line">	|</span><br><span class="line">	|--进入while(1)循环</span><br><span class="line">		|</span><br><span class="line">		|--virEventRunDefaultImpl&#123;这里是运行poll去检测eventloop.handles中的每个描述符的事件，如果有事件发生就会调用回调函数去处理事件，但是未看出来&#125;</span><br><span class="line">		|	|</span><br><span class="line">		|	|--virEventGLibRunOnce</span><br><span class="line">		|		|</span><br><span class="line">		|		|--g_main_context_iteration(NULL, TRUE)&#123;该函数可以完成GMainContext的单次迭代&#125;</span><br><span class="line">		|</span><br><span class="line">		|</span><br><span class="line">		|--virHashForEach(dmn-&gt;servers, daemonServerProcessClients, NULL)&#123;这里处理客户端，因为libvirtd也需要连接其他的libvirtd&#125;</span><br><span class="line">		|	|</span><br><span class="line">		|	|--for循环调用</span><br><span class="line">		|		|</span><br><span class="line">		|		|--daemonServerProcessClients(servers[i]-&gt;payload, servers[i]-&gt;name)</span><br><span class="line">		|			|</span><br><span class="line">		|			|--virNetServerProcessClients</span><br><span class="line">		|				|</span><br><span class="line">		|				|--判断client-&gt;wantClose 是否为true，是，则会主动关闭client</span><br><span class="line">		|</span><br><span class="line">		|--dmn-&gt;quit&#123;判断是否是退出&#125;</span><br><span class="line">			|</span><br><span class="line">			|--virThreadCreateFull(&amp;shutdownThread, true, daemonShutdownWait，&quot;daemon-shutdown&quot;)</span><br><span class="line">				|</span><br><span class="line">				|--daemonShutdownWait&#123;创建新的&quot;daemon-shutdown&quot;线程去处理资源&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/libvirt/" rel="tag"><i class="fa fa-tag"></i> libvirt</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/07/03/libvirt%E6%97%A5%E5%BF%97%E9%85%8D%E7%BD%AE/" rel="next" title="libvirt日志配置">
+                <i class="fa fa-chevron-left"></i> libvirt日志配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/07/05/libvirt%E6%96%B0%E5%A2%9E%E9%A9%B1%E5%8A%A8/" rel="prev" title="libvirt新增驱动">
+                libvirt新增驱动 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mashuyu.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+                <a href="/archives">
+                  <span class="site-state-item-count">210</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">131</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/rma-shuyu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1004129700@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E4%BD%93%E4%BB%A3%E7%A0%81%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">总体代码流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%84%E4%B8%AA%E6%B5%81%E7%A8%8B%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">各个流程代码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E8%BF%9B%E7%A8%8B%E5%88%9B%E5%BB%BA"><span class="nav-number">2.1.</span> <span class="nav-text">子进程创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#daemon%E5%AF%B9%E8%B1%A1%E5%88%9B%E5%BB%BA"><span class="nav-number">2.2.</span> <span class="nav-text">daemon对象创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#virNetServerNew%E5%88%9B%E5%BB%BA"><span class="nav-number">2.3.</span> <span class="nav-text">virNetServerNew创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%88%9B%E5%BB%BA"><span class="nav-number">2.4.</span> <span class="nav-text">服务端创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A9%B1%E5%8A%A8%E8%8E%B7%E5%8F%96"><span class="nav-number">2.5.</span> <span class="nav-text">驱动获取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A9%B1%E5%8A%A8%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.6.</span> <span class="nav-text">驱动初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#event%E4%BA%8B%E4%BB%B6%E8%BF%90%E8%A1%8C"><span class="nav-number">2.7.</span> <span class="nav-text">event事件运行</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rma-shuyu</span>
+
+  
+</div>
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共235.8k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'D2xdJ1c0QWBntVsHIVyVXtSZ-gzGzoHsz',
+        appKey: 'UGFWDjX2oTi2dIoWPAyisa9S',
+        placeholder: '请在此输入您的留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

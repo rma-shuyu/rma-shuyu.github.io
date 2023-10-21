@@ -112,7 +112,7 @@
 <meta property="og:image" content="https://rma-shuyu.github.io/2021/05/10/omitempty%E5%85%B3%E9%94%AE%E5%AD%97/4cd9ff01cf4568afd7712d2d5d2023d88c4746fa0ebcb6d3dd41a6be20744048.png">
 <meta property="og:image" content="https://rma-shuyu.github.io/2021/05/10/omitempty%E5%85%B3%E9%94%AE%E5%AD%97/ef7e859c46b3844078ad6c9800293e6b95a28ffabaa6f20fd9dfa09694841688.png">
 <meta property="article:published_time" content="2021-05-10T12:27:18.000Z">
-<meta property="article:modified_time" content="2023-01-27T12:06:26.921Z">
+<meta property="article:modified_time" content="2023-10-21T07:21:41.640Z">
 <meta property="article:author" content="rma-shuyu">
 <meta property="article:tag" content="go">
 <meta name="twitter:card" content="summary">
@@ -426,7 +426,7 @@
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> address <span class="keyword">struct</span> &#123;</span><br><span class="line">	Street  <span class="type">string</span> <span class="string">`json:&quot;street&quot;`</span></span><br><span class="line">	Ste     <span class="type">string</span> <span class="string">`json:&quot;suite,omitempty&quot;`</span></span><br><span class="line">	City    <span class="type">string</span> <span class="string">`json:&quot;city&quot;`</span></span><br><span class="line">	State   <span class="type">string</span> <span class="string">`json:&quot;state&quot;`</span></span><br><span class="line">	Zipcode <span class="type">string</span> <span class="string">`json:&quot;zipcode&quot;`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>得到预期结果：<br><img src="ef7e859c46b3844078ad6c9800293e6b95a28ffabaa6f20fd9dfa09694841688.png" alt="图 2">  </p>
 <h2 id="陷阱"><a href="#陷阱" class="headerlink" title="陷阱"></a>陷阱</h2><p>带来方便的同时，使用 omitempty 也有些小陷阱，一个是该关键字无法忽略掉嵌套结构体。还是拿地址类型说事，这回我们想要往地址结构体中加一个新 field 来表示经纬度，如果缺乏相关的数据，暂时可以忽略。新的结构体定义如下所示</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> address <span class="keyword">struct</span> &#123;</span><br><span class="line">	Street     <span class="type">string</span>     <span class="string">`json:&quot;street&quot;`</span></span><br><span class="line">	Ste        <span class="type">string</span>     <span class="string">`json:&quot;suite,omitempty&quot;`</span></span><br><span class="line">	City       <span class="type">string</span>     <span class="string">`json:&quot;city&quot;`</span></span><br><span class="line">	State      <span class="type">string</span>     <span class="string">`json:&quot;state&quot;`</span></span><br><span class="line">	Zipcode    <span class="type">string</span>     <span class="string">`json:&quot;zipcode&quot;`</span></span><br><span class="line">	Coordinate coordinate <span class="string">`json:&quot;coordinate,omitempty&quot;`</span></span><br><span class="line">&#125;</span><br><span class="line"> 你们BNBH美好关于jbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</span><br><span class="line"><span class="keyword">type</span> coordinate <span class="keyword">struct</span> &#123;</span><br><span class="line">	Lat <span class="type">float64</span> <span class="string">`json:&quot;latitude&quot;`</span></span><br><span class="line">	Lng <span class="type">float64</span> <span class="string">`json:&quot;longitude&quot;`</span></span><br><span class="line">&#125;bhnmjvjhgmbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> address <span class="keyword">struct</span> &#123;</span><br><span class="line">	Street     <span class="type">string</span>     <span class="string">`json:&quot;street&quot;`</span></span><br><span class="line">	Ste        <span class="type">string</span>     <span class="string">`json:&quot;suite,omitempty&quot;`</span></span><br><span class="line">	City       <span class="type">string</span>     <span class="string">`json:&quot;city&quot;`</span></span><br><span class="line">	State      <span class="type">string</span>     <span class="string">`json:&quot;state&quot;`</span></span><br><span class="line">	Zipcode    <span class="type">string</span>     <span class="string">`json:&quot;zipcode&quot;`</span></span><br><span class="line">	Coordinate coordinate <span class="string">`json:&quot;coordinate,omitempty&quot;`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> coordinate <span class="keyword">struct</span> &#123;</span><br><span class="line">	Lat <span class="type">float64</span> <span class="string">`json:&quot;latitude&quot;`</span></span><br><span class="line">	Lng <span class="type">float64</span> <span class="string">`json:&quot;longitude&quot;`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>读入原来的地址数据，处理后序列化输出，我们就会发现即使加上了 omitempty 关键字，输出的 json 还是带上了一个空的坐标信息</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;street&quot;</span>: <span class="string">&quot;200 Larkin St&quot;</span>,</span><br><span class="line">    <span class="string">&quot;city&quot;</span>: <span class="string">&quot;San Francisco&quot;</span>,</span><br><span class="line">    <span class="string">&quot;state&quot;</span>: <span class="string">&quot;CA&quot;</span>,</span><br><span class="line">    <span class="string">&quot;zipcode&quot;</span>: <span class="string">&quot;94102&quot;</span>,</span><br><span class="line">    <span class="string">&quot;coordinate&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;latitude&quot;</span>: <span class="number">0</span>,</span><br><span class="line">        <span class="string">&quot;longitude&quot;</span>: <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>为了达到我们想要的效果，可以把坐标定义为指针类型，这样 Golang 就能知道一个指针的“空值”是多少了，否则面对一个我们自定义的结构， Golang 是猜不出我们想要的空值的。于是有了如下的结构体定义</p>
@@ -566,7 +566,7 @@
             
               <div class="site-state-item site-state-posts">
                 <a href="/archives">
-                  <span class="site-state-item-count">199</span>
+                  <span class="site-state-item-count">210</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -577,7 +577,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">40</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -588,7 +588,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">123</span>
+                  <span class="site-state-item-count">131</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -689,7 +689,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共221.7k字</span>
+  <span class="post-count">博客全站共235.8k字</span>
 </div>
         
 

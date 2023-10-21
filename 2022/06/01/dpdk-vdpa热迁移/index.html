@@ -112,7 +112,7 @@
 <meta property="og:image" content="https://rma-shuyu.github.io/2022/06/01/dpdk-vdpa%E7%83%AD%E8%BF%81%E7%A7%BB/0734ac154de106c235477400aa1840b92837e72d71524dcaed70ec77f61f4f61.png">
 <meta property="og:image" content="https://rma-shuyu.github.io/2022/06/01/dpdk-vdpa%E7%83%AD%E8%BF%81%E7%A7%BB/53a448e19dd93a2e06b6b44fd832eda4266946e6ac59a0724c61dcc2121a47ac.png">
 <meta property="article:published_time" content="2022-06-01T12:02:04.000Z">
-<meta property="article:modified_time" content="2023-07-01T09:37:27.358Z">
+<meta property="article:modified_time" content="2023-10-21T07:21:41.636Z">
 <meta property="article:author" content="rma-shuyu">
 <meta property="article:tag" content="DPDK">
 <meta name="twitter:card" content="summary">
@@ -417,7 +417,7 @@
 <span id="more"></span>
 
 <p>a)       设备启动过程中以及启动之后前端驱动对 BAR 空间的配置和修改。 Vdpa 框架中， virtio 设备配置空间的仿真由 qemu 实现，因此设备状态的保存和恢复由 qemu 实现，并在目的端 vmstats_load 之后， vm_start 流程中调用 vdpa 接口下发 load 后的配置信息，启动设备。</p>
-<p>b)      队列当前的头尾指针信息 , virtio 设备涉及 avail head 和 used tail 。 Vdpa 中，队列的状态信息在停止设备过程中调用 vdap 接口从设备侧读取。</p>
+<p>b)      队列当前的头尾指针信息 , virtio 设备涉及 avail head 和 used tail 。 Vdpa 中，队列的状态信息在停止设备过程中调用 vdpa 接口从设备侧读取。</p>
 <h2 id="设备队列tx-rx-方向处理"><a href="#设备队列tx-rx-方向处理" class="headerlink" title="设备队列tx/rx 方向处理"></a>设备队列tx/rx 方向处理</h2><p>队列当前的头尾指针信息， virtio 设备侧涉及 avail head 和 used tail 的保存和恢复。</p>
 <p>a)       发送方向状态保存 :</p>
 <p>保存 used tail, 恢复的时候将 avail head 和 used tail 设置成保存的 used tail 。如果迁移前 used tail &lt; avail head ，迁移后目的端会重复发送部分数据（ used tail -&gt; avail head ）， TCP seq/ack保障可靠性， UDP 侧收到重复数据可能会有影响。</p>
@@ -550,7 +550,7 @@
             
               <div class="site-state-item site-state-posts">
                 <a href="/archives">
-                  <span class="site-state-item-count">199</span>
+                  <span class="site-state-item-count">210</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -561,7 +561,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">40</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -572,7 +572,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">123</span>
+                  <span class="site-state-item-count">131</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -673,7 +673,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共221.7k字</span>
+  <span class="post-count">博客全站共235.8k字</span>
 </div>
         
 
