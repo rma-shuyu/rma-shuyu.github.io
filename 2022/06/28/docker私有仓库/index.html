@@ -112,7 +112,7 @@
 <meta property="og:image" content="https://rma-shuyu.github.io/2022/06/28/docker%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93/bfcef290e0529142f4fa675f5cb3cc0d2564e07512912b699ffa9a00bf6c8a6a.png">
 <meta property="og:image" content="https://rma-shuyu.github.io/2022/06/28/docker%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93/634baf7e844835348b1d5708228a67a8bdda0d92583551bb1dd6dc1d825ff527.png">
 <meta property="article:published_time" content="2022-06-28T12:25:15.000Z">
-<meta property="article:modified_time" content="2023-09-09T10:33:02.408Z">
+<meta property="article:modified_time" content="2023-11-12T13:43:55.362Z">
 <meta property="article:author" content="rma-shuyu">
 <meta property="article:tag" content="docker">
 <meta name="twitter:card" content="summary">
@@ -433,7 +433,7 @@
 
 <h4 id="镜像上传与下载"><a href="#镜像上传与下载" class="headerlink" title="镜像上传与下载"></a>镜像上传与下载</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker push xx.xx.xx.xx:5000/nginx            # 一定要注明仓库地址，否则会报错</span><br><span class="line">docker pull xx.xx.xx.xx:5000/nginx</span><br></pre></td></tr></table></figure>
 
-<h4 id="查看仓库镜像信息"><a href="#查看仓库镜像信息" class="headerlink" title="查看仓库镜像信息"></a>查看仓库镜像信息</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 查看仓库镜像列表（也可以通过windows浏览器打开查看）</span><br><span class="line">curl -XGET http://xx.xx.xx.xx:5000/v2/_catalog</span><br><span class="line"></span><br><span class="line"># 查看指定应用镜像tag</span><br><span class="line">curl -XGET http://xx.xx.xx.xx:5000/v2/image_name/tags/list</span><br></pre></td></tr></table></figure>
+<h4 id="查看仓库镜像信息"><a href="#查看仓库镜像信息" class="headerlink" title="查看仓库镜像信息"></a>查看仓库镜像信息</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 查看仓库镜像列表（也可以通过windows浏览器打开查看）</span><br><span class="line">curl -XGET http://xx.xx.xx.xx:5000/v2/_catalog | python3 -m json.tool</span><br><span class="line"></span><br><span class="line"># 查看指定应用镜像tag</span><br><span class="line">curl -XGET http://xx.xx.xx.xx:5000/v2/image_name/tags/list</span><br></pre></td></tr></table></figure>
 
 <hr>
 <h2 id="三、搭建Registry-web"><a href="#三、搭建Registry-web" class="headerlink" title="三、搭建Registry web"></a>三、搭建Registry web</h2><h4 id="首先搜索并拉取镜像-1"><a href="#首先搜索并拉取镜像-1" class="headerlink" title="首先搜索并拉取镜像"></a>首先搜索并拉取镜像</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker search docker-registry-web</span><br><span class="line">docker pull hyper/docker-registry-web　　　　# 这个镜像用的人较多</span><br></pre></td></tr></table></figure>
@@ -575,7 +575,7 @@
             
               <div class="site-state-item site-state-posts">
                 <a href="/archives">
-                  <span class="site-state-item-count">210</span>
+                  <span class="site-state-item-count">218</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -586,7 +586,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-count">41</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -597,7 +597,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">131</span>
+                  <span class="site-state-item-count">136</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -698,7 +698,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共235.8k字</span>
+  <span class="post-count">博客全站共249k字</span>
 </div>
         
 
