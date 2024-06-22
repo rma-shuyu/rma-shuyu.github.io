@@ -110,7 +110,7 @@
 <meta property="og:description" content="设备类查看当前ovs接管设备 1ovs-vsctl show">
 <meta property="og:locale">
 <meta property="article:published_time" content="2024-05-24T10:09:54.000Z">
-<meta property="article:modified_time" content="2024-06-22T07:13:57.665Z">
+<meta property="article:modified_time" content="2024-06-22T07:34:15.388Z">
 <meta property="article:author" content="rma-shuyu">
 <meta property="article:tag" content="ovs">
 <meta name="twitter:card" content="summary">
@@ -444,7 +444,7 @@
 <p>通路测试，前后端对应接口寻找方法如下：</p>
 <ul>
 <li>前端virtio-net口，可通过ethtool -i ensX命令查看设备bdf</li>
-<li>后端登录诊断(ssh <a href="mailto:&#x72;&#x6f;&#x6f;&#116;&#64;&#x31;&#x32;&#55;&#x2e;&#49;">&#x72;&#x6f;&#x6f;&#116;&#64;&#x31;&#x32;&#55;&#x2e;&#49;</a> -p 60000)，进入msg_cmd模式，敲device list，可查看当前系统所有设备bdf，<br>即bdf可唯一对应前端一个设备</li>
+<li>后端登录诊断(ssh <a href="mailto:&#x72;&#111;&#x6f;&#116;&#x40;&#49;&#x32;&#x37;&#x2e;&#49;">&#x72;&#111;&#x6f;&#116;&#x40;&#49;&#x32;&#x37;&#x2e;&#49;</a> -p 60000)，进入msg_cmd模式，敲device list，可查看当前系统所有设备bdf，<br>即bdf可唯一对应前端一个设备</li>
 <li>通过ovs-vsctl show查看当前ovs接管设备，可通过比对接口参数(主要通过iface=/tmp/sock0)，唯一可对应到上述第二步的一个设备，<br>即virtio_net口&lt;—&gt;ovs接口唯一确定</li>
 </ul>
 

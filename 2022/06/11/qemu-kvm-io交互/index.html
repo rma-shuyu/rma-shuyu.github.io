@@ -110,7 +110,7 @@
 <meta property="og:description" content="qemu初始化main函数通过调用kvm_init 和 machine-&gt;init来初始化kvm。 其中, machine-&gt;init会创建vcpu, 用一个线程去模拟vcpu, 该线程执行的函数为kvm_vcpu_thread_fn, 并且该线程调用kvm_cpu_exec,该函数调用kvm_vcpu_ioctl切换到kvm中,下次从kvm中返回时,会接着执行kvm_vcpu_ioc">
 <meta property="og:locale">
 <meta property="article:published_time" content="2022-06-11T09:46:12.000Z">
-<meta property="article:modified_time" content="2023-07-29T06:46:38.897Z">
+<meta property="article:modified_time" content="2024-06-22T07:34:15.404Z">
 <meta property="article:author" content="rma-shuyu">
 <meta property="article:tag" content="qemu">
 <meta property="article:tag" content="kvm">
