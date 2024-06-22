@@ -111,7 +111,7 @@
 <meta property="og:locale">
 <meta property="og:image" content="https://rma-shuyu.github.io/2020/09/08/linux%E8%B0%83%E4%BC%98/89be2ee91d755c1a58c33374e212ad341d9c339261a8b444c1aab29cfdd02d38.png">
 <meta property="article:published_time" content="2020-09-08T10:54:21.000Z">
-<meta property="article:modified_time" content="2023-01-27T12:06:26.910Z">
+<meta property="article:modified_time" content="2024-06-22T07:13:57.665Z">
 <meta property="article:author" content="rma-shuyu">
 <meta property="article:tag" content="linux">
 <meta property="article:tag" content="调优">
@@ -416,7 +416,33 @@
         <p>下图诠释了linux内核各个模块对应的调优诊断工具</p>
 <span id="more"></span>
 <p><img src="89be2ee91d755c1a58c33374e212ad341d9c339261a8b444c1aab29cfdd02d38.png" alt="图 28">       </p>
+<h4 id="网络类"><a href="#网络类" class="headerlink" title="网络类"></a>网络类</h4><p>iptables<br>tcpdump<br>tcpreplay<br>net-tools<br>iperf</p>
+<h4 id="文件系统类"><a href="#文件系统类" class="headerlink" title="文件系统类"></a>文件系统类</h4><p>df<br>fdisk<br>dd<br>fio</p>
+<h4 id="调试类"><a href="#调试类" class="headerlink" title="调试类"></a>调试类</h4><p>gdb<br>kdump-tools<br>kexec-tools<br>trace-cmd<br>strace<br>vmlinux<br>System.map<br>perf<br>crash<br>bpftrace<br>bcc</p>
+<h4 id="内存类"><a href="#内存类" class="headerlink" title="内存类"></a>内存类</h4><p>memtester<br>devmem2</p>
+<h4 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h4><p>taskset<br>acpi<br>acpidump<br>iasl</p>
+<h4 id="misc"><a href="#misc" class="headerlink" title="misc"></a>misc</h4><p>python2<br>python2<br>vim<br>ipmitool<br>dmidecode<br>efibootmgr</p>
+<h4 id="设备相关"><a href="#设备相关" class="headerlink" title="设备相关"></a>设备相关</h4><p>lspci<br>setpci<br>lsusb<br>smartctl<br>shell</p>
+<h4 id="性能工具"><a href="#性能工具" class="headerlink" title="性能工具"></a>性能工具</h4><p>apt install hdparm<br>apt install stress</p>
+<p>stream<br><a target="_blank" rel="noopener" href="http://www.cs.virginia.edu/stream/FTP/Code/">http://www.cs.virginia.edu/stream/FTP/Code/</a><br>gcc -O3 -fopenmp -DN=2000000 -DNTIMES=10 stream.c -o stream</p>
+<p>unixbench-5.1.2-29.tar.gz<br>apt install perf<br>apt install libgl<br>make</p>
+<p>apt install ipmitool</p>
+<p>/root/tools/lkp-tests</p>
+<p>npb: /root/tools/NPB3.4.2/</p>
+<p>lmbench</p>
+<h4 id="调优手段"><a href="#调优手段" class="headerlink" title="调优手段"></a>调优手段</h4><p><strong>查看某个核上跑哪些进程，线程</strong><br>7是核号，实际使用时换成需要的核</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -eLo pid,tid,psr,stat,pcpu,comm | awk &#x27;&#123;if($3==1) print $0&#125;&#x27;</span><br></pre></td></tr></table></figure>
 
+<p><strong>查看进程跑在哪些核上</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps c -L -o ppid,lwp,comm,%cpu,psr,time -p 3598</span><br></pre></td></tr></table></figure>
+
+<p><strong>绑核</strong></p>
+<p>taskset -cp 6-12 4232<br>taskset -cp 13-19 4849</p>
+<p><strong>固定cpu主频</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cpufreq-set -g performance</span><br></pre></td></tr></table></figure>
+
+<p><strong>核隔离</strong><br>cmdline修改</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">isolcpus=4-15</span><br></pre></td></tr></table></figure>
       
     </div>
     
@@ -515,8 +541,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -533,7 +568,7 @@
             
               <div class="site-state-item site-state-posts">
                 <a href="/archives">
-                  <span class="site-state-item-count">218</span>
+                  <span class="site-state-item-count">248</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -544,7 +579,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-count">44</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -555,7 +590,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">136</span>
+                  <span class="site-state-item-count">154</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -602,6 +637,22 @@
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">网络类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%B1%BB"><span class="nav-number">2.</span> <span class="nav-text">文件系统类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E7%B1%BB"><span class="nav-number">3.</span> <span class="nav-text">调试类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%B1%BB"><span class="nav-number">4.</span> <span class="nav-text">内存类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B"><span class="nav-number">5.</span> <span class="nav-text">进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#misc"><span class="nav-number">6.</span> <span class="nav-text">misc</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E5%A4%87%E7%9B%B8%E5%85%B3"><span class="nav-number">7.</span> <span class="nav-text">设备相关</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E5%B7%A5%E5%85%B7"><span class="nav-number">8.</span> <span class="nav-text">性能工具</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E4%BC%98%E6%89%8B%E6%AE%B5"><span class="nav-number">9.</span> <span class="nav-text">调优手段</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -615,7 +666,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -640,7 +691,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共249k字</span>
+  <span class="post-count">博客全站共312.4k字</span>
 </div>
         
 

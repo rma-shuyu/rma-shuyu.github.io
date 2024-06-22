@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function () {
+        if ('') {
+            if (prompt('请输入文章密码') !== '') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://rma-shuyu.github.io/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="openstack," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="rma's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="参考：https:&#x2F;&#x2F;www.modb.pro&#x2F;db&#x2F;524431https:&#x2F;&#x2F;docs.openstack.org&#x2F;zh_CN&#x2F;install-guide&#x2F;environment-memcached-rdo.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="openstack T版本部署">
+<meta property="og:url" content="https://rma-shuyu.github.io/2022/06/08/openstack-T%E7%89%88%E6%9C%AC%E9%83%A8%E7%BD%B2/index.html">
+<meta property="og:site_name" content="rma&#39;s Blog">
+<meta property="og:description" content="参考：https:&#x2F;&#x2F;www.modb.pro&#x2F;db&#x2F;524431https:&#x2F;&#x2F;docs.openstack.org&#x2F;zh_CN&#x2F;install-guide&#x2F;environment-memcached-rdo.html">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-06-08T12:02:04.000Z">
+<meta property="article:modified_time" content="2024-06-22T07:13:57.665Z">
+<meta property="article:author" content="rma-shuyu">
+<meta property="article:tag" content="openstack">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rma-shuyu.github.io/2022/06/08/openstack-T版本部署/"/>
+
+
+
+
+
+  <title>openstack T版本部署 | rma's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a target="_blank" rel="noopener" href="https://github.com/rma-shuyu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">rma's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay hungry, stay foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2022/06/08/openstack-T%E7%89%88%E6%9C%AC%E9%83%A8%E7%BD%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">openstack T版本部署</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-06-08T20:02:04+08:00">
+                2022-06-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/openstack/" itemprop="url" rel="index">
+                    <span itemprop="name">openstack</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2022/06/08/openstack-T%E7%89%88%E6%9C%AC%E9%83%A8%E7%BD%B2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2022/06/08/openstack-T%E7%89%88%E6%9C%AC%E9%83%A8%E7%BD%B2/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://www.modb.pro/db/524431">https://www.modb.pro/db/524431</a><br><a target="_blank" rel="noopener" href="https://docs.openstack.org/zh_CN/install-guide/environment-memcached-rdo.html">https://docs.openstack.org/zh_CN/install-guide/environment-memcached-rdo.html</a></p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="主机名称配置"><a href="#主机名称配置" class="headerlink" title="主机名称配置"></a>主机名称配置</h2><p>controller节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hostnamectl set-hostname controller</span><br></pre></td></tr></table></figure>
+
+<p>compute节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hostnamectl set-hostname compute</span><br></pre></td></tr></table></figure>
+
+<h2 id="主机映射配置"><a href="#主机映射配置" class="headerlink" title="主机映射配置"></a>主机映射配置</h2><p>controller节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/hosts</span><br><span class="line"></span><br><span class="line">#添加：</span><br><span class="line">10.20.69.56 controller</span><br><span class="line">10.20.70.20 compute</span><br><span class="line">#保存并退出：wq</span><br><span class="line"></span><br><span class="line">ping -c 4 compute</span><br></pre></td></tr></table></figure>
+
+<h2 id="网络时间服务配置"><a href="#网络时间服务配置" class="headerlink" title="网络时间服务配置"></a>网络时间服务配置</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install -y chrony</span><br><span class="line">vi /etc/chrony.conf</span><br></pre></td></tr></table></figure>
+
+<p>控制节点</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> #注释所有server</span><br><span class="line"> #添加：</span><br><span class="line">server controller iburst</span><br><span class="line">allow</span><br><span class="line"> #保存并退出：wq</span><br></pre></td></tr></table></figure>
+
+<p>计算节点</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> #注释所有server</span><br><span class="line"> #添加：</span><br><span class="line">server controller iburst</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable  chronyd.service;systemctl start chronyd.service</span><br><span class="line">systemctl status chronyd</span><br><span class="line">chronyc sources</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装OpenStack包"><a href="#安装OpenStack包" class="headerlink" title="安装OpenStack包"></a>安装OpenStack包</h2><p>所有节点</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">yum install -y centos-release-openstack-train</span><br><span class="line"></span><br><span class="line">cd /etc/yum.repos.d/</span><br><span class="line">sed -i -e &quot;s|mirrorlist=|#mirrorlist=|g&quot; advanced-virtualization.repo CentOS-Messaging-rabbitmq.repo CentOS-OpenStack-train.repo CentOS-Storage-common.repo  ceph-nautilus.repo</span><br><span class="line">sed -i -e &quot;s|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g&quot; advanced-virtualization.repo CentOS-Messaging-rabbitmq.repo CentOS-OpenStack-train.repo CentOS-Storage-common.repo  ceph-nautilus.repo</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">yum clean all &amp;&amp; yum makecache</span><br><span class="line"></span><br><span class="line">yum upgrade --allowerasing    #如果升级过程包含新内核，请重新启动主机以激活它。</span><br><span class="line">yum install python3-openstackclient openstack-selinux -y</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="安装SQL数据库"><a href="#安装SQL数据库" class="headerlink" title="安装SQL数据库"></a>安装SQL数据库</h2><p>设置进程最大可打开的文件数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/security/limits.conf</span><br><span class="line">添加</span><br><span class="line">* soft nofile 65535</span><br><span class="line">* hard nofile 65535</span><br></pre></td></tr></table></figure>
+
+<p>controller节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">yum install mariadb mariadb-server python2-PyMySQL -y</span><br><span class="line"></span><br><span class="line">vi /etc/my.cnf.d/openstack.cnf</span><br><span class="line">#创建和编辑</span><br><span class="line">[mysqld]</span><br><span class="line">bind-address = 192.168.200.10</span><br><span class="line">default-storage-engine = innodb</span><br><span class="line">innodb_file_per_table = on</span><br><span class="line">max_connections = 4096</span><br><span class="line">collation-server = utf8_general_ci</span><br><span class="line">character-set-server = utf8</span><br><span class="line">#保存并退出：wq</span><br><span class="line"></span><br><span class="line">systemctl enable mariadb.service;systemctl start mariadb.service</span><br><span class="line"></span><br><span class="line">systemctl status mariadb.service</span><br><span class="line"></span><br><span class="line">mysql_secure_installation</span><br><span class="line"></span><br><span class="line">#输入root密码，默认为空，点击回车</span><br><span class="line">Set root password? [Y/n] y  </span><br><span class="line">#输入root密码&quot;000000&quot;两次</span><br><span class="line">Remove anonymous users? [Y/n] y</span><br><span class="line"></span><br><span class="line">Disallow root login remotely? [Y/n] n</span><br><span class="line"></span><br><span class="line">Remove test database and access to it? [Y/n] y</span><br><span class="line"></span><br><span class="line">Reload privilege tables now? [Y/n] y</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="安装消息队列-rabbitMQ"><a href="#安装消息队列-rabbitMQ" class="headerlink" title="安装消息队列 rabbitMQ"></a>安装消息队列 rabbitMQ</h2><p>controller节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">yum -y install epel-release</span><br><span class="line">yum install -y rabbitmq-server </span><br><span class="line">systemctl enable rabbitmq-server.service</span><br><span class="line">systemctl restart rabbitmq-server.service</span><br><span class="line">systemctl status rabbitmq-server.service</span><br><span class="line"></span><br><span class="line">rabbitmqctl add_user openstack 000000</span><br><span class="line">rabbitmqctl set_permissions openstack &quot;.*&quot; &quot;.*&quot; &quot;.*&quot;</span><br><span class="line">#查看是否创建成功</span><br><span class="line">rabbitmqctl list_users</span><br><span class="line">#查看需要启动的服务</span><br><span class="line"> rabbitmq-plugins list</span><br><span class="line">#开启图形化界面(选做，可通过http://10.20.69.56:15672访问，用户名guest，密码guest)</span><br><span class="line">rabbitmq-plugins enable rabbitmq_management rabbitmq_management_agent </span><br></pre></td></tr></table></figure>
+<h2 id="安装memcahce服务（内存缓存服务）"><a href="#安装memcahce服务（内存缓存服务）" class="headerlink" title="安装memcahce服务（内存缓存服务）"></a>安装memcahce服务（内存缓存服务）</h2><p>controller节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">yum install -y memcached python3-memcached</span><br><span class="line">vim /etc/sysconfig/memcached</span><br><span class="line">#将服务配置为使用控制器节点的管理 IP 地址。这是为了允许其他节点通过管理网络访问：</span><br><span class="line">OPTIONS=&quot;-l 127.0.0.1,::1,controller&quot;</span><br><span class="line">#保存并退出：wq</span><br><span class="line"></span><br><span class="line">systemctl enable memcached.service;systemctl start memcached.service</span><br><span class="line"></span><br><span class="line">#查看运行状态</span><br><span class="line">systemctl status  memcached.service</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装etcd服务"><a href="#安装etcd服务" class="headerlink" title="安装etcd服务"></a>安装etcd服务</h2><p>controller节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">yum install -y etcd </span><br><span class="line">vim /etc/etcd/etcd.conf </span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">#[Member]</span><br><span class="line">ETCD_DATA_DIR=&quot;/var/lib/etcd/default.etcd&quot;</span><br><span class="line">ETCD_LISTEN_PEER_URLS=&quot;http://10.20.69.56:2380&quot;</span><br><span class="line">ETCD_LISTEN_CLIENT_URLS=&quot;http://10.20.69.56:2379&quot;</span><br><span class="line">ETCD_NAME=&quot;controller&quot;</span><br><span class="line">#[Clustering]</span><br><span class="line">ETCD_INITIAL_ADVERTISE_PEER_URLS=&quot;http://10.20.69.56:2380&quot;</span><br><span class="line">ETCD_ADVERTISE_CLIENT_URLS=&quot;http://10.20.69.56:2379&quot;</span><br><span class="line">ETCD_INITIAL_CLUSTER=&quot;controller=http://10.20.69.56:2380&quot;</span><br><span class="line">ETCD_INITIAL_CLUSTER_TOKEN=&quot;etcd-cluster-01&quot;</span><br><span class="line">ETCD_INITIAL_CLUSTER_STATE=&quot;new&quot;</span><br><span class="line">#保存并退出：wq</span><br><span class="line"></span><br><span class="line">systemctl enable etcd;systemctl start etcd</span><br><span class="line">systemctl status etcd</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装Keystone服务"><a href="#安装Keystone服务" class="headerlink" title="安装Keystone服务"></a>安装Keystone服务</h2><p>controller节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p000000</span><br><span class="line">MariaDB [(none)]&gt; CREATE DATABASE keystone;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON keystone.* TO &#x27;keystone&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON keystone.* TO &#x27;keystone&#x27;@&#x27;%&#x27;  IDENTIFIED BY  &#x27;000000&#x27;; </span><br><span class="line">MariaDB [(none)]&gt; exit;</span><br><span class="line"></span><br><span class="line">yum install openstack-keystone httpd -y</span><br><span class="line"></span><br><span class="line">yum install python3-mod_wsgi.x86_64 -y</span><br><span class="line"></span><br><span class="line">vim /etc/keystone/keystone.conf</span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[database]</span><br><span class="line">connection = mysql+pymysql://keystone:000000@controller/keystone</span><br><span class="line">[token]</span><br><span class="line">provider = fernet</span><br><span class="line">#保存并退出：wq</span><br><span class="line"></span><br><span class="line">su -s /bin/sh -c &quot;keystone-manage db_sync&quot; keystone           #填充身份服务数据库</span><br><span class="line"></span><br><span class="line">keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone</span><br><span class="line">keystone-manage credential_setup --keystone-user keystone --keystone-group keystone</span><br><span class="line"></span><br><span class="line">keystone-manage bootstrap --bootstrap-password 000000 \</span><br><span class="line">  --bootstrap-admin-url http://controller:5000/v3/ \</span><br><span class="line">  --bootstrap-internal-url http://controller:5000/v3/ \</span><br><span class="line">  --bootstrap-public-url http://controller:5000/v3/ \</span><br><span class="line">  --bootstrap-region-id RegionOne</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置Apache-HTTP"><a href="#配置Apache-HTTP" class="headerlink" title="配置Apache HTTP"></a>配置Apache HTTP</h3><p>controller节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/httpd/conf/httpd.conf</span><br><span class="line"></span><br><span class="line">#仅添加</span><br><span class="line">ServerName controller</span><br><span class="line">#保存并退出：wq</span><br><span class="line"></span><br><span class="line">ln -s /usr/share/keystone/wsgi-keystone.conf /etc/httpd/conf.d/</span><br><span class="line">systemctl enable httpd.service;systemctl start httpd.service</span><br><span class="line">#设置变量配置管理帐户</span><br><span class="line">export OS_USERNAME=admin</span><br><span class="line">export OS_PASSWORD=000000</span><br><span class="line">export OS_PROJECT_NAME=admin</span><br><span class="line">export OS_USER_DOMAIN_NAME=Default</span><br><span class="line">export OS_PROJECT_DOMAIN_NAME=Default</span><br><span class="line">export OS_AUTH_URL=http://controller:5000/v3</span><br><span class="line">export OS_IDENTITY_API_VERSION=3</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建域、项目、用户和角色"><a href="#创建域、项目、用户和角色" class="headerlink" title="创建域、项目、用户和角色"></a>创建域、项目、用户和角色</h3><p>controller节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">. /home/rma/unproxy.sh  #去除http代理</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">openstack domain create --description &quot;An Example Domain&quot; example</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">openstack project create --domain default --description &quot;Service Project&quot; service</span><br><span class="line">openstack project create --domain default --description &quot;Demo Project&quot; myproject</span><br><span class="line">openstack user create --domain default --password-prompt myuser             #输入两次密码000000 </span><br><span class="line"></span><br><span class="line">openstack role create myrole</span><br><span class="line">openstack role add --project myproject --user myuser myrole</span><br></pre></td></tr></table></figure>
+
+<h3 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">unset OS_AUTH_URL OS_PASSWORD</span><br><span class="line"></span><br><span class="line">openstack --os-auth-url http://controller:5000/v3 \</span><br><span class="line">  --os-project-domain-name Default --os-user-domain-name Default \</span><br><span class="line">  --os-project-name admin --os-username admin token issue</span><br><span class="line">   #密码000000 </span><br><span class="line">openstack --os-auth-url http://controller:5000/v3 \</span><br><span class="line">  --os-project-domain-name Default --os-user-domain-name Default \</span><br><span class="line">  --os-project-name myproject --os-username myuser token issue</span><br><span class="line"> #密码000000 </span><br></pre></td></tr></table></figure>
+
+<h3 id="创建admin与demo用户脚本"><a href="#创建admin与demo用户脚本" class="headerlink" title="创建admin与demo用户脚本"></a>创建admin与demo用户脚本</h3><p>controller节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">vim admin-openrc</span><br><span class="line">#新建文件，添加以下内容</span><br><span class="line">export OS_PROJECT_DOMAIN_NAME=Default</span><br><span class="line">export OS_USER_DOMAIN_NAME=Default</span><br><span class="line">export OS_PROJECT_NAME=admin</span><br><span class="line">export OS_USERNAME=admin</span><br><span class="line">export OS_PASSWORD=000000</span><br><span class="line">export OS_AUTH_URL=http://controller:5000/v3</span><br><span class="line">export OS_IDENTITY_API_VERSION=3</span><br><span class="line">export OS_IMAGE_API_VERSION=2</span><br><span class="line">#保存并退出：wq</span><br><span class="line"></span><br><span class="line">vim demo-openrc</span><br><span class="line">#新建文件，添加以下内容</span><br><span class="line">export OS_PROJECT_DOMAIN_NAME=Default</span><br><span class="line">export OS_USER_DOMAIN_NAME=Default</span><br><span class="line">export OS_PROJECT_NAME=myproject</span><br><span class="line">export OS_USERNAME=myuser</span><br><span class="line">export OS_PASSWORD=myuser</span><br><span class="line">export OS_AUTH_URL=http://controller:5000/v3</span><br><span class="line">export OS_IDENTITY_API_VERSION=3</span><br><span class="line">export OS_IMAGE_API_VERSION=2</span><br><span class="line">#保存并退出：wq</span><br><span class="line"></span><br><span class="line">. admin-openrc</span><br><span class="line">openstack token issue</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装Glance服务"><a href="#安装Glance服务" class="headerlink" title="安装Glance服务"></a>安装Glance服务</h2><p>controller节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p000000</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; CREATE DATABASE glance;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON glance.* TO &#x27;glance&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON glance.* TO &#x27;glance&#x27;@&#x27;%&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; exit;</span><br><span class="line"></span><br><span class="line">. admin-openrc</span><br><span class="line">openstack user create --domain default --password-prompt glance #密码000000</span><br><span class="line">openstack role add --project service --user glance admin</span><br><span class="line"></span><br><span class="line">openstack service create --name glance \</span><br><span class="line">  --description &quot;OpenStack Image&quot; image</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  image public http://controller:9292 </span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  image internal http://controller:9292</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  image admin http://controller:9292 </span><br><span class="line"></span><br><span class="line">  #查看端口</span><br><span class="line">openstack endpoint list</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#新增华为云，来安装openstack-glance</span><br><span class="line">yum install wget -y</span><br><span class="line">cd /etc/yum.repos.d/</span><br><span class="line">cp CentOS-Linux-BaseOS.repo CentOS-Linux-BaseOS.repo.bak</span><br><span class="line">wget -O /etc/yum.repos.d/CentOS-Linux-BaseOS.repo https://repo.huaweicloud.com/repository/conf/CentOS-8-reg.repo</span><br><span class="line">yum clean all</span><br><span class="line">yum makecache</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">yum install openstack-glance -y</span><br><span class="line"></span><br><span class="line">vim /etc/glance/glance-api.conf</span><br><span class="line"></span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[database]</span><br><span class="line">connection = mysql+pymysql://glance:000000@controller/glance</span><br><span class="line">[keystone_authtoken]</span><br><span class="line">www_authenticate_uri  = http://controller:5000</span><br><span class="line">auth_url = http://controller:5000</span><br><span class="line">memcached_servers = controller:11211</span><br><span class="line">auth_type = password</span><br><span class="line">project_domain_name = Default</span><br><span class="line">user_domain_name = Default</span><br><span class="line">project_name = service</span><br><span class="line">username = glance</span><br><span class="line">password = 000000</span><br><span class="line">[paste_deploy]</span><br><span class="line">flavor = keystone  </span><br><span class="line">[glance_store]</span><br><span class="line">stores = file,http</span><br><span class="line">default_store = file</span><br><span class="line">filesystem_store_datadir = /var/lib/glance/images/</span><br><span class="line">#保存并退出：wq</span><br><span class="line"></span><br><span class="line">su -s /bin/sh -c &quot;glance-manage db_sync&quot; glance</span><br><span class="line"></span><br><span class="line">systemctl enable openstack-glance-api.service;systemctl start openstack-glance-api.service</span><br><span class="line"></span><br><span class="line">#验证</span><br><span class="line">#可通过浏览器下载http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img</span><br><span class="line">#上传镜像 cirros-0.4.0-x86_64-disk.img</span><br><span class="line"></span><br><span class="line">glance image-create --name &quot;cirros5&quot; \</span><br><span class="line">  --file cirros-0.4.0-x86_64-disk2.img \</span><br><span class="line">  --disk-format qcow2 --container-format bare \</span><br><span class="line">  --visibility public</span><br><span class="line"></span><br><span class="line"> openstack image list</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装Placement服务"><a href="#安装Placement服务" class="headerlink" title="安装Placement服务"></a>安装Placement服务</h2><p>controller节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p000000</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; CREATE DATABASE placement;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON placement.* TO &#x27;placement&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON placement.* TO &#x27;placement&#x27;@&#x27;%&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; exit;</span><br><span class="line"></span><br><span class="line">. admin-openrc</span><br><span class="line">openstack user create --domain default --password-prompt placement #密码000000</span><br><span class="line">openstack role add --project service --user placement admin</span><br><span class="line"></span><br><span class="line">openstack service create --name placement \</span><br><span class="line">  --description &quot;Placement API&quot; placement</span><br><span class="line"> openstack endpoint create --region RegionOne \</span><br><span class="line">  placement public http://controller:8778</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  placement internal http://controller:8778</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  placement admin http://controller:8778</span><br><span class="line"></span><br><span class="line">yum install openstack-placement-api -y</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">vim /etc/placement/placement.conf</span><br><span class="line"></span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[placement_database]</span><br><span class="line">connection = mysql+pymysql://placement:000000@controller/placement</span><br><span class="line">[api]</span><br><span class="line">auth_strategy = keystone</span><br><span class="line">[keystone_authtoken]</span><br><span class="line">auth_url = http://controller:5000/v3</span><br><span class="line">memcached_servers = controller:11211</span><br><span class="line">auth_type = password</span><br><span class="line">project_domain_name = Default</span><br><span class="line">user_domain_name = Default</span><br><span class="line">project_name = service</span><br><span class="line">username = placement</span><br><span class="line">password = 000000</span><br><span class="line">#保存并退出：wq</span><br><span class="line"></span><br><span class="line">su -s /bin/sh -c &quot;placement-manage db sync&quot; placement</span><br><span class="line">#注意如有一下提醒，可忽略此输出中的任何弃用消息</span><br><span class="line">/usr/lib/python2.7/site-packages/pymysql/cursors.py:170: Warning: (1280, u&quot;Name &#x27;alembic_version_pkc&#x27; ignored for PRIMARY key.&quot;)</span><br><span class="line">  result = self._query(query)</span><br><span class="line">httpd -v</span><br><span class="line">#官方文档：由于打包错误，您必须通过添加以下配置来启用对 Placement API 的访问 /etc/httpd/conf.d/00-nova-placement-api.conf：</span><br><span class="line"></span><br><span class="line">vim /etc/httpd/conf.d/00-placement-api.conf </span><br><span class="line">#添加</span><br><span class="line">&lt;Directory /usr/bin&gt;</span><br><span class="line">   &lt;IfVersion &gt;= 2.4&gt;</span><br><span class="line">      Require all granted</span><br><span class="line">   &lt;/IfVersion&gt;</span><br><span class="line">   &lt;IfVersion &lt; 2.4&gt;</span><br><span class="line">      Order allow,deny</span><br><span class="line">      Allow from all</span><br><span class="line">   &lt;/IfVersion&gt;</span><br><span class="line">&lt;/Directory&gt;</span><br><span class="line">#保存并退出：wq</span><br><span class="line"></span><br><span class="line">systemctl restart httpd</span><br><span class="line">#验证</span><br><span class="line">placement-status upgrade check</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h2 id="安装Nova服务"><a href="#安装Nova服务" class="headerlink" title="安装Nova服务"></a>安装Nova服务</h2><h3 id="controller节点"><a href="#controller节点" class="headerlink" title="controller节点"></a>controller节点</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p000000</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; CREATE DATABASE nova_api;</span><br><span class="line">MariaDB [(none)]&gt; CREATE DATABASE nova;</span><br><span class="line">MariaDB [(none)]&gt; CREATE DATABASE nova_cell0;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova_api.* TO &#x27;nova&#x27;@&#x27;localhost&#x27;IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova_api.* TO &#x27;nova&#x27;@&#x27;%&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova.* TO &#x27;nova&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova.* TO &#x27;nova&#x27;@&#x27;%&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova_cell0.* TO &#x27;nova&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova_cell0.* TO &#x27;nova&#x27;@&#x27;%&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; exit;</span><br><span class="line"></span><br><span class="line">. admin-openrc</span><br><span class="line"></span><br><span class="line">openstack user create --domain default --password-prompt nova     #密码000000</span><br><span class="line">openstack role add --project service --user nova admin</span><br><span class="line"></span><br><span class="line">openstack service create --name nova \</span><br><span class="line">  --description &quot;OpenStack Compute&quot; compute</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  compute public http://controller:8774/v2.1</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  compute internal http://controller:8774/v2.1</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  compute admin http://controller:8774/v2.1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">yum install openstack-nova-api openstack-nova-conductor openstack-nova-novncproxy openstack-nova-scheduler -y</span><br><span class="line"></span><br><span class="line">vim /etc/nova/nova.conf</span><br><span class="line"></span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[DEFAULT]</span><br><span class="line">enabled_apis = osapi_compute,metadata</span><br><span class="line">my_ip = 10.20.69.56</span><br><span class="line">use_neutron = true</span><br><span class="line">firewall_driver = nova.virt.firewall.NoopFirewallDriver</span><br><span class="line">[api_database]</span><br><span class="line">connection = mysql+pymysql://nova:000000@controller/nova_api</span><br><span class="line">[database]</span><br><span class="line">connection = mysql+pymysql://nova:000000@controller/nova</span><br><span class="line">[DEFAULT]</span><br><span class="line">transport_url = rabbit://openstack:000000@controller:5672/</span><br><span class="line">[api]</span><br><span class="line">auth_strategy = keystone</span><br><span class="line">[keystone_authtoken]</span><br><span class="line">www_authenticate_uri = http://controller:5000/</span><br><span class="line">auth_url = http://controller:5000/</span><br><span class="line">memcached_servers = controller:11211</span><br><span class="line">auth_type = password</span><br><span class="line">project_domain_name = Default</span><br><span class="line">user_domain_name = Default</span><br><span class="line">project_name = service</span><br><span class="line">username = nova</span><br><span class="line">password = 000000</span><br><span class="line">[vnc]</span><br><span class="line">enabled = true</span><br><span class="line">server_listen = $my_ip</span><br><span class="line">server_proxyclient_address = $my_ip</span><br><span class="line">[glance]</span><br><span class="line">api_servers = http://controller:9292</span><br><span class="line">[oslo_concurrency]</span><br><span class="line">lock_path = /var/lib/nova/tmp</span><br><span class="line">[placement]</span><br><span class="line">region_name = RegionOne</span><br><span class="line">project_domain_name = Default</span><br><span class="line">project_name = service</span><br><span class="line">auth_type = password</span><br><span class="line">user_domain_name = Default</span><br><span class="line">auth_url = http://controller:5000/v3</span><br><span class="line">username = placement</span><br><span class="line">password = 000000</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">su -s /bin/sh -c &quot;nova-manage api_db sync&quot; nova</span><br><span class="line">su -s /bin/sh -c &quot;nova-manage cell_v2 map_cell0&quot; nova</span><br><span class="line">su -s /bin/sh -c &quot;nova-manage cell_v2 create_cell --name=cell1 --verbose&quot; nova</span><br><span class="line">su -s /bin/sh -c &quot;nova-manage db sync&quot; nova</span><br><span class="line">#验证</span><br><span class="line">su -s /bin/sh -c &quot;nova-manage cell_v2 list_cells&quot; nova</span><br><span class="line"></span><br><span class="line">systemctl enable \</span><br><span class="line">    openstack-nova-api.service \</span><br><span class="line">    openstack-nova-scheduler.service \</span><br><span class="line">    openstack-nova-conductor.service \</span><br><span class="line">    openstack-nova-novncproxy.service</span><br><span class="line">    </span><br><span class="line">systemctl start \</span><br><span class="line">    openstack-nova-api.service \</span><br><span class="line">    openstack-nova-scheduler.service \</span><br><span class="line">    openstack-nova-conductor.service \</span><br><span class="line">    openstack-nova-novncproxy.service</span><br><span class="line"></span><br><span class="line">systemctl status \</span><br><span class="line">    openstack-nova-api.service \</span><br><span class="line">    openstack-nova-scheduler.service \</span><br><span class="line">    openstack-nova-conductor.service \</span><br><span class="line">    openstack-nova-novncproxy.service</span><br></pre></td></tr></table></figure>
+<h3 id="compute节点"><a href="#compute节点" class="headerlink" title="compute节点:"></a>compute节点:</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">wget https://archive.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8 -O /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-8</span><br><span class="line"></span><br><span class="line">yum install openstack-nova-compute -y</span><br><span class="line"></span><br><span class="line">vim /etc/nova/nova.conf</span><br><span class="line"></span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[DEFAULT]</span><br><span class="line">enabled_apis = osapi_compute,metadata</span><br><span class="line">transport_url = rabbit://openstack:000000@controller</span><br><span class="line">my_ip = 10.20.70.20</span><br><span class="line">use_neutron = true</span><br><span class="line">firewall_driver = nova.virt.firewall.NoopFirewallDriver</span><br><span class="line">[api]</span><br><span class="line">auth_strategy = keystone</span><br><span class="line">[keystone_authtoken]</span><br><span class="line">www_authenticate_uri = http://controller:5000/</span><br><span class="line">auth_url = http://controller:5000/</span><br><span class="line">memcached_servers = controller:11211</span><br><span class="line">auth_type = password</span><br><span class="line">project_domain_name = Default</span><br><span class="line">user_domain_name = Default</span><br><span class="line">project_name = service</span><br><span class="line">username = nova</span><br><span class="line">password = 000000</span><br><span class="line">[vnc]</span><br><span class="line">enabled = true</span><br><span class="line">server_listen = 0.0.0.0</span><br><span class="line">server_proxyclient_address = $my_ip</span><br><span class="line">novncproxy_base_url = http://10.20.69.56:6080/vnc_auto.html</span><br><span class="line">[glance]</span><br><span class="line">api_servers = http://controller:9292</span><br><span class="line">[oslo_concurrency]</span><br><span class="line">lock_path = /var/lib/nova/tmp</span><br><span class="line">[placement]</span><br><span class="line">region_name = RegionOne</span><br><span class="line">project_domain_name = Default</span><br><span class="line">project_name = service</span><br><span class="line">auth_type = password</span><br><span class="line">user_domain_name = Default</span><br><span class="line">auth_url = http://controller:5000/v3</span><br><span class="line">username = placement</span><br><span class="line">password = 000000</span><br><span class="line"></span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">#确定节点是否支持虚拟机的硬件加速，显示非0数字表示支持</span><br><span class="line">egrep -c &#x27;(vmx|svm)&#x27; /proc/cpuinfo</span><br><span class="line">#如不支持可在nova.conf添加以下内容</span><br><span class="line">[libvirt]</span><br><span class="line">virt_type = qemu</span><br><span class="line"></span><br><span class="line">systemctl enable libvirtd.service openstack-nova-compute.service;systemctl start libvirtd.service openstack-nova-compute.service</span><br><span class="line">systemctl status libvirtd.service openstack-nova-compute.service</span><br></pre></td></tr></table></figure>
+
+<h3 id="controller节点："><a href="#controller节点：" class="headerlink" title="controller节点："></a>controller节点：</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">. admin-openrc</span><br><span class="line">#验证操作</span><br><span class="line">openstack compute service list --service nova-compute</span><br><span class="line"></span><br><span class="line">su -s /bin/sh -c &quot;nova-manage cell_v2 discover_hosts --verbose&quot; nova</span><br><span class="line">#注添加新计算节点时，必须在控制器节点上运行以注册这些新计算节点。或者，您可以在以下位置中设置适当的间隔 ：nova-manage cell_v2 discover_hosts/etc/nova/nova.conf</span><br><span class="line"></span><br><span class="line">vim /etc/nova/nova.conf</span><br><span class="line">#添加：</span><br><span class="line">[scheduler]</span><br><span class="line">discover_hosts_in_cells_interval = 300</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">systemctl restart openstack-nova*</span><br><span class="line">openstack compute service list</span><br><span class="line">openstack catalog list</span><br><span class="line">openstack image list</span><br><span class="line">nova-status upgrade check</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装Neutron服务"><a href="#安装Neutron服务" class="headerlink" title="安装Neutron服务"></a>安装Neutron服务</h2><h3 id="controller节点-1"><a href="#controller节点-1" class="headerlink" title="controller节点"></a>controller节点</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p000000</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; CREATE DATABASE neutron;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON neutron.* TO &#x27;neutron&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON neutron.* TO &#x27;neutron&#x27;@&#x27;%&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt; exit;</span><br><span class="line"></span><br><span class="line">. admin-openrc</span><br><span class="line"></span><br><span class="line">openstack user create --domain default --password-prompt neutron  #密码000000</span><br><span class="line">openstack role add --project service --user neutron admin</span><br><span class="line"></span><br><span class="line">openstack service create --name neutron \</span><br><span class="line">  --description &quot;OpenStack Networking&quot; network</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  network public http://controller:9696</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  network internal http://controller:9696</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  network admin http://controller:9696</span><br><span class="line">  </span><br><span class="line">#自助服务网络配置(Self-service networks支持L3, Provider networks（提供商网络）只支持L2)</span><br><span class="line">yum install -y openstack-neutron openstack-neutron-ml2 \</span><br><span class="line">  openstack-neutron-openvswitch ebtables</span><br><span class="line"></span><br><span class="line">vim /etc/neutron/neutron.conf  </span><br><span class="line"></span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[database]</span><br><span class="line">connection = mysql+pymysql://neutron:000000@controller/neutron  </span><br><span class="line">[DEFAULT]</span><br><span class="line">core_plugin = ml2</span><br><span class="line">service_plugins = router</span><br><span class="line">allow_overlapping_ips = true</span><br><span class="line">transport_url = rabbit://openstack:000000@controller</span><br><span class="line">auth_strategy = keystone</span><br><span class="line">notify_nova_on_port_status_changes = true</span><br><span class="line">notify_nova_on_port_data_changes = true</span><br><span class="line">[keystone_authtoken]</span><br><span class="line">www_authenticate_uri = http://controller:5000</span><br><span class="line">auth_url = http://controller:5000</span><br><span class="line">memcached_servers = controller:11211</span><br><span class="line">auth_type = password</span><br><span class="line">project_domain_name = default</span><br><span class="line">user_domain_name = default</span><br><span class="line">project_name = service</span><br><span class="line">username = neutron</span><br><span class="line">password = 000000</span><br><span class="line">[nova]</span><br><span class="line">auth_url = http://controller:5000</span><br><span class="line">auth_type = password</span><br><span class="line">project_domain_name = default</span><br><span class="line">user_domain_name = default</span><br><span class="line">region_name = RegionOne</span><br><span class="line">project_name = service</span><br><span class="line">username = nova</span><br><span class="line">password = 000000</span><br><span class="line">[oslo_concurrency]</span><br><span class="line">lock_path = /var/lib/neutron/tmp</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">#配置 Modular Layer 2 (ML2) 插件</span><br><span class="line">vim /etc/neutron/plugins/ml2/ml2_conf.ini</span><br><span class="line"></span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[ml2]</span><br><span class="line">type_drivers = flat,vlan,vxlan</span><br><span class="line">tenant_network_types = vlan,vxlan</span><br><span class="line">mechanism_drivers = openvswitch,l2population</span><br><span class="line">extension_drivers = port_security</span><br><span class="line">[ml2_type_flat]</span><br><span class="line">flat_networks = provider</span><br><span class="line">[ml2_type_vlan]</span><br><span class="line">network_vlan_ranges = provider,default</span><br><span class="line">[ml2_type_vxlan]</span><br><span class="line">vni_ranges = 1:1000</span><br><span class="line">[securitygroup]</span><br><span class="line">enable_ipset = true</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">vim /etc/sysctl.conf</span><br><span class="line">#添加：</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">#加载内核参数</span><br><span class="line">modprobe br_netfilter</span><br><span class="line">#查看内核参数</span><br><span class="line">sysctl -p</span><br><span class="line">#要启用网络桥接支持，通常br_netfilter需要加载内核模块</span><br><span class="line"></span><br><span class="line">#配置第三层代理</span><br><span class="line">vim /etc/neutron/l3_agent.ini</span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[DEFAULT]</span><br><span class="line">interface_driver = openvswitch</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#配置 DHCP 代理</span><br><span class="line">vim /etc/neutron/dhcp_agent.ini</span><br><span class="line"></span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[DEFAULT]</span><br><span class="line">interface_driver = openvswitch</span><br><span class="line">enable_isolated_metadata = True</span><br><span class="line">force_metadata = True</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">#配置元数据代理</span><br><span class="line">vim /etc/neutron/metadata_agent.ini</span><br><span class="line"></span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[DEFAULT]</span><br><span class="line">nova_metadata_host = controller</span><br><span class="line">metadata_proxy_shared_secret = 000000</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">#配置计算服务以使用网络服务</span><br><span class="line">vim /etc/nova/nova.conf</span><br><span class="line">#添加：</span><br><span class="line">[neutron]</span><br><span class="line">auth_url = http://controller:5000</span><br><span class="line">auth_type = password</span><br><span class="line">project_domain_name = default</span><br><span class="line">user_domain_name = default</span><br><span class="line">region_name = RegionOne</span><br><span class="line">project_name = service</span><br><span class="line">username = neutron</span><br><span class="line">password = 000000</span><br><span class="line">service_metadata_proxy = true</span><br><span class="line">metadata_proxy_shared_secret = 000000</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini</span><br><span class="line">neutron-openvswitch-agent.service </span><br><span class="line">su -s /bin/sh -c &quot;neutron-db-manage --config-file /etc/neutron/neutron.conf \</span><br><span class="line">  --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head&quot; neutron</span><br><span class="line"></span><br><span class="line">systemctl restart neutron-server.service  neutron-dhcp-agent.service neutron-metadata-agent.service</span><br><span class="line"></span><br><span class="line">systemctl restart openstack-nova-api.service</span><br><span class="line"></span><br><span class="line">systemctl enable neutron-server.service \</span><br><span class="line">  neutron-openvswitch-agent.service neutron-dhcp-agent.service \</span><br><span class="line">  neutron-metadata-agent.service</span><br><span class="line"></span><br><span class="line">systemctl start neutron-server.service \</span><br><span class="line">  neutron-openvswitch-agent.service neutron-dhcp-agent.service \</span><br><span class="line">  neutron-metadata-agent.service</span><br><span class="line"></span><br><span class="line">systemctl enable neutron-l3-agent.service;systemctl start neutron-l3-agent.service</span><br></pre></td></tr></table></figure>
+<h3 id="compute节点-1"><a href="#compute节点-1" class="headerlink" title="compute节点"></a>compute节点</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line">yum install openstack-neutron-openvswitch ebtables ipset -y</span><br><span class="line"></span><br><span class="line">vim /etc/neutron/neutron.conf </span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[DEFAULT]</span><br><span class="line">transport_url = rabbit://openstack:000000@controller</span><br><span class="line">auth_strategy = keystone</span><br><span class="line">[keystone_authtoken]</span><br><span class="line">www_authenticate_uri = http://controller:5000</span><br><span class="line">auth_url = http://controller:5000</span><br><span class="line">memcached_servers = controller:11211</span><br><span class="line">auth_type = password</span><br><span class="line">project_domain_name = default</span><br><span class="line">user_domain_name = default</span><br><span class="line">project_name = service</span><br><span class="line">username = neutron</span><br><span class="line">password = 000000</span><br><span class="line">[oslo_concurrency]</span><br><span class="line">lock_path = /var/lib/neutron/tmp</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#自助服务网络</span><br><span class="line">vim /etc/neutron/plugins/ml2/openvswitch_agent.ini </span><br><span class="line"></span><br><span class="line">[ovs]</span><br><span class="line">local_ip = 10.20.70.20</span><br><span class="line">integration_bridge = br-jmnd</span><br><span class="line">datapath_type = netdev</span><br><span class="line">vhostuser_socket_dir = /var/run/openvswitch</span><br><span class="line">ovsdb_connection = unix:/var/run/openvswitch/db.sock</span><br><span class="line"></span><br><span class="line">[agent]</span><br><span class="line">tunnel_types = vxlan</span><br><span class="line">l2_population = True</span><br><span class="line"> </span><br><span class="line">[securitygroup]</span><br><span class="line">firewall_driver = openvswitch</span><br><span class="line"></span><br><span class="line">vim /etc/sysctl.conf</span><br><span class="line">#添加：</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">#加载内核参数</span><br><span class="line">modprobe br_netfilter</span><br><span class="line">#查看内核参数</span><br><span class="line">sysctl -p</span><br><span class="line"></span><br><span class="line">#配置计算服务以使用网络服务</span><br><span class="line">vim /etc/nova/nova.conf</span><br><span class="line">#添加：</span><br><span class="line">[neutron]</span><br><span class="line">auth_url = http://controller:5000</span><br><span class="line">auth_type = password</span><br><span class="line">project_domain_name = default</span><br><span class="line">user_domain_name = default</span><br><span class="line">region_name = RegionOne</span><br><span class="line">project_name = service</span><br><span class="line">username = neutron</span><br><span class="line">password = 000000</span><br><span class="line"></span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">systemctl restart openstack-nova-compute.service</span><br><span class="line"></span><br><span class="line">systemctl enable neutron-openvswitch-agent.service;systemctl start neutron-openvswitch-agent.service</span><br><span class="line"></span><br><span class="line">systemctl status neutron-openvswitch-agent.service</span><br><span class="line"></span><br><span class="line">### controller节点：</span><br><span class="line"></span><br><span class="line">#验证</span><br><span class="line">. admin-openrc</span><br><span class="line">openstack extension list --network</span><br><span class="line">openstack network agent list</span><br><span class="line"></span><br><span class="line">+--------------------------------------+--------------------+------------+-------------------+-------+-------+---------------------------+</span><br><span class="line">| ID                                   | Agent Type         | Host       | Availability Zone | Alive | State | Binary                    |</span><br><span class="line">+--------------------------------------+--------------------+------------+-------------------+-------+-------+---------------------------+</span><br><span class="line">| 0c916fa1-70d6-46a3-afb1-28a29f7a51cf | L3 agent           | controller | nova              | :-)   | UP    | neutron-l3-agent          |</span><br><span class="line">| 77ba28e4-fd87-4b16-a31f-1bdff0095e9e | Open vSwitch agent | compute    | None              | :-)   | UP    | neutron-openvswitch-agent |</span><br><span class="line">| bf1346e6-6a38-4898-b3cb-2cd0d99ca228 | DHCP agent         | controller | nova              | :-)   | UP    | neutron-dhcp-agent        |</span><br><span class="line">| c73dbb86-baf3-45fe-9561-4dc5396e88d3 | Metadata agent     | controller | None              | :-)   | UP    | neutron-metadata-agent    |</span><br><span class="line">+--------------------------------------+--------------------+------------+-------------------+-------+-------+---------------------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装Dashboard服务"><a href="#安装Dashboard服务" class="headerlink" title="安装Dashboard服务"></a>安装Dashboard服务</h2><h3 id="controller节点-2"><a href="#controller节点-2" class="headerlink" title="controller节点"></a>controller节点</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">yum install openstack-dashboard -y</span><br><span class="line"></span><br><span class="line">vim /etc/openstack-dashboard/local_settings </span><br><span class="line">#更改内容：</span><br><span class="line">OPENSTACK_HOST = &quot;controller&quot;</span><br><span class="line">ALLOWED_HOSTS = [&#x27;*&#x27;]</span><br><span class="line">SESSION_ENGINE = &#x27;django.contrib.sessions.backends.cache&#x27;</span><br><span class="line">CACHES = &#123;</span><br><span class="line">    &#x27;default&#x27;: &#123;</span><br><span class="line">         &#x27;BACKEND&#x27;: &#x27;django.core.cache.backends.memcached.MemcachedCache&#x27;,</span><br><span class="line">         &#x27;LOCATION&#x27;: &#x27;controller:11211&#x27;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">OPENSTACK_KEYSTONE_URL = &quot;http://%s:5000/v3&quot; % OPENSTACK_HOST</span><br><span class="line">OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True</span><br><span class="line">OPENSTACK_API_VERSIONS = &#123;</span><br><span class="line">    &quot;identity&quot;: 3,</span><br><span class="line">    &quot;image&quot;: 2,</span><br><span class="line">    &quot;volume&quot;: 3,</span><br><span class="line">&#125;</span><br><span class="line">OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = &quot;Default&quot;</span><br><span class="line">OPENSTACK_KEYSTONE_DEFAULT_ROLE = &quot;user&quot;</span><br><span class="line">#如配置三层网络不需要改以下注释设置</span><br><span class="line">#OPENSTACK_NEUTRON_NETWORK = &#123;</span><br><span class="line">#    &#x27;enable_auto_allocated_network&#x27;: False,</span><br><span class="line">#    &#x27;enable_distributed_router&#x27;: False,</span><br><span class="line">#    &#x27;enable_fip_topology_check&#x27;: False,</span><br><span class="line">#    &#x27;enable_ha_router&#x27;: False,</span><br><span class="line">#    &#x27;enable_ipv6&#x27;: False,</span><br><span class="line">#    # TODO(amotoki): Drop OPENSTACK_NEUTRON_NETWORK completely from here.</span><br><span class="line">#    # enable_quotas has the different default value here.</span><br><span class="line">#    &#x27;enable_quotas&#x27;: False,</span><br><span class="line">#    &#x27;enable_rbac_policy&#x27;: False,</span><br><span class="line">#    &#x27;enable_router&#x27;: True,</span><br><span class="line">#    &#x27;enable_fip_topology_check&#x27;: False,</span><br><span class="line">#    &#x27;default_dns_nameservers&#x27;: [],</span><br><span class="line">#    &#x27;supported_provider_types&#x27;: [&#x27;*&#x27;],</span><br><span class="line">#    &#x27;segmentation_id_range&#x27;: &#123;&#125;,</span><br><span class="line">#    &#x27;extra_provider_types&#x27;: &#123;&#125;,</span><br><span class="line">#    &#x27;supported_vnic_types&#x27;: [&#x27;*&#x27;],</span><br><span class="line">#    &#x27;physical_networks&#x27;: [],</span><br><span class="line"># &#125;</span><br><span class="line">TIME_ZONE = &quot;Asia/Shanghai&quot;</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">vim /etc/httpd/conf.d/openstack-dashboard.conf</span><br><span class="line">#添加：</span><br><span class="line">WSGIApplicationGroup %&#123;GLOBAL&#125;</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">#注意，编辑以下文件，找到WEBROOT = &#x27;/&#x27; 修改为WEBROOT = &#x27;/dashboard&#x27; (官方未提及坑点之一)</span><br><span class="line">vi /usr/share/openstack-dashboard/openstack_dashboard/defaults.py</span><br><span class="line">vi /usr/share/openstack-dashboard/openstack_dashboard/test/settings.py</span><br><span class="line">vi /usr/share/openstack-dashboard/static/dashboard/js/e21db2a561ed.js </span><br><span class="line"></span><br><span class="line">systemctl restart httpd.service memcached.service</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装Cinder服务"><a href="#安装Cinder服务" class="headerlink" title="安装Cinder服务"></a>安装Cinder服务</h2><h3 id="controller节点-3"><a href="#controller节点-3" class="headerlink" title="controller节点"></a>controller节点</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p000000</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt;CREATE DATABASE cinder;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON cinder.* TO &#x27;cinder&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt;GRANT ALL PRIVILEGES ON cinder.* TO &#x27;cinder&#x27;@&#x27;%&#x27; IDENTIFIED BY &#x27;000000&#x27;;</span><br><span class="line">MariaDB [(none)]&gt;exit;</span><br><span class="line"></span><br><span class="line">. admin-openrc</span><br><span class="line">openstack user create --domain default --password-prompt cinder    #密码000000</span><br><span class="line">openstack role add --project service --user cinder admin</span><br><span class="line"></span><br><span class="line">openstack service create --name cinderv2 \</span><br><span class="line">  --description &quot;OpenStack Block Storage&quot; volumev2</span><br><span class="line">openstack service create --name cinderv3 \</span><br><span class="line">  --description &quot;OpenStack Block Storage&quot; volumev3</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  volumev2 public http://controller:8776/v2/%\(project_id\)s</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  volumev2 internal http://controller:8776/v2/%\(project_id\)s</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  volumev2 admin http://controller:8776/v2/%\(project_id\)s</span><br><span class="line"></span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  volumev3 public http://controller:8776/v3/%\(project_id\)s</span><br><span class="line">openstack endpoint create --region RegionOne \</span><br><span class="line">  volumev3 internal http://controller:8776/v3/%\(project_id\)s</span><br><span class="line"> openstack endpoint create --region RegionOne \</span><br><span class="line">  volumev3 admin http://controller:8776/v3/%\(project_id\)s</span><br><span class="line"></span><br><span class="line">#安装软件包</span><br><span class="line">yum install openstack-cinder -y</span><br><span class="line"></span><br><span class="line">vi /etc/cinder/cinder.conf</span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[database]</span><br><span class="line">connection = mysql+pymysql://cinder:000000@controller/cinder</span><br><span class="line">[DEFAULT]</span><br><span class="line">transport_url = rabbit://openstack:000000@controller</span><br><span class="line">auth_strategy = keystone</span><br><span class="line">my_ip = 10.20.69.56</span><br><span class="line">[keystone_authtoken]</span><br><span class="line">www_authenticate_uri = http://controller:5000</span><br><span class="line">auth_url = http://controller:5000</span><br><span class="line">memcached_servers = controller:11211</span><br><span class="line">auth_type = password</span><br><span class="line">project_domain_name = default</span><br><span class="line">user_domain_name = default</span><br><span class="line">project_name = service</span><br><span class="line">username = cinder</span><br><span class="line">password = 000000</span><br><span class="line">[oslo_concurrency]</span><br><span class="line">lock_path = /var/lib/cinder/tmp</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">su -s /bin/sh -c &quot;cinder-manage db sync&quot; cinder</span><br><span class="line">#忽略此输出中的任何弃用消息。</span><br><span class="line"></span><br><span class="line">vi /etc/nova/nova.conf</span><br><span class="line">#添加：</span><br><span class="line">[cinder]</span><br><span class="line">os_region_name = RegionOne</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">systemctl restart openstack-nova-api.service</span><br><span class="line"></span><br><span class="line">systemctl enable openstack-cinder-api.service openstack-cinder-scheduler.service;systemctl start openstack-cinder-api.service openstack-cinder-scheduler.service</span><br></pre></td></tr></table></figure>
+
+<h3 id="compute（块存储）节点"><a href="#compute（块存储）节点" class="headerlink" title="compute（块存储）节点:"></a>compute（块存储）节点:</h3><p>host上执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">modprobe target_core_mod</span><br><span class="line"></span><br><span class="line">yum install lvm2 device-mapper-persistent-data -y </span><br><span class="line"></span><br><span class="line">systemctl enable lvm2-lvmetad.service;systemctl start lvm2-lvmetad.service</span><br><span class="line">#请提前添加磁盘sdb</span><br><span class="line">pvcreate /dev/sda4</span><br><span class="line">vgcreate cinder-volumes /dev/sda4</span><br><span class="line"></span><br><span class="line">vi /etc/lvm/lvm.conf</span><br><span class="line">#根据lvm硬盘添加：disp</span><br><span class="line">devices &#123;</span><br><span class="line">filter = [ &quot;a/sda/&quot;, &quot;a/sda4/&quot;, &quot;r/.*/&quot;]</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">yum install openstack-cinder targetcli python3-keystone -y</span><br><span class="line"></span><br><span class="line">vi /etc/cinder/cinder.conf</span><br><span class="line">#删除原内容，添加以下内容</span><br><span class="line">[database]</span><br><span class="line">connection = mysql+pymysql://cinder:000000@controller/cinder</span><br><span class="line">[DEFAULT]</span><br><span class="line">transport_url = rabbit://openstack:000000@controller</span><br><span class="line">auth_strategy = keystone</span><br><span class="line">my_ip = 10.20.70.20</span><br><span class="line">enabled_backends = lvm</span><br><span class="line">glance_api_servers = http://controller:9292</span><br><span class="line">target_ip_address = 10.20.70.20</span><br><span class="line">target_port = 3260</span><br><span class="line">target_helper = lioadm</span><br><span class="line">use_chap_auth = false</span><br><span class="line">instorage_mcs_iscsi_chap_enabled=false</span><br><span class="line">debug = true</span><br><span class="line">osapi_volume_workers=10</span><br><span class="line">[keystone_authtoken]</span><br><span class="line">www_authenticate_uri = http://controller:5000</span><br><span class="line">auth_url = http://controller:5000</span><br><span class="line">memcached_servers = controller:11211</span><br><span class="line">auth_type = password</span><br><span class="line">project_domain_name = default</span><br><span class="line">user_domain_name = default</span><br><span class="line">project_name = service</span><br><span class="line">username = cinder</span><br><span class="line">password = 000000</span><br><span class="line">[lvm]</span><br><span class="line">volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver</span><br><span class="line">volume_group = cinder-volumes</span><br><span class="line">target_protocol = iscsi</span><br><span class="line">target_helper = lioadm</span><br><span class="line">[oslo_concurrency]</span><br><span class="line">lock_path = /var/lib/cinder/tmp</span><br><span class="line">#保存并退出:wq</span><br><span class="line"></span><br><span class="line">systemctl enable openstack-cinder-volume.service target.service;systemctl start openstack-cinder-volume.service target.service</span><br><span class="line"></span><br><span class="line">systemctl restart openstack-cinder-volume.service </span><br><span class="line">systemctl restart target.servicelv</span><br><span class="line">systemctl status openstack-cinder-volume.service target.service</span><br><span class="line">## 查看安装的版本号</span><br><span class="line"> pip3  list |grep -E &quot;nova|neutron|glance|cinder|placement|keystone|horizon&quot;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="启动实例"><a href="#启动实例" class="headerlink" title="启动实例"></a>启动实例</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">#创建m1.nano主机类型</span><br><span class="line">openstack flavor create --id 0 --vcpus 2 --ram 2048 --disk 1 m1.nano</span><br><span class="line"></span><br><span class="line">openstack server create --flavor m1.nano --image  cirros4 vm5</span><br><span class="line">openstack server create --flavor m2.nano --image  cirros5 vm3</span><br><span class="line"></span><br><span class="line">#删除虚机</span><br><span class="line">openstack server delete vm5</span><br><span class="line"></span><br><span class="line">#生成密钥对选作</span><br><span class="line">ssh-keygen -q -N &quot;&quot;          #需执行回车操作</span><br><span class="line">openstack keypair create --public-key ~/.ssh/id_rsa.pub mykey</span><br><span class="line">openstack keypair list</span><br><span class="line"></span><br><span class="line">#添加安全组规则</span><br><span class="line">#查看默认规则</span><br><span class="line">openstack security group rule list default</span><br><span class="line">#通过ID删除现有规则</span><br><span class="line">openstack security group rule delete &lt;ID&gt;</span><br><span class="line">#添加规则（如有多条同名规则请使用id）</span><br><span class="line">openstack security group rule create --proto icmp default</span><br><span class="line">openstack security group rule create --proto tcp default</span><br><span class="line">openstack security group rule create --proto udp default</span><br><span class="line">openstack security group rule create --proto icmp --egress default</span><br><span class="line">openstack security group rule create --proto tcp --egress default</span><br><span class="line">openstack security group rule create --proto udp --egress default</span><br><span class="line"></span><br><span class="line">#创建内外网络及路由</span><br><span class="line">openstack network create  --share --external \</span><br><span class="line">  --provider-physical-network provider \</span><br><span class="line">  --provider-network-type flat flat-provider</span><br><span class="line"></span><br><span class="line">openstack subnet create --network flat-provider \</span><br><span class="line">  --allocation-pool start=192.168.100.100,end=192.168.100.200 \</span><br><span class="line">  --dns-nameserver 172.16.100.134 --gateway 192.168.100.1 \</span><br><span class="line">  --subnet-range 192.168.100.0/24 flat-subnet</span><br><span class="line">  </span><br><span class="line"> openstack network create int-net</span><br><span class="line"> openstack subnet create --network int-net \</span><br><span class="line">  --dns-nameserver 172.16.100.134 --gateway 10.0.0.1 \</span><br><span class="line">  --subnet-range 10.0.0.0/24 int-subnet</span><br><span class="line"></span><br><span class="line">openstack router create router</span><br><span class="line">openstack router add subnet router int-subnet</span><br><span class="line">openstack router set --external-gateway flat-provider router</span><br><span class="line"></span><br><span class="line">#创建云主机</span><br><span class="line">openstack server create --flavor m1.nano --image  cirros \</span><br><span class="line">  --nic net-id=e41e72a0-e11f-449c-a13b-18cae8347ba4 --security-group default \</span><br><span class="line">  --key-name mykey vm1</span><br><span class="line">#查询云主机</span><br><span class="line">openstack server list</span><br><span class="line">#查询主机控制台链接</span><br><span class="line">openstack console url show vm1</span><br><span class="line"></span><br><span class="line">#在浏览器访问，或在dashboard平台打开</span><br><span class="line"> http://192.168.200.10:6080/vnc_auto.html?path=%3Ftoken%3D2d424de0-0a9b-4961-b7ab-4aa458222a03</span><br></pre></td></tr></table></figure>
+
+<h2 id="调试问题记录"><a href="#调试问题记录" class="headerlink" title="调试问题记录"></a>调试问题记录</h2><h3 id="查看t版本对应的各组件版本"><a href="#查看t版本对应的各组件版本" class="headerlink" title="查看t版本对应的各组件版本"></a>查看t版本对应的各组件版本</h3><p><a target="_blank" rel="noopener" href="https://releases.openstack.org/train/index.html">https://releases.openstack.org/train/index.html</a></p>
+<h3 id="openstack-server-create-创建虚机失败，virsh-list为空"><a href="#openstack-server-create-创建虚机失败，virsh-list为空" class="headerlink" title="openstack server create 创建虚机失败，virsh list为空"></a>openstack server create 创建虚机失败，virsh list为空</h3><p>查看/var/log/libvirt/qemu的日志，发现kvm没有权限</p>
+<p>修改权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#chown root:kvm /dev/kvm</span><br><span class="line">#chmod 666 /dev/kvm</span><br></pre></td></tr></table></figure>
+
+<p>修改/etc/libvirt/qemu.conf</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#user=&quot;root&quot;</span><br><span class="line"></span><br><span class="line">user=&quot;root&quot;</span><br><span class="line"></span><br><span class="line">#group=&quot;root&quot;</span><br><span class="line"></span><br><span class="line">group=&quot;root&quot;</span><br></pre></td></tr></table></figure>
+<p>重启libvirtd服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#systemctl restart libvirtd</span><br></pre></td></tr></table></figure>
+
+<h3 id="neutron-openvswitch-agent启动失败"><a href="#neutron-openvswitch-agent启动失败" class="headerlink" title="neutron-openvswitch-agent启动失败"></a>neutron-openvswitch-agent启动失败</h3><p>修改计算节点/usr/lib/systemd/system/neutron-openvswitch-agent.service<br>将User改成User=root<br>删除掉依赖openvswitch.service<br>systemctl daemon-reload<br>在docker外面执行：modprobe bridge</p>
+<h3 id="openstack-nova-compute启动失败"><a href="#openstack-nova-compute启动失败" class="headerlink" title="openstack-nova-compute启动失败"></a>openstack-nova-compute启动失败</h3><p>修改计算节点/usr/lib/systemd/system/openstack-nova-compute.service<br>将User改成User=root<br>systemctl daemon-reload</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/openstack/" rel="tag"><i class="fa fa-tag"></i> openstack</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/06/07/openstack%E7%BB%84%E4%BB%B6%E4%BB%8B%E7%BB%8D/" rel="next" title="openstack组件介绍">
+                <i class="fa fa-chevron-left"></i> openstack组件介绍
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/06/08/Libvirt%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/" rel="prev" title="Libvirt源码编译">
+                Libvirt源码编译 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mashuyu.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+                <a href="/archives">
+                  <span class="site-state-item-count">248</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">154</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/rma-shuyu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1004129700@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E6%9C%BA%E5%90%8D%E7%A7%B0%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">主机名称配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E6%9C%BA%E6%98%A0%E5%B0%84%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">主机映射配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E6%97%B6%E9%97%B4%E6%9C%8D%E5%8A%A1%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">网络时间服务配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85OpenStack%E5%8C%85"><span class="nav-number">4.</span> <span class="nav-text">安装OpenStack包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85SQL%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">5.</span> <span class="nav-text">安装SQL数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-rabbitMQ"><span class="nav-number">6.</span> <span class="nav-text">安装消息队列 rabbitMQ</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85memcahce%E6%9C%8D%E5%8A%A1%EF%BC%88%E5%86%85%E5%AD%98%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">安装memcahce服务（内存缓存服务）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85etcd%E6%9C%8D%E5%8A%A1"><span class="nav-number">8.</span> <span class="nav-text">安装etcd服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Keystone%E6%9C%8D%E5%8A%A1"><span class="nav-number">9.</span> <span class="nav-text">安装Keystone服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEApache-HTTP"><span class="nav-number">9.1.</span> <span class="nav-text">配置Apache HTTP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%9F%9F%E3%80%81%E9%A1%B9%E7%9B%AE%E3%80%81%E7%94%A8%E6%88%B7%E5%92%8C%E8%A7%92%E8%89%B2"><span class="nav-number">9.2.</span> <span class="nav-text">创建域、项目、用户和角色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81"><span class="nav-number">9.3.</span> <span class="nav-text">验证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAadmin%E4%B8%8Edemo%E7%94%A8%E6%88%B7%E8%84%9A%E6%9C%AC"><span class="nav-number">9.4.</span> <span class="nav-text">创建admin与demo用户脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Glance%E6%9C%8D%E5%8A%A1"><span class="nav-number">10.</span> <span class="nav-text">安装Glance服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Placement%E6%9C%8D%E5%8A%A1"><span class="nav-number">11.</span> <span class="nav-text">安装Placement服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Nova%E6%9C%8D%E5%8A%A1"><span class="nav-number">12.</span> <span class="nav-text">安装Nova服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#controller%E8%8A%82%E7%82%B9"><span class="nav-number">12.1.</span> <span class="nav-text">controller节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#compute%E8%8A%82%E7%82%B9"><span class="nav-number">12.2.</span> <span class="nav-text">compute节点:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#controller%E8%8A%82%E7%82%B9%EF%BC%9A"><span class="nav-number">12.3.</span> <span class="nav-text">controller节点：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Neutron%E6%9C%8D%E5%8A%A1"><span class="nav-number">13.</span> <span class="nav-text">安装Neutron服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#controller%E8%8A%82%E7%82%B9-1"><span class="nav-number">13.1.</span> <span class="nav-text">controller节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#compute%E8%8A%82%E7%82%B9-1"><span class="nav-number">13.2.</span> <span class="nav-text">compute节点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Dashboard%E6%9C%8D%E5%8A%A1"><span class="nav-number">14.</span> <span class="nav-text">安装Dashboard服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#controller%E8%8A%82%E7%82%B9-2"><span class="nav-number">14.1.</span> <span class="nav-text">controller节点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Cinder%E6%9C%8D%E5%8A%A1"><span class="nav-number">15.</span> <span class="nav-text">安装Cinder服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#controller%E8%8A%82%E7%82%B9-3"><span class="nav-number">15.1.</span> <span class="nav-text">controller节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#compute%EF%BC%88%E5%9D%97%E5%AD%98%E5%82%A8%EF%BC%89%E8%8A%82%E7%82%B9"><span class="nav-number">15.2.</span> <span class="nav-text">compute（块存储）节点:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E5%AE%9E%E4%BE%8B"><span class="nav-number">16.</span> <span class="nav-text">启动实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95"><span class="nav-number">17.</span> <span class="nav-text">调试问题记录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8Bt%E7%89%88%E6%9C%AC%E5%AF%B9%E5%BA%94%E7%9A%84%E5%90%84%E7%BB%84%E4%BB%B6%E7%89%88%E6%9C%AC"><span class="nav-number">17.1.</span> <span class="nav-text">查看t版本对应的各组件版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#openstack-server-create-%E5%88%9B%E5%BB%BA%E8%99%9A%E6%9C%BA%E5%A4%B1%E8%B4%A5%EF%BC%8Cvirsh-list%E4%B8%BA%E7%A9%BA"><span class="nav-number">17.2.</span> <span class="nav-text">openstack server create 创建虚机失败，virsh list为空</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#neutron-openvswitch-agent%E5%90%AF%E5%8A%A8%E5%A4%B1%E8%B4%A5"><span class="nav-number">17.3.</span> <span class="nav-text">neutron-openvswitch-agent启动失败</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#openstack-nova-compute%E5%90%AF%E5%8A%A8%E5%A4%B1%E8%B4%A5"><span class="nav-number">17.4.</span> <span class="nav-text">openstack-nova-compute启动失败</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rma-shuyu</span>
+
+  
+</div>
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共312.4k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'D2xdJ1c0QWBntVsHIVyVXtSZ-gzGzoHsz',
+        appKey: 'UGFWDjX2oTi2dIoWPAyisa9S',
+        placeholder: '请在此输入您的留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

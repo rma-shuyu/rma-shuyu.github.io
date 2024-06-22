@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function () {
+        if ('') {
+            if (prompt('请输入文章密码') !== '') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://rma-shuyu.github.io/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="qemu," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="rma's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="设备类型（-machine&#x2F;-M）在qemu中，不同的指令集的模拟器会编译成不同的可执行文件，诸如：qemu-system-x86_64&#x2F;qemu-system-aarch64&#x2F;qemu-system-arm&#x2F;qemu-system-mips&#x2F;qemu-system-riscv64">
+<meta property="og:type" content="article">
+<meta property="og:title" content="qemu启动参数">
+<meta property="og:url" content="https://rma-shuyu.github.io/2022/06/05/qemu%E5%90%AF%E5%8A%A8%E5%8F%82%E6%95%B0/index.html">
+<meta property="og:site_name" content="rma&#39;s Blog">
+<meta property="og:description" content="设备类型（-machine&#x2F;-M）在qemu中，不同的指令集的模拟器会编译成不同的可执行文件，诸如：qemu-system-x86_64&#x2F;qemu-system-aarch64&#x2F;qemu-system-arm&#x2F;qemu-system-mips&#x2F;qemu-system-riscv64">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-06-05T12:02:04.000Z">
+<meta property="article:modified_time" content="2024-06-22T07:13:57.681Z">
+<meta property="article:author" content="rma-shuyu">
+<meta property="article:tag" content="qemu">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rma-shuyu.github.io/2022/06/05/qemu启动参数/"/>
+
+
+
+
+
+  <title>qemu启动参数 | rma's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a target="_blank" rel="noopener" href="https://github.com/rma-shuyu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">rma's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay hungry, stay foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2022/06/05/qemu%E5%90%AF%E5%8A%A8%E5%8F%82%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">qemu启动参数</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-06-05T20:02:04+08:00">
+                2022-06-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%99%9A%E6%8B%9F%E5%8C%96/" itemprop="url" rel="index">
+                    <span itemprop="name">虚拟化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2022/06/05/qemu%E5%90%AF%E5%8A%A8%E5%8F%82%E6%95%B0/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2022/06/05/qemu%E5%90%AF%E5%8A%A8%E5%8F%82%E6%95%B0/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="设备类型（-machine-M）"><a href="#设备类型（-machine-M）" class="headerlink" title="设备类型（-machine/-M）"></a>设备类型（-machine/-M）</h3><p>在qemu中，不同的指令集的模拟器会编译成不同的可执行文件，诸如：<code>qemu-system-x86_64/qemu-system-aarch64/qemu-system-arm/qemu-system-mips/qemu-system-riscv64</code></p>
+<span id="more"></span>
+
+<p>但相同指令集肯定存在不同的设备，尤其是在嵌入式设备上。使用参数-machine help运行模拟器可以查看当前模拟器支持的设备信息，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">qqm@ubuntu: qemu-system-riscv64 -machine help      </span><br><span class="line">Supported machines are:</span><br><span class="line">microchip-icicle-kit Microchip PolarFire SoC Icicle Kit</span><br><span class="line">none                 empty machine</span><br><span class="line">quard-star           RISC-V Quard Star board</span><br><span class="line">sifive_e             RISC-V Board compatible with SiFive E SDK</span><br><span class="line">sifive_u             RISC-V Board compatible with SiFive U SDK</span><br><span class="line">spike                RISC-V Spike board (default)</span><br><span class="line">virt                 RISC-V VirtIO board</span><br><span class="line"></span><br><span class="line">qqm@ubuntu: qemu-system-aarch64 -machine help </span><br><span class="line">Supported machines are:</span><br><span class="line">akita                Sharp SL-C1000 (Akita) PDA (PXA270)</span><br><span class="line">ast2500-evb          Aspeed AST2500 EVB (ARM1176)</span><br><span class="line">ast2600-evb          Aspeed AST2600 EVB (Cortex A7)</span><br><span class="line">borzoi               Sharp SL-C3100 (Borzoi) PDA (PXA270)</span><br><span class="line">canon-a1100          Canon PowerShot A1100 IS (ARM946)</span><br><span class="line">cheetah              Palm Tungsten|E aka. Cheetah PDA (OMAP310)</span><br><span class="line">collie               Sharp SL-5500 (Collie) PDA (SA-1110)</span><br><span class="line">connex               Gumstix Connex (PXA255)</span><br><span class="line">cubieboard           cubietech cubieboard (Cortex-A8)</span><br><span class="line">emcraft-sf2          SmartFusion2 SOM kit from Emcraft (M2S010)</span><br><span class="line">g220a-bmc            Bytedance G220A BMC (ARM1176)</span><br><span class="line">highbank             Calxeda Highbank (ECX-1000)</span><br><span class="line">...</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>模拟器运行时必须选择一个具体的设备，比如运行树梅派3B则执行qemu-system-aarch64 -machine raspi3b或qemu-system-aarch64 -M raspi3b，运行Quard Star board则是执行qemu-system-riscv64 -machine quard-star或qemu-system-aarch64 -M quard-star。qemu定义使用virt来进行通用模拟而非实际的某SOC。</p>
+<p>具体到设备本身可能还有额外的参数作为可选项供使用者配置，要查看设备的可选参数可以使用-machine ‘id’,help，如下示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">qqm@ubuntu: qemu-system-riscv64 -machine quard-star,help</span><br><span class="line">quard-star.hmat=bool (Set on/off to enable/disable ACPI Heterogeneous Memory Attribute Table (HMAT))</span><br><span class="line">quard-star.mask-rom-path=string (Quard Star Mask ROM image file)</span><br><span class="line">quard-star.suppress-vmdesc=bool (Set on to disable self-describing migration)</span><br><span class="line">quard-star.append=string (Linux kernel command line)</span><br><span class="line">quard-star.mem-merge=bool (Enable/disable memory merge support)</span><br><span class="line">quard-star.dtb=string (Linux kernel device tree file)</span><br><span class="line">quard-star.memory-backend=string (Set RAM backendValid value is ID of hostmem based backend)</span><br><span class="line">quard-star.dumpdtb=string (Dump current dtb to a file and quit)</span><br><span class="line">quard-star.phandle-start=int (The first phandle ID we may generate dynamically)</span><br><span class="line">quard-star.dump-guest-core=bool (Include guest memory in a core dump)</span><br><span class="line">quard-star.memory-encryption=string (Set memory encryption object to use)</span><br><span class="line">quard-star.firmware=string (Firmware image)</span><br><span class="line">quard-star.usb=bool (Set on/off to enable/disable usb)</span><br><span class="line">quard-star.graphics=bool (Set on/off to enable/disable graphics emulation)</span><br><span class="line">quard-star.confidential-guest-support=link&lt;confidential-guest-support&gt; (Set confidential guest scheme to support)</span><br><span class="line">quard-star.initrd=string (Linux initial ramdisk file)</span><br><span class="line">quard-star.dt-compatible=string (Overrides the &quot;compatible&quot; property of the dt root node)</span><br><span class="line">quard-star.kernel=string (Linux kernel image file)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>因此你可以看到我们的run.sh使用了mask-rom-path参数为quard-star指定maskrom固件路径</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-M quard-star,mask-rom-path=&quot;$SHELL_FOLDER/output/mask_rom/mask_rom.bin&quot;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="内存大小（-m）"><a href="#内存大小（-m）" class="headerlink" title="内存大小（-m）"></a>内存大小（-m）</h3><p>参数-m 1G就是指定虚拟机内部的内存大小为1GB，帮助说明如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">qqm@ubuntu: qemu-system-riscv64 -m help</span><br><span class="line">qemu-system-riscv64: -m help: Parameter &#x27;size&#x27; expects a non-negative number below 2^64</span><br><span class="line">Optional suffix k, M, G, T, P or E means kilo-, mega-, giga-, tera-, peta-</span><br><span class="line">and exabytes, respectively.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="核心数（-smp）"><a href="#核心数（-smp）" class="headerlink" title="核心数（-smp）"></a>核心数（-smp）</h3><p>现代cpu往往是对称多核心的，因此通过指定-smp 8可以指定虚拟机核心数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">qqm@ubuntu: qemu-system-riscv64 -smp help</span><br><span class="line">qemu-system-riscv64: -smp help: Parameter &#x27;cpus&#x27; expects a number</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="驱动器映像文件（-drive）"><a href="#驱动器映像文件（-drive）" class="headerlink" title="驱动器映像文件（-drive）"></a>驱动器映像文件（-drive）</h3><p>-drive用来添加映像文件，一般用于块设备，常见配置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-drive if=none,format=raw,file=./usb.img,id=usb0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>一般来讲必须要配置file参数，qemu会根据文件内容自动匹配format，但是最好还是显式声明format=raw更好，qemu支持的format非常多，甚至包括ftp、http等网络地址，详细可以查阅<a target="_blank" rel="noopener" href="https://www.qemu.org/docs/master/system/images.html">qemu文档-磁盘映像</a>，我们最简单透明的就是直接使用raw格式。if参数用来指定匹配设备内部的块设备，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-drive if=pflash,bus=0,unit=0,format=raw,file=$SHELL_FOLDER/output/fw/fw.bin,id=mtd0 \</span><br><span class="line">-drive if=mtd,format=raw,file=$SHELL_FOLDER/output/fw/norflash.img,id=mtd1 \</span><br><span class="line">-drive if=none,format=raw,file=$SHELL_FOLDER/output/fw/usb.img,id=usb0 \</span><br><span class="line">-drive if=sd,format=raw,file=$SHELL_FOLDER/output/fw/sd.img,id=sd0 \</span><br><span class="line">-drive if=none,format=raw,file=$SHELL_FOLDER/output/rootfs/rootfs.img,id=disk0 \</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这样设备映像就匹配到设备源码drive_get_next中的具体ip，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">drive_get_next(IF_SD);</span><br><span class="line">drive_get_next(IF_MTD);</span><br><span class="line">drive_get_next(IF_PFLASH);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="网络设备（-netdev）"><a href="#网络设备（-netdev）" class="headerlink" title="网络设备（-netdev）"></a>网络设备（-netdev）</h3><p>网络设备配置常见两种，一种是user模式，一种是tap模式，这里分别介绍：</p>
+<h4 id="user模式"><a href="#user模式" class="headerlink" title="user模式"></a>user模式</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-netdev user,net=192.168.31.0/24,host=192.168.31.2,hostname=qemu,dns=192.168.31.56,tftp=$SHELL_FOLDER/output,bootfile=/linux_kernel/Image,dhcpstart=192.168.31.100,hostfwd=tcp::3522-:22,hostfwd=tcp::3580-:80,id=net0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如上为user模式配置的一个实例，user模式下，客户机和宿主机之间可以建立tcp/udp连接，且可以配置端口转发将客户机中的端口转发到宿主机上。</p>
+<ul>
+<li>  net=192.168.31.0/24 ：配置网关地址/子网掩码</li>
+<li>  host=192.168.31.2 ：配置主机地址</li>
+<li>  hostname=qemu ：配置主机名称</li>
+<li>  dns=192.168.31.56 ：创建一个dns服务器</li>
+<li>  tftp=$SHELL_FOLDER/output,bootfile=/linux_kernel/Image：创建一个tftp服务器</li>
+<li>  dhcpstart=192.168.31.100：dhcp地址分配起始地址</li>
+<li>  hostfwd=tcp::3522-:22：端口转发将客户机的22端口转发到宿主机的3522端口</li>
+</ul>
+<p>user模式的缺点是客户机无法支持全部的ip协议，但其使用简单，无需对宿主机进行额外的配置。</p>
+<h4 id="tap模式"><a href="#tap模式" class="headerlink" title="tap模式"></a>tap模式</h4><p>tap即在宿主机上创建一个虚拟网卡设备tap0，客户机使用这个网卡设备进行网络通信，优点是对于客户机网卡设备与真实网卡相似，但是缺点是宿主机需要额外工具进行大量配置，网络拓扑结构复杂。</p>
+<p>网桥一般需要手动配置，不过qemu提供了一个qemu-bridge-helper工具可以自动配置网桥，需要配置echo “allow br0” &gt; /etc/qemu/bridge.conf文件，启动qemu参数如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-netdev tap,helper=/libexec/qemu-bridge-helper,id=net0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>不过如此使用需要qemu使用root权限才能创建网桥，如此对整个qemu提高权限非常不合适，这里我还是建议自己配置网桥后使用如下命令启动qemu。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-netdev tap,ifname=tap0,script=no,downscript=no,id=net0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>网桥的配置方法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">set -e</span><br><span class="line"></span><br><span class="line">MODE=\</span><br><span class="line">&quot;config_tap | \</span><br><span class="line">release_tap&quot;</span><br><span class="line"></span><br><span class="line">USER_NAME=$(whoami)</span><br><span class="line">USAGE=&quot;usage $0 [$MODE] [&lt;ETH_NAME&gt;] &quot;</span><br><span class="line"></span><br><span class="line">if [ $# == 2 ] ; then</span><br><span class="line">	ETH_NAME=$1</span><br><span class="line">else</span><br><span class="line">    ETH_NAME=enp2s0f0 #eth0</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">config_tap()</span><br><span class="line">&#123;</span><br><span class="line">    brctl addbr br0</span><br><span class="line">    ip addr flush dev $ETH_NAME</span><br><span class="line">    brctl addif br0 $ETH_NAME</span><br><span class="line">    tunctl -t tap0 -u $USER_NAME</span><br><span class="line">    brctl addif br0 tap0</span><br><span class="line">    ifconfig $ETH_NAME up</span><br><span class="line">    ifconfig tap0 up</span><br><span class="line">    ifconfig br0 up</span><br><span class="line">    ip addr flush dev br0</span><br><span class="line">    ip addr flush dev tap0</span><br><span class="line">    ip addr flush dev $ETH_NAME</span><br><span class="line"></span><br><span class="line">    # static</span><br><span class="line">    ip addr add 169.254.105.176/16 brd + dev br0</span><br><span class="line">    # dynamic</span><br><span class="line">    #dhclient -v br0</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">release_tap()</span><br><span class="line">&#123;</span><br><span class="line">    brctl delif br0 tap0</span><br><span class="line">    tunctl -d tap0</span><br><span class="line">    brctl delif br0 $ETH_NAME</span><br><span class="line">    ifconfig br0 down</span><br><span class="line">    brctl delbr br0</span><br><span class="line">    ifconfig $ETH_NAME up</span><br><span class="line"></span><br><span class="line">    # static</span><br><span class="line">    ip addr add 169.254.105.176/16 brd + dev $ETH_NAME</span><br><span class="line">    # dynamic</span><br><span class="line">    #dhclient -v $ETH_NAME</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">config_tap)</span><br><span class="line">    config_tap</span><br><span class="line">	;;</span><br><span class="line">release_tap)</span><br><span class="line">    release_tap</span><br><span class="line">	;;</span><br><span class="line">--help)</span><br><span class="line">	echo $USAGE</span><br><span class="line">	exit 0</span><br><span class="line">	;;</span><br><span class="line">*)</span><br><span class="line">	echo $USAGE</span><br><span class="line">	exit 1	</span><br><span class="line">	;;</span><br><span class="line">esac</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>完成配置后：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">br0: flags=4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 169.254.105.176  netmask 255.255.0.0  broadcast 169.254.255.255</span><br><span class="line">        ether 0a:0e:24:90:6a:e9  txqueuelen 1000  (以太网)</span><br><span class="line">        RX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 7  bytes 811 (811.0 B)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">enp2s0f0: flags=4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu 1500</span><br><span class="line">        ether 02:42:41:29:3f:f3  txqueuelen 1000  (以太网)</span><br><span class="line">        RX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">tap0: flags=4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu 1500</span><br><span class="line">        ether 0a:0e:24:90:6a:e9  txqueuelen 1000  (以太网)</span><br><span class="line">        RX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>最后一般情况下的无线网卡sta是不支持网桥的，因此tap方式只能和有线网卡桥接。<a target="_blank" rel="noopener" href="https://blog.stdio.io/954">更多参考</a>。</p>
+<h3 id="字符设备（-chardev）"><a href="#字符设备（-chardev）" class="headerlink" title="字符设备（-chardev）"></a>字符设备（-chardev）</h3><p>qemu中创建字符设备的典型应用就是模拟ttyUSB的设备，如下参数配置可以在宿主机打开一个telnet服务器，我们可以从外部连接到qemu内部，配合device选项可以关联到内部的usb-serial。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-chardev socket,telnet=on,host=127.0.0.1,port=3450,server=on,wait=off,id=usb1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-device usb-serial,always-plugged=true,chardev=usb1 \</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>字符设备支持如下类型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">qqm@ubuntu: qemu-system-riscv64 -chardev help      </span><br><span class="line">Available chardev backend types: </span><br><span class="line">  ringbuf</span><br><span class="line">  mux</span><br><span class="line">  pipe</span><br><span class="line">  null</span><br><span class="line">  msmouse</span><br><span class="line">  socket</span><br><span class="line">  vc</span><br><span class="line">  parallel</span><br><span class="line">  memory</span><br><span class="line">  udp</span><br><span class="line">  file</span><br><span class="line">  pty</span><br><span class="line">  serial</span><br><span class="line">  wctablet</span><br><span class="line">  stdio</span><br><span class="line">  testdev</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>具体字符设备类型还可以指定更多参数，示例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">qemu-system-riscv64 -chardev sockeet,help</span><br><span class="line">chardev options:</span><br><span class="line">  abstract=&lt;bool (on/off)&gt;</span><br><span class="line">  append=&lt;bool (on/off)&gt;</span><br><span class="line">  backend=&lt;str&gt;</span><br><span class="line">  chardev=&lt;str&gt;</span><br><span class="line">  cols=&lt;num&gt;</span><br><span class="line">  debug=&lt;num&gt;</span><br><span class="line">  delay=&lt;bool (on/off)&gt;</span><br><span class="line">  fd=&lt;str&gt;</span><br><span class="line">  height=&lt;num&gt;</span><br><span class="line">  host=&lt;str&gt;</span><br><span class="line">  ipv4=&lt;bool (on/off)&gt;</span><br><span class="line">  ipv6=&lt;bool (on/off)&gt;</span><br><span class="line">  localaddr=&lt;str&gt;</span><br><span class="line">  localport=&lt;str&gt;</span><br><span class="line">  logappend=&lt;bool (on/off)&gt;</span><br><span class="line">  logfile=&lt;str&gt;</span><br><span class="line">  mux=&lt;bool (on/off)&gt;</span><br><span class="line">  name=&lt;str&gt;</span><br><span class="line">  nodelay=&lt;bool (on/off)&gt;</span><br><span class="line">  path=&lt;str&gt;</span><br><span class="line">  port=&lt;str&gt;</span><br><span class="line">  reconnect=&lt;num&gt;</span><br><span class="line">  rows=&lt;num&gt;</span><br><span class="line">  server=&lt;bool (on/off)&gt;</span><br><span class="line">  signal=&lt;bool (on/off)&gt;</span><br><span class="line">  size=&lt;size&gt;</span><br><span class="line">  telnet=&lt;bool (on/off)&gt;</span><br><span class="line">  tight=&lt;bool (on/off)&gt;</span><br><span class="line">  tls-authz=&lt;str&gt;</span><br><span class="line">  tls-creds=&lt;str&gt;</span><br><span class="line">  tn3270=&lt;bool (on/off)&gt;</span><br><span class="line">  to=&lt;num&gt;</span><br><span class="line">  wait=&lt;bool (on/off)&gt;</span><br><span class="line">  websocket=&lt;bool (on/off)&gt;</span><br><span class="line">  width=&lt;num&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="文件系统设备（-fsdev）"><a href="#文件系统设备（-fsdev）" class="headerlink" title="文件系统设备（-fsdev）"></a>文件系统设备（-fsdev）</h3><p>-fsdev并不常用，但在使用virtio-9p-device设备时会很有用，使用虚拟机软件时，一般都提供一个共享目录功能，让虚拟机和主机可以同时访问同一目录，方便交互文件，virtio-9p-device设备就能实现类似功能，示例参数配置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-fsdev local,security_model=mapped-xattr,path=$SHELL_FOLDER,id=fsdev0</span><br><span class="line">-device virtio-9p-device,fsdev=fsdev0,mount_tag=hostshare,id=fs0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>由-fsdev选项配置宿主机要共享的路径（path参数），共享模型（security_model参数）指的是关于共享目录的权限处理，这里建议时使用mapped-xattr映射权限，这样在host下权限为运行qemu用户的权限，guest有权进行读和写。</p>
+<p>另外qemu支持virtio-9p-device需要的libattr1-dev，否则无法支持这一功能。</p>
+<h3 id="音频设备（-audiodev）"><a href="#音频设备（-audiodev）" class="headerlink" title="音频设备（-audiodev）"></a>音频设备（-audiodev）</h3><p>-audiodev用于指定创建host上的音频设备，配置id，以便连接到guest上的音频仿真硬件,该选项参数如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">-audiodev [driver=]driver,id=id[,prop[=value][,...]]</span><br><span class="line">                specifies the audio backend to use</span><br><span class="line">                id= identifier of the backend</span><br><span class="line">                timer-period= timer period in microseconds</span><br><span class="line">                in|out.mixing-engine= use mixing engine to mix streams inside QEMU</span><br><span class="line">                in|out.fixed-settings= use fixed settings for host audio</span><br><span class="line">                in|out.frequency= frequency to use with fixed settings</span><br><span class="line">                in|out.channels= number of channels to use with fixed settings</span><br><span class="line">                in|out.format= sample format to use with fixed settings</span><br><span class="line">                valid values: s8, s16, s32, u8, u16, u32, f32</span><br><span class="line">                in|out.voices= number of voices to use</span><br><span class="line">                in|out.buffer-length= length of buffer in microseconds</span><br><span class="line">-audiodev none,id=id,[,prop[=value][,...]]</span><br><span class="line">                dummy driver that discards all output</span><br><span class="line">-audiodev alsa,id=id[,prop[=value][,...]]</span><br><span class="line">                in|out.dev= name of the audio device to use</span><br><span class="line">                in|out.period-length= length of period in microseconds</span><br><span class="line">                in|out.try-poll= attempt to use poll mode</span><br><span class="line">                threshold= threshold (in microseconds) when playback starts</span><br><span class="line">-audiodev oss,id=id[,prop[=value][,...]]</span><br><span class="line">                in|out.dev= path of the audio device to use</span><br><span class="line">                in|out.buffer-count= number of buffers</span><br><span class="line">                in|out.try-poll= attempt to use poll mode</span><br><span class="line">                try-mmap= try using memory mapped access</span><br><span class="line">                exclusive= open device in exclusive mode</span><br><span class="line">                dsp-policy= set timing policy (0..10), -1 to use fragment mode</span><br><span class="line">-audiodev pa,id=id[,prop[=value][,...]]</span><br><span class="line">                server= PulseAudio server address</span><br><span class="line">                in|out.name= source/sink device name</span><br><span class="line">                in|out.latency= desired latency in microseconds</span><br><span class="line">-audiodev sdl,id=id[,prop[=value][,...]]</span><br><span class="line">                in|out.buffer-count= number of buffers</span><br><span class="line">-audiodev wav,id=id[,prop[=value][,...]]</span><br><span class="line">                path= path of wav file to record</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这里要注意你的qemu不一定支持这么多音频框架，需要在编译qemu时指定config选项：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--audio-drv-list=pa,alsa,sdl,oss</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果在windows上的qemu，则不支持以上框架，一般用dsound框架。</p>
+<h3 id="全局参数（-global）"><a href="#全局参数（-global）" class="headerlink" title="全局参数（-global）"></a>全局参数（-global）</h3><p>-global一般用于配置qemu的全局参数选项，可配置的内容非常多，格式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">global options:</span><br><span class="line">  driver=&lt;str&gt;</span><br><span class="line">  property=&lt;str&gt;</span><br><span class="line">  value=&lt;str&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>示例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-global virtio-mmio.force-legacy=false</span><br><span class="line">-global quard-star-syscon.boot-cfg=&quot;$DBOOTCFG&quot;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如何查看可用的选项呢？我这里没找到更好的办法，原则上如果你有qemu的源码，在源码中搜索DEFINE_PROP即可看到类似如下的代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DEFINE_PROP_STRING(&quot;boot-cfg&quot;, QuardStarSysconState, boot_cfg),</span><br><span class="line">DEFINE_PROP_BOOL(&quot;update-cfg&quot;, QuardStarSysconState, update_cfg, true),</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这里的选项均作为global的可配置参数使用，这部分参数配置最好能阅读qemu的源码理解使用，否则不建议配置这些参数。</p>
+<h3 id="设备（-device）"><a href="#设备（-device）" class="headerlink" title="设备（-device）"></a>设备（-device）</h3><p>-device常用于指定guest上总线挂载的外部设备，例如virtio-mmio、usb、pci等总线，示例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-device virtio-blk-device,drive=disk0,id=hd0 \</span><br><span class="line">-device virtio-gpu-device,xres=$WIDTH,yres=$HEIGHT,id=video0 \</span><br><span class="line">-device virtio-mouse-device,id=input0 \</span><br><span class="line">-device virtio-keyboard-device,id=input1 \</span><br><span class="line">-device virtio-9p-device,fsdev=fsdev0,mount_tag=hostshare,id=fs0 \</span><br><span class="line">-device virtio-net-device,netdev=net0 \</span><br><span class="line">-device usb-storage,drive=usb0 \</span><br><span class="line">-device usb-serial,always-plugged=true,chardev=usb1 \</span><br><span class="line">-device wm8750,audiodev=audio0 \</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>注意有些设备需要匹配host上的真实设备驱动模拟，一般要匹配类似chardev\audiodev\fsdev\netdev。</p>
+<h3 id="显示选项（-display）"><a href="#显示选项（-display）" class="headerlink" title="显示选项（-display）"></a>显示选项（-display）</h3><p>-display与-audiodev情况类似，主要是看qemu在编译时配置那些gui框架，目前建议在ubuntu上使用gtk效果良好。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">-display sdl[,alt_grab=on|off][,ctrl_grab=on|off]</span><br><span class="line">            [,window_close=on|off][,gl=on|core|es|off]</span><br><span class="line">-display gtk[,grab_on_hover=on|off][,gl=on|off]|</span><br><span class="line">-display vnc=&lt;display&gt;[,&lt;optargs&gt;]</span><br><span class="line">-display curses[,charset=&lt;encoding&gt;]</span><br><span class="line">-display egl-headless[,rendernode=&lt;file&gt;]</span><br><span class="line">-display none</span><br><span class="line">                select display backend type</span><br><span class="line">                The default display is equivalent to</span><br><span class="line">                &quot;-display gtk&quot;</span><br><span class="line">-nographic      disable graphical output and redirect serial I/Os to console</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>配置示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">--display gtk,zoom-to-fit=false</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果你不想仿真GUI时可以使用-nographic选项。</p>
+<h3 id="终端选项（–serial-–parallel-–monitor）"><a href="#终端选项（–serial-–parallel-–monitor）" class="headerlink" title="终端选项（–serial　–parallel　–monitor）"></a>终端选项（–serial　–parallel　–monitor）</h3><p>终端包括三类串行终端，并行终端，qemu命令监控终端。</p>
+<p>终端对应的host设备可以是以下选项：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">--serial stdio</span><br><span class="line">--serial vc:1280x720</span><br><span class="line">--serial telnet:127.0.0.1:3441,server,nowait</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>绑定stdio即host的标准输入输出，vc:1280x720即GUI显示窗口（注意配置合适的分辨率），telnet为打开一个服务器用于终端交互。</p>
+<h3 id="调试选项（-s-d）"><a href="#调试选项（-s-d）" class="headerlink" title="调试选项（-s -d）"></a>调试选项（-s -d）</h3><p>很多人使用qemu有一个最大的原因就是对目标代码进行验证仿真调试，以便解决在真机上不便于调试的情况。这里介绍两个调试分析相关的选项。</p>
+<h4 id="s"><a href="#s" class="headerlink" title="-s"></a>-s</h4><p>-s -S或-gdb tcp::1234 -S选项用于启动gdb服务，启动后qemu不立即运行guest，而是等待主机gdb发起连接，此时使用gdb输入target remote:1234可以进行相关调试，与真机调试无异。</p>
+<h4 id="d"><a href="#d" class="headerlink" title="-d"></a>-d</h4><p>如果qemu参数添加-d help，可以得到如下输出结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">Log items (comma separated):</span><br><span class="line">out_asm         show generated host assembly code for each compiled TB</span><br><span class="line">in_asm          show target assembly code for each compiled TB</span><br><span class="line">op              show micro ops for each compiled TB</span><br><span class="line">op_opt          show micro ops after optimization</span><br><span class="line">op_ind          show micro ops before indirect lowering</span><br><span class="line">int             show interrupts/exceptions in short format</span><br><span class="line">exec            show trace before each executed TB (lots of logs)</span><br><span class="line">cpu             show CPU registers before entering a TB (lots of logs)</span><br><span class="line">fpu             include FPU registers in the &#x27;cpu&#x27; logging</span><br><span class="line">mmu             log MMU-related activities</span><br><span class="line">pcall           x86 only: show protected mode far calls/returns/exceptions</span><br><span class="line">cpu_reset       show CPU state before CPU resets</span><br><span class="line">unimp           log unimplemented functionality</span><br><span class="line">guest_errors    log when the guest OS does something invalid (eg accessing a</span><br><span class="line">non-existent register)</span><br><span class="line">page            dump pages at beginning of user mode emulation</span><br><span class="line">nochain         do not chain compiled TBs so that &quot;exec&quot; and &quot;cpu&quot; show</span><br><span class="line">complete traces</span><br><span class="line">plugin          output from TCG plugins</span><br><span class="line"></span><br><span class="line">strace          log every user-mode syscall, its input, and its result</span><br><span class="line">trace:PATTERN   enable trace events</span><br><span class="line"></span><br><span class="line">Use &quot;-d trace:help&quot; to get a list of trace events.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>其中非常有用的选项，如：-d in_asm/int/page/mmu/strace -D qemu.log都可以给我们输出很多guest运行时的信息到qemu.log文件中，因此可以进行一些非侵入式观察调试行为，便于软件分析。</p>
+<h3 id="vfio-设备"><a href="#vfio-设备" class="headerlink" title="vfio 设备"></a>vfio 设备</h3><h4 id="xml"><a href="#xml" class="headerlink" title="xml"></a>xml</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br></pre></td><td class="code"><pre><span class="line">&lt;domain type=&#x27;kvm&#x27; id=&#x27;1&#x27;&gt;</span><br><span class="line">  &lt;name&gt;vm&lt;/name&gt;</span><br><span class="line">  &lt;uuid&gt;8c6ebff0-eb21-11eb-a2af-0c48c6c88118&lt;/uuid&gt;</span><br><span class="line">  &lt;memory unit=&#x27;KiB&#x27;&gt;2097152&lt;/memory&gt;</span><br><span class="line">  &lt;currentMemory unit=&#x27;KiB&#x27;&gt;2097152&lt;/currentMemory&gt;</span><br><span class="line">  &lt;vcpu placement=&#x27;static&#x27;&gt;2&lt;/vcpu&gt;</span><br><span class="line">  &lt;resource&gt;</span><br><span class="line">    &lt;partition&gt;/machine&lt;/partition&gt;</span><br><span class="line">  &lt;/resource&gt;</span><br><span class="line">  &lt;os&gt;</span><br><span class="line">    &lt;type arch=&#x27;x86_64&#x27; machine=&#x27;pc-i440fx-2.1&#x27;&gt;hvm&lt;/type&gt;</span><br><span class="line">  &lt;/os&gt;</span><br><span class="line">  &lt;features&gt;</span><br><span class="line">    &lt;acpi/&gt;</span><br><span class="line">  &lt;/features&gt;</span><br><span class="line">  &lt;cpu mode=&#x27;custom&#x27; match=&#x27;exact&#x27; check=&#x27;full&#x27;&gt;</span><br><span class="line">    &lt;model fallback=&#x27;forbid&#x27;&gt;kvm64&lt;/model&gt;</span><br><span class="line">    &lt;feature policy=&#x27;require&#x27; name=&#x27;x2apic&#x27;/&gt;</span><br><span class="line">    &lt;feature policy=&#x27;require&#x27; name=&#x27;hypervisor&#x27;/&gt;</span><br><span class="line">  &lt;/cpu&gt;</span><br><span class="line">  &lt;clock offset=&#x27;utc&#x27;/&gt;</span><br><span class="line">  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;</span><br><span class="line">  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;</span><br><span class="line">  &lt;on_crash&gt;destroy&lt;/on_crash&gt;</span><br><span class="line">  &lt;devices&gt;</span><br><span class="line">    &lt;emulator&gt;/root/pc-bios/qemu-system-x86_64&lt;/emulator&gt;</span><br><span class="line">    &lt;controller type=&#x27;pci&#x27; index=&#x27;0&#x27; model=&#x27;pci-root&#x27;&gt;</span><br><span class="line">      &lt;alias name=&#x27;pci.0&#x27;/&gt;</span><br><span class="line">    &lt;/controller&gt;</span><br><span class="line">    &lt;controller type=&#x27;usb&#x27; index=&#x27;0&#x27; model=&#x27;piix3-uhci&#x27;&gt;</span><br><span class="line">      &lt;alias name=&#x27;usb&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x01&#x27; function=&#x27;0x2&#x27;/&gt;</span><br><span class="line">    &lt;/controller&gt;</span><br><span class="line">    &lt;input type=&#x27;mouse&#x27; bus=&#x27;ps2&#x27;&gt;</span><br><span class="line">      &lt;alias name=&#x27;input0&#x27;/&gt;</span><br><span class="line">    &lt;/input&gt;</span><br><span class="line">    &lt;input type=&#x27;keyboard&#x27; bus=&#x27;ps2&#x27;&gt;</span><br><span class="line">      &lt;alias name=&#x27;input1&#x27;/&gt;</span><br><span class="line">    &lt;/input&gt;</span><br><span class="line">    &lt;graphics type=&#x27;vnc&#x27; port=&#x27;5900&#x27; autoport=&#x27;yes&#x27; listen=&#x27;0.0.0.0&#x27;&gt;</span><br><span class="line">      &lt;listen type=&#x27;address&#x27; address=&#x27;0.0.0.0&#x27;/&gt;</span><br><span class="line">    &lt;/graphics&gt;</span><br><span class="line">    &lt;audio id=&#x27;1&#x27; type=&#x27;none&#x27;/&gt;</span><br><span class="line">    &lt;video&gt;</span><br><span class="line">      &lt;model type=&#x27;cirrus&#x27; vram=&#x27;16384&#x27; heads=&#x27;1&#x27; primary=&#x27;yes&#x27;/&gt;</span><br><span class="line">      &lt;alias name=&#x27;video0&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x02&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/video&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x65&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x1&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;boot order=&#x27;1&#x27;/&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev0&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x09&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x65&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x2&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev1&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0a&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x65&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x3&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev2&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0b&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x65&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x4&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev3&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0c&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x67&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x1&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev4&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0d&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x67&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x2&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev5&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0e&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x67&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x3&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev6&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0f&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x67&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x4&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev7&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x10&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;memballoon model=&#x27;virtio&#x27;&gt;</span><br><span class="line">      &lt;alias name=&#x27;balloon0&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x03&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/memballoon&gt;</span><br><span class="line">  &lt;/devices&gt;</span><br><span class="line">  &lt;seclabel type=&#x27;dynamic&#x27; model=&#x27;selinux&#x27; relabel=&#x27;yes&#x27;&gt;</span><br><span class="line">    &lt;label&gt;system_u:system_r:svirt_t:s0:c21,c767&lt;/label&gt;</span><br><span class="line">    &lt;imagelabel&gt;system_u:object_r:svirt_image_t:s0:c21,c767&lt;/imagelabel&gt;</span><br><span class="line">  &lt;/seclabel&gt;</span><br><span class="line">  &lt;seclabel type=&#x27;dynamic&#x27; model=&#x27;dac&#x27; relabel=&#x27;yes&#x27;&gt;</span><br><span class="line">    &lt;label&gt;+0:+0&lt;/label&gt;</span><br><span class="line">    &lt;imagelabel&gt;+0:+0&lt;/imagelabel&gt;</span><br><span class="line">  &lt;/seclabel&gt;</span><br><span class="line">&lt;/domain&gt;</span><br><span class="line"> </span><br><span class="line">[root@node-69-26 ~]# virsh dumpxml vm &gt; xml</span><br><span class="line">[root@node-69-26 ~]#</span><br><span class="line">[root@node-69-26 ~]# cat xml</span><br><span class="line">&lt;domain type=&#x27;kvm&#x27; id=&#x27;1&#x27;&gt;</span><br><span class="line">  &lt;name&gt;vm&lt;/name&gt;</span><br><span class="line">  &lt;uuid&gt;8c6ebff0-eb21-11eb-a2af-0c48c6c88118&lt;/uuid&gt;</span><br><span class="line">  &lt;memory unit=&#x27;KiB&#x27;&gt;2097152&lt;/memory&gt;</span><br><span class="line">  &lt;currentMemory unit=&#x27;KiB&#x27;&gt;2097152&lt;/currentMemory&gt;</span><br><span class="line">  &lt;vcpu placement=&#x27;static&#x27;&gt;2&lt;/vcpu&gt;</span><br><span class="line">  &lt;resource&gt;</span><br><span class="line">    &lt;partition&gt;/machine&lt;/partition&gt;</span><br><span class="line">  &lt;/resource&gt;</span><br><span class="line">  &lt;os&gt;</span><br><span class="line">    &lt;type arch=&#x27;x86_64&#x27; machine=&#x27;pc-i440fx-2.1&#x27;&gt;hvm&lt;/type&gt;</span><br><span class="line">  &lt;/os&gt;</span><br><span class="line">  &lt;features&gt;</span><br><span class="line">    &lt;acpi/&gt;</span><br><span class="line">  &lt;/features&gt;</span><br><span class="line">  &lt;cpu mode=&#x27;custom&#x27; match=&#x27;exact&#x27; check=&#x27;full&#x27;&gt;</span><br><span class="line">    &lt;model fallback=&#x27;forbid&#x27;&gt;kvm64&lt;/model&gt;</span><br><span class="line">    &lt;feature policy=&#x27;require&#x27; name=&#x27;x2apic&#x27;/&gt;</span><br><span class="line">    &lt;feature policy=&#x27;require&#x27; name=&#x27;hypervisor&#x27;/&gt;</span><br><span class="line">  &lt;/cpu&gt;</span><br><span class="line">  &lt;clock offset=&#x27;utc&#x27;/&gt;</span><br><span class="line">  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;</span><br><span class="line">  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;</span><br><span class="line">  &lt;on_crash&gt;destroy&lt;/on_crash&gt;</span><br><span class="line">  &lt;devices&gt;</span><br><span class="line">    &lt;emulator&gt;/root/pc-bios/qemu-system-x86_64&lt;/emulator&gt;</span><br><span class="line">    &lt;controller type=&#x27;pci&#x27; index=&#x27;0&#x27; model=&#x27;pci-root&#x27;&gt;</span><br><span class="line">      &lt;alias name=&#x27;pci.0&#x27;/&gt;</span><br><span class="line">    &lt;/controller&gt;</span><br><span class="line">    &lt;controller type=&#x27;usb&#x27; index=&#x27;0&#x27; model=&#x27;piix3-uhci&#x27;&gt;</span><br><span class="line">      &lt;alias name=&#x27;usb&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x01&#x27; function=&#x27;0x2&#x27;/&gt;</span><br><span class="line">    &lt;/controller&gt;</span><br><span class="line">    &lt;input type=&#x27;mouse&#x27; bus=&#x27;ps2&#x27;&gt;</span><br><span class="line">      &lt;alias name=&#x27;input0&#x27;/&gt;</span><br><span class="line">    &lt;/input&gt;</span><br><span class="line">    &lt;input type=&#x27;keyboard&#x27; bus=&#x27;ps2&#x27;&gt;</span><br><span class="line">      &lt;alias name=&#x27;input1&#x27;/&gt;</span><br><span class="line">    &lt;/input&gt;</span><br><span class="line">    &lt;graphics type=&#x27;vnc&#x27; port=&#x27;5900&#x27; autoport=&#x27;yes&#x27; listen=&#x27;0.0.0.0&#x27;&gt;</span><br><span class="line">      &lt;listen type=&#x27;address&#x27; address=&#x27;0.0.0.0&#x27;/&gt;</span><br><span class="line">    &lt;/graphics&gt;</span><br><span class="line">    &lt;audio id=&#x27;1&#x27; type=&#x27;none&#x27;/&gt;</span><br><span class="line">    &lt;video&gt;</span><br><span class="line">      &lt;model type=&#x27;cirrus&#x27; vram=&#x27;16384&#x27; heads=&#x27;1&#x27; primary=&#x27;yes&#x27;/&gt;</span><br><span class="line">      &lt;alias name=&#x27;video0&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x02&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/video&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x65&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x1&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;boot order=&#x27;1&#x27;/&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev0&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x09&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x65&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x2&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev1&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0a&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x65&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x3&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev2&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0b&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x65&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x4&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev3&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0c&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x67&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x1&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev4&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0d&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x67&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x2&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev5&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0e&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x67&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x3&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev6&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0f&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">      &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">      &lt;source&gt;</span><br><span class="line">        &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x67&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x4&#x27;/&gt;</span><br><span class="line">      &lt;/source&gt;</span><br><span class="line">      &lt;alias name=&#x27;hostdev7&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x10&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/hostdev&gt;</span><br><span class="line">    &lt;memballoon model=&#x27;virtio&#x27;&gt;</span><br><span class="line">      &lt;alias name=&#x27;balloon0&#x27;/&gt;</span><br><span class="line">      &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x03&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">    &lt;/memballoon&gt;</span><br><span class="line">  &lt;/devices&gt;</span><br><span class="line">  &lt;seclabel type=&#x27;dynamic&#x27; model=&#x27;selinux&#x27; relabel=&#x27;yes&#x27;&gt;</span><br><span class="line">    &lt;label&gt;system_u:system_r:svirt_t:s0:c21,c767&lt;/label&gt;</span><br><span class="line">    &lt;imagelabel&gt;system_u:object_r:svirt_image_t:s0:c21,c767&lt;/imagelabel&gt;</span><br><span class="line">  &lt;/seclabel&gt;</span><br><span class="line">  &lt;seclabel type=&#x27;dynamic&#x27; model=&#x27;dac&#x27; relabel=&#x27;yes&#x27;&gt;</span><br><span class="line">    &lt;label&gt;+0:+0&lt;/label&gt;</span><br><span class="line">    &lt;imagelabel&gt;+0:+0&lt;/imagelabel&gt;</span><br><span class="line">  &lt;/seclabel&gt;</span><br><span class="line">&lt;/domain&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="qemu参数"><a href="#qemu参数" class="headerlink" title="qemu参数"></a>qemu参数</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ulimit -l unlimited</span><br><span class="line">/root/pc-bios/qemu-system-x86_64 -name guest=vm,debug-threads=on -S -object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain-1-vm/master-key.aes -machine pc-i440fx-2.1,usb=off,dump-guest-core=off -accel kvm -cpu kvm64 -m 2048 -overcommit mem-lock=off -smp 2,sockets=2,cores=1,threads=1 -uuid 8c6ebff0-eb21-11eb-a2af-0c48c6c88118 -no-user-config -nodefaults -chardev socket,id=charmonitor,fd=38,server=on,wait=off -mon chardev=charmonitor,id=monitor,mode=control -rtc base=utc -no-shutdown -boot strict=on -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -audiodev &#123;&quot;id&quot;:&quot;audio1&quot;,&quot;driver&quot;:&quot;none&quot;&#125; -vnc 0.0.0.0:0,audiodev=audio1 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 -device vfio-pci,host=0000:65:00.1,id=hostdev0,bootindex=1,bus=pci.0,addr=0x9 -device vfio-pci,host=0000:65:00.2,id=hostdev1,bus=pci.0,addr=0xa -device vfio-pci,host=0000:65:00.3,id=hostdev2,bus=pci.0,addr=0xb -device vfio-pci,host=0000:65:00.4,id=hostdev3,bus=pci.0,addr=0xc -device vfio-pci,host=0000:67:00.1,id=hostdev4,bus=pci.0,addr=0xd -device vfio-pci,host=0000:67:00.2,id=hostdev5,bus=pci.0,addr=0xe -device vfio-pci,host=0000:67:00.3,id=hostdev6,bus=pci.0,addr=0xf -device vfio-pci,host=0000:67:00.4,id=hostdev7,bus=pci.0,addr=0x10 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 -msg timestamp=on</span><br></pre></td></tr></table></figure>
+
+<h3 id="vdpa-设备"><a href="#vdpa-设备" class="headerlink" title="vdpa 设备"></a>vdpa 设备</h3><h4 id="xml-1"><a href="#xml-1" class="headerlink" title="xml"></a>xml</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">&lt;domain type=&quot;kvm&quot; xmlns:qemu=&#x27;http://libvirt.org/schemas/domain/qemu/1.0&#x27;&gt;</span><br><span class="line">    &lt;name&gt;vm0&lt;/name&gt;</span><br><span class="line">    &lt;uuid&gt;d37f5411-b296-11ed-8e6c-0c48c6c879e4&lt;/uuid&gt;</span><br><span class="line">    &lt;memory unit=&quot;KiB&quot;&gt;2097152&lt;/memory&gt;</span><br><span class="line">    &lt;vcpu placement=&quot;static&quot;&gt;2&lt;/vcpu&gt;</span><br><span class="line">    &lt;os&gt;</span><br><span class="line">        &lt;type arch=&quot;x86_64&quot; machine=&quot;pc-i440fx-2.1&quot;&gt;hvm&lt;/type&gt;</span><br><span class="line">    &lt;/os&gt;</span><br><span class="line">    &lt;features&gt;</span><br><span class="line">        &lt;acpi&gt;&lt;/acpi&gt;</span><br><span class="line">    &lt;/features&gt;</span><br><span class="line">    &lt;clock offset=&quot;utc&quot;&gt;&lt;/clock&gt;</span><br><span class="line">    &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;</span><br><span class="line">    &lt;on_reboot&gt;restart&lt;/on_reboot&gt;</span><br><span class="line">    &lt;on_crash&gt;destroy&lt;/on_crash&gt;</span><br><span class="line">    &lt;devices&gt;</span><br><span class="line">        &lt;emulator&gt;/home/corsica-sim/qemu-system-x86_64-vdpa&lt;/emulator&gt;</span><br><span class="line">        &lt;disk device=&quot;disk&quot; type=&quot;file&quot;&gt;</span><br><span class="line">            &lt;target bus=&quot;ide&quot; dev=&quot;hda&quot;/&gt;</span><br><span class="line">            &lt;source file=&quot;/home/centos8.4-vm0.qcow2&quot;/&gt;</span><br><span class="line">            &lt;driver type=&quot;qcow2&quot; name=&quot;qemu&quot;/&gt;</span><br><span class="line">        &lt;/disk&gt;</span><br><span class="line">        &lt;interface type=&#x27;vdpa&#x27;&gt;</span><br><span class="line">                        &lt;source dev=&#x27;/dev/vhost-vdpa-3&#x27;/&gt;</span><br><span class="line">                        &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x07&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">                &lt;/interface&gt;</span><br><span class="line">        &lt;memballoon model=&#x27;virtio&#x27;&gt;</span><br><span class="line">            &lt;alias name=&#x27;balloon0&#x27;/&gt;</span><br><span class="line">            &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x08&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">        &lt;/memballoon&gt;</span><br><span class="line">        &lt;serial type=&quot;tcp&quot;&gt;</span><br><span class="line">            &lt;source mode=&quot;bind&quot; host=&quot;127.0.0.1&quot; service=&quot;4319&quot;/&gt;</span><br><span class="line">            &lt;protocol type=&quot;telnet&quot;/&gt;</span><br><span class="line">            &lt;target port=&quot;1&quot;/&gt;</span><br><span class="line">        &lt;/serial&gt;</span><br><span class="line">    &lt;/devices&gt;</span><br><span class="line">    &lt;qemu:commandline&gt;</span><br><span class="line">        &lt;qemu:arg value=&#x27;-cpu&#x27;/&gt;</span><br><span class="line">        &lt;qemu:arg value=&#x27;host&#x27;/&gt;</span><br><span class="line">        &lt;qemu:arg value=&#x27;-net&#x27;/&gt;</span><br><span class="line">        &lt;qemu:arg value=&#x27;nic&#x27;/&gt;</span><br><span class="line">        &lt;qemu:arg value=&#x27;-net&#x27;/&gt;</span><br><span class="line">        &lt;qemu:arg value=&#x27;user,hostfwd=tcp::5022-:22&#x27;/&gt;</span><br><span class="line">    &lt;/qemu:commandline&gt;</span><br><span class="line">&lt;/domain&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="qemu参数-1"><a href="#qemu参数-1" class="headerlink" title="qemu参数"></a>qemu参数</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">#legacy设备</span><br><span class="line">ulimit -l unlimited</span><br><span class="line">/root/qemu/qemu-system-x86_64 \</span><br><span class="line">-drive file=/nfs/centos8.4-8g-ext4-nodebug.img,if=none,id=sys -device virtio-blk-pci,drive=sys,bootindex=1 \</span><br><span class="line">-netdev type=vhost-vdpa,vhostdev=/dev/vhost-vdpa-2,id=vhost-vdpa0,queues=4 \</span><br><span class="line">-device virtio-net-pci,netdev=vhost-vdpa0,mq=on,vectors=9,tx_queue_size=512,rx_queue_size=512,page-per-vq=on,addr=0x9 \</span><br><span class="line">-netdev type=vhost-vdpa,vhostdev=/dev/vhost-vdpa-3,id=vhost-vdpa1,queues=4 \</span><br><span class="line">-device virtio-net-pci,netdev=vhost-vdpa1,mq=on,vectors=9,tx_queue_size=512,rx_queue_size=512,page-per-vq=on,addr=0xa \</span><br><span class="line">-enable-kvm -smp 4 -m 1G -cpu host -vnc :50 -monitor stdio</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#modern设备</span><br><span class="line">ulimit -l unlimited</span><br><span class="line">/root/qemu/qemu-system-x86_64 \</span><br><span class="line">-drive file=/mnt/centos8.4-8g-ext4-nodebug.img,if=none,id=sys -device virtio-blk-pci,drive=sys,bootindex=1 \</span><br><span class="line">-netdev type=vhost-vdpa,vhostdev=/dev/vhost-vdpa-0,id=vhost-vdpa0,queues=4 \</span><br><span class="line">-device virtio-net-pci,netdev=vhost-vdpa0,mq=on,vectors=9,disable-modern=off,disable-legacy=on,tx_queue_size=512,rx_queue_size=512,page-per-vq=on,addr=0x9 \</span><br><span class="line">-netdev type=vhost-vdpa,vhostdev=/dev/vhost-vdpa-1,id=vhost-vdpa1,queues=4 \</span><br><span class="line">-device virtio-net-pci,netdev=vhost-vdpa1,mq=on,vectors=9,disable-modern=off,disable-legacy=on,tx_queue_size=512,rx_queue_size=512,page-per-vq=on,addr=0xa \</span><br><span class="line">-device vhost-vdpa-blk-pci,vdpa-dev=/dev/vhost-vdpa-3,vectors=2,disable-modern=off,disable-legacy=on,num-queues=2,queue-size=128,page-per-vq=on,addr=0xb \</span><br><span class="line">-enable-kvm -smp 4 -m 1G -cpu host -vnc :50 -monitor stdio -trace events=event -D dst-vdpa.log</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="vhost-user-设备"><a href="#vhost-user-设备" class="headerlink" title="vhost-user 设备"></a>vhost-user 设备</h3><h4 id="xml-2"><a href="#xml-2" class="headerlink" title="xml"></a>xml</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">&lt;domain type=&quot;kvm&quot; xmlns:qemu=&#x27;http://libvirt.org/schemas/domain/qemu/1.0&#x27;&gt;</span><br><span class="line">    &lt;name&gt;vm0&lt;/name&gt;</span><br><span class="line">    &lt;uuid&gt;d37f5411-b296-11ed-8e6c-0c48c6c879e4&lt;/uuid&gt;</span><br><span class="line">    &lt;memory unit=&quot;KiB&quot;&gt;2097152&lt;/memory&gt;</span><br><span class="line">    &lt;memoryBacking&gt;</span><br><span class="line">        &lt;hugepages&gt;</span><br><span class="line">            &lt;page size=&quot;2&quot; unit=&quot;M&quot;/&gt;</span><br><span class="line">        &lt;/hugepages&gt;</span><br><span class="line">        &lt;nosharepages/&gt;</span><br><span class="line">        &lt;locked/&gt;</span><br><span class="line">        &lt;source type=&quot;file&quot;/&gt;</span><br><span class="line">        &lt;access mode=&quot;shared&quot;/&gt;</span><br><span class="line">        &lt;discard/&gt;</span><br><span class="line">    &lt;/memoryBacking&gt;</span><br><span class="line">    &lt;vcpu placement=&quot;static&quot;&gt;2&lt;/vcpu&gt;</span><br><span class="line">    &lt;os&gt;</span><br><span class="line">        &lt;type arch=&quot;x86_64&quot; machine=&quot;pc-i440fx-2.1&quot;&gt;hvm&lt;/type&gt;</span><br><span class="line">    &lt;/os&gt;</span><br><span class="line">    &lt;cpu mode=&#x27;custom&#x27; match=&#x27;exact&#x27; check=&#x27;full&#x27;&gt;</span><br><span class="line">        &lt;model fallback=&#x27;forbid&#x27;&gt;kvm64&lt;/model&gt;</span><br><span class="line">        &lt;feature policy=&#x27;require&#x27; name=&#x27;x2apic&#x27;/&gt;</span><br><span class="line">        &lt;feature policy=&#x27;require&#x27; name=&#x27;hypervisor&#x27;/&gt;</span><br><span class="line">    &lt;/cpu&gt;</span><br><span class="line">    &lt;features&gt;</span><br><span class="line">        &lt;acpi&gt;&lt;/acpi&gt;</span><br><span class="line">    &lt;/features&gt;</span><br><span class="line">    &lt;clock offset=&quot;utc&quot;&gt;&lt;/clock&gt;</span><br><span class="line">    &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;</span><br><span class="line">    &lt;on_reboot&gt;restart&lt;/on_reboot&gt;</span><br><span class="line">    &lt;on_crash&gt;destroy&lt;/on_crash&gt;</span><br><span class="line">    &lt;devices&gt;</span><br><span class="line">        &lt;emulator&gt;/root/pc-bios/qemu-system-x86_64&lt;/emulator&gt;</span><br><span class="line">        &lt;disk device=&quot;disk&quot; type=&quot;file&quot;&gt;</span><br><span class="line">            &lt;target bus=&quot;ide&quot; dev=&quot;hda&quot;/&gt;</span><br><span class="line">            &lt;source file=&quot;/mnt/store/vm0-centos8.4-8g-ext4-host-dmar.img&quot;/&gt;</span><br><span class="line">        &lt;/disk&gt;</span><br><span class="line">        &lt;interface type=&#x27;vhostuser&#x27;&gt;</span><br><span class="line">            &lt;mac address=&#x27;00:aa:bb:cc:dd:ee&#x27;/&gt;</span><br><span class="line">            &lt;source type=&#x27;unix&#x27; path=&#x27;/tmp/vdpa-socket0&#x27; mode=&#x27;client&#x27;/&gt;</span><br><span class="line">            &lt;model type=&#x27;virtio&#x27;/&gt;</span><br><span class="line">            &lt;driver queues=&#x27;4&#x27; rx_queue_size=&#x27;512&#x27; tx_queue_size=&#x27;512&#x27;/&gt;</span><br><span class="line">        &lt;/interface&gt;</span><br><span class="line">        &lt;serial type=&quot;tcp&quot;&gt;</span><br><span class="line">            &lt;source mode=&quot;bind&quot; host=&quot;127.0.0.1&quot; service=&quot;4321&quot;/&gt;</span><br><span class="line">            &lt;protocol type=&quot;telnet&quot;/&gt;</span><br><span class="line">            &lt;target port=&quot;1&quot;/&gt;</span><br><span class="line">        &lt;/serial&gt;</span><br><span class="line">        &lt;graphics type=&#x27;vnc&#x27; port=&#x27;5901&#x27; listen=&#x27;0.0.0.0&#x27;&gt;</span><br><span class="line">            &lt;listen type=&#x27;address&#x27; address=&#x27;0.0.0.0&#x27;/&gt;</span><br><span class="line">        &lt;/graphics&gt;</span><br><span class="line">  </span><br><span class="line">    &lt;/devices&gt;</span><br><span class="line">    &lt;qemu:commandline&gt;</span><br><span class="line">        &lt;qemu:arg value=&#x27;-L&#x27;/&gt;</span><br><span class="line">        &lt;qemu:arg value=&#x27;/root/pc-bios&#x27;/&gt;</span><br><span class="line">    &lt;/qemu:commandline&gt;</span><br><span class="line">&lt;/domain&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="qemu参数-2"><a href="#qemu参数-2" class="headerlink" title="qemu参数"></a>qemu参数</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ulimit -l unlimited</span><br><span class="line">/root/qemu-system-x86_64 \</span><br><span class="line">-m 2048 -enable-kvm \</span><br><span class="line">-drive if=virtio,file=/data/vm0-centos8.4-8g-ext4-host-dmar.img,cache=none  \</span><br><span class="line">-object memory-backend-file,id=mem,size=2048M,mem-path=/dev/hugepages,share=on \</span><br><span class="line">-mem-prealloc \</span><br><span class="line">-numa node,memdev=mem \</span><br><span class="line">-chardev socket,id=char0,path=/tmp/vdpa-socket0,server=on \</span><br><span class="line">-netdev type=vhost-user,id=vdpa,chardev=char0,queues=1 \</span><br><span class="line">-device virtio-net-pci,rx_queue_size=512,tx_queue_size=512,netdev=vdpa,page-per-vq=on,addr=0xa \</span><br><span class="line">-monitor stdio \</span><br><span class="line">-vnc :0 -L /root/pc-bios</span><br></pre></td></tr></table></figure>
+
+<h3 id="nvme设备"><a href="#nvme设备" class="headerlink" title="nvme设备"></a>nvme设备</h3><h4 id="qemu参数-3"><a href="#qemu参数-3" class="headerlink" title="qemu参数"></a>qemu参数</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">/root/qemu-system-x86_64 -enable-kvm -machine q35 -cpu host -smp 4 -m 4096 \</span><br><span class="line">                -hda $&#123;BASE_PATH&#125;/centos8.4-ext4-host-large.qcow2 -daemonize \</span><br><span class="line">    -device ioh3420,id=root_port1,chassis=0,slot=0 \</span><br><span class="line">    -device x3130-upstream,id=pci.0,bus=root_port1 \</span><br><span class="line">    -device xio3130-downstream,id=pci.2,bus=pci.0,chassis=1,slot=0 \</span><br><span class="line">    -device xio3130-downstream,id=pci.3,bus=pci.0,chassis=1,slot=1 \</span><br><span class="line">    -device xio3130-downstream,id=pci.4,bus=pci.0,chassis=1,slot=2 \</span><br><span class="line">    -device xio3130-downstream,id=pci.5,bus=pci.0,chassis=1,slot=3 \</span><br><span class="line">    -device xio3130-downstream,id=pci.6,bus=pci.0,chassis=1,slot=4 \</span><br><span class="line">    -device xio3130-downstream,id=pci.7,bus=pci.0,chassis=1,slot=5 \</span><br><span class="line">    -device xio3130-downstream,id=pci.8,bus=pci.0,chassis=1,slot=6 \</span><br><span class="line">    -device xio3130-downstream,id=pci.9,bus=pci.0,chassis=1,slot=7 \</span><br><span class="line">    -device xio3130-downstream,id=pci.10,bus=pci.0,chassis=1,slot=8 \</span><br><span class="line">    -device xio3130-downstream,id=pci.11,bus=pci.0,chassis=1,slot=9 \</span><br><span class="line">    -device xio3130-downstream,id=pci.12,bus=pci.0,chassis=1,slot=10 \</span><br><span class="line">    -device xio3130-downstream,id=pci.13,bus=pci.0,chassis=1,slot=11 \</span><br><span class="line">    -device xio3130-downstream,id=pci.14,bus=pci.0,chassis=1,slot=12 \</span><br><span class="line">    -device xio3130-downstream,id=pci.15,bus=pci.0,chassis=1,slot=13 \</span><br><span class="line">    -device xio3130-downstream,id=pci.16,bus=pci.0,chassis=1,slot=14 \</span><br><span class="line">    -device xio3130-downstream,id=pci.17,bus=pci.0,chassis=1,slot=15 \</span><br><span class="line">    -device xio3130-downstream,id=pci.18,bus=pci.0,chassis=1,slot=16 \</span><br><span class="line">    -device xio3130-downstream,id=pci.19,bus=pci.0,chassis=1,slot=17 \</span><br><span class="line">    -device xio3130-downstream,id=pci.20,bus=pci.0,chassis=1,slot=18 \</span><br><span class="line">    -device xio3130-downstream,id=pci.21,bus=pci.0,chassis=1,slot=19 \</span><br><span class="line">    -device xio3130-downstream,id=pci.22,bus=pci.0,chassis=1,slot=20 \</span><br><span class="line">    -device xio3130-downstream,id=pci.23,bus=pci.0,chassis=1,slot=21 \</span><br><span class="line">    -device xio3130-downstream,id=pci.24,bus=pci.0,chassis=1,slot=22 \</span><br><span class="line">    -device xio3130-downstream,id=pci.25,bus=pci.0,chassis=1,slot=23 \</span><br><span class="line">    -device xio3130-downstream,id=pci.26,bus=pci.0,chassis=1,slot=24 \</span><br><span class="line">    -device x3130-upstream,id=pci.27,bus=pci.18 \</span><br><span class="line">    -device xio3130-downstream,id=pci.28,bus=pci.27,chassis=2,slot=0 \</span><br><span class="line">    -device xio3130-downstream,id=pci.29,bus=pci.27,chassis=2,slot=1 \</span><br><span class="line">    -device xio3130-downstream,id=pci.30,bus=pci.27,chassis=2,slot=2 \</span><br><span class="line">    -device xio3130-downstream,id=pci.31,bus=pci.27,chassis=2,slot=3 \</span><br><span class="line">    -device xio3130-downstream,id=pci.32,bus=pci.27,chassis=2,slot=4 \</span><br><span class="line">    -device xio3130-downstream,id=pci.33,bus=pci.27,chassis=2,slot=5 \</span><br><span class="line">    -device xio3130-downstream,id=pci.34,bus=pci.27,chassis=2,slot=6 \</span><br><span class="line">    -device xio3130-downstream,id=pci.35,bus=pci.27,chassis=2,slot=7 \</span><br><span class="line">    -device xio3130-downstream,id=pci.36,bus=pci.27,chassis=2,slot=8 \</span><br><span class="line">    -device xio3130-downstream,id=pci.37,bus=pci.27,chassis=2,slot=9 \</span><br><span class="line">    -device xio3130-downstream,id=pci.38,bus=pci.27,chassis=2,slot=10 \</span><br><span class="line">    -device xio3130-downstream,id=pci.39,bus=pci.27,chassis=2,slot=11 \</span><br><span class="line">    -device xio3130-downstream,id=pci.40,bus=pci.27,chassis=2,slot=12 \</span><br><span class="line">    -device xio3130-downstream,id=pci.41,bus=pci.27,chassis=2,slot=13 \</span><br><span class="line">    -device xio3130-downstream,id=pci.42,bus=pci.27,chassis=2,slot=14 \</span><br><span class="line">    -device xio3130-downstream,id=pci.43,bus=pci.27,chassis=2,slot=15 \</span><br><span class="line">    -device xio3130-downstream,id=pci.44,bus=pci.27,chassis=2,slot=16 \</span><br><span class="line">    -device xio3130-downstream,id=pci.45,bus=pci.27,chassis=2,slot=17 \</span><br><span class="line">    -device xio3130-downstream,id=pci.46,bus=pci.27,chassis=2,slot=18 \</span><br><span class="line">    -device xio3130-downstream,id=pci.47,bus=pci.27,chassis=2,slot=19 \</span><br><span class="line">    -device xio3130-downstream,id=pci.48,bus=pci.27,chassis=2,slot=20 \</span><br><span class="line">    -device xio3130-downstream,id=pci.49,bus=pci.27,chassis=2,slot=21 \</span><br><span class="line">    -device xio3130-downstream,id=pci.50,bus=pci.27,chassis=2,slot=22 \</span><br><span class="line">    -device xio3130-downstream,id=pci.51,bus=pci.27,chassis=2,slot=23 \</span><br><span class="line">    -device xio3130-downstream,id=pci.n0,bus=pci.27,chassis=2,slot=24 \</span><br><span class="line">    -device xio3130-downstream,id=pci.n1,bus=pci.27,chassis=2,slot=25 \</span><br><span class="line">    -device xio3130-downstream,id=pci.n2,bus=pci.27,chassis=2,slot=26 \</span><br><span class="line">    -device xio3130-downstream,id=pci.n3,bus=pci.27,chassis=2,slot=27 \</span><br><span class="line">    -device xio3130-downstream,id=pci.rmda,bus=pci.27,chassis=2,slot=28 \</span><br><span class="line">        -drive file=$&#123;BASE_PATH&#125;/nvme0.raw,format=raw,if=none,id=nvme0 \</span><br><span class="line">    -device nvme,bus=pci.n0,id=nvme.106,drive=nvme0,serial=deadbeaf0,max_ioqpairs=2 \</span><br><span class="line">        -drive file=$&#123;BASE_PATH&#125;/nvme1.raw,format=raw,if=none,id=nvme1 \</span><br><span class="line">    -device nvme,bus=pci.n1,id=nvme.107,drive=nvme1,serial=deadbeaf0,max_ioqpairs=2 \</span><br><span class="line">        -L $&#123;BASE_PATH&#125;/pc-bios \</span><br><span class="line">    -net nic -net user,hostfwd=tcp::5023-:22 \</span><br><span class="line">        -D $&#123;BASE_PATH&#125;/qemu-sim.log \</span><br><span class="line">    -d jmnd_once,jmnd_err,jmnd_sdma,jmnd_nvme,jmnd_warn \</span><br><span class="line">    -msg timestamp=on \</span><br><span class="line">        -trace events=$&#123;BASE_PATH&#125;/events \</span><br><span class="line">    -vnc :0 \</span><br><span class="line">        -monitor telnet:localhost:4321,server,nowait</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/qemu/" rel="tag"><i class="fa fa-tag"></i> qemu</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/06/05/virtqueue/" rel="next" title="virtqueue与spdq rings">
+                <i class="fa fa-chevron-left"></i> virtqueue与spdq rings
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/06/05/DPDK-SPDK-OVS-QEMU%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/" rel="prev" title="DPDK/SPDK/OVS/QEMU源码编译">
+                DPDK/SPDK/OVS/QEMU源码编译 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mashuyu.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+                <a href="/archives">
+                  <span class="site-state-item-count">248</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">154</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/rma-shuyu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1004129700@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E5%A4%87%E7%B1%BB%E5%9E%8B%EF%BC%88-machine-M%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">设备类型（-machine&#x2F;-M）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F%EF%BC%88-m%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">内存大小（-m）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%95%B0%EF%BC%88-smp%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">核心数（-smp）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A9%B1%E5%8A%A8%E5%99%A8%E6%98%A0%E5%83%8F%E6%96%87%E4%BB%B6%EF%BC%88-drive%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">驱动器映像文件（-drive）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87%EF%BC%88-netdev%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">网络设备（-netdev）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#user%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.1.</span> <span class="nav-text">user模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tap%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.2.</span> <span class="nav-text">tap模式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E8%AE%BE%E5%A4%87%EF%BC%88-chardev%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">字符设备（-chardev）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E8%AE%BE%E5%A4%87%EF%BC%88-fsdev%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">文件系统设备（-fsdev）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E8%AE%BE%E5%A4%87%EF%BC%88-audiodev%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">音频设备（-audiodev）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E5%8F%82%E6%95%B0%EF%BC%88-global%EF%BC%89"><span class="nav-number">9.</span> <span class="nav-text">全局参数（-global）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E5%A4%87%EF%BC%88-device%EF%BC%89"><span class="nav-number">10.</span> <span class="nav-text">设备（-device）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%BE%E7%A4%BA%E9%80%89%E9%A1%B9%EF%BC%88-display%EF%BC%89"><span class="nav-number">11.</span> <span class="nav-text">显示选项（-display）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%88%E7%AB%AF%E9%80%89%E9%A1%B9%EF%BC%88%E2%80%93serial-%E2%80%93parallel-%E2%80%93monitor%EF%BC%89"><span class="nav-number">12.</span> <span class="nav-text">终端选项（–serial　–parallel　–monitor）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E9%80%89%E9%A1%B9%EF%BC%88-s-d%EF%BC%89"><span class="nav-number">13.</span> <span class="nav-text">调试选项（-s -d）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#s"><span class="nav-number">13.1.</span> <span class="nav-text">-s</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#d"><span class="nav-number">13.2.</span> <span class="nav-text">-d</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vfio-%E8%AE%BE%E5%A4%87"><span class="nav-number">14.</span> <span class="nav-text">vfio 设备</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#xml"><span class="nav-number">14.1.</span> <span class="nav-text">xml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#qemu%E5%8F%82%E6%95%B0"><span class="nav-number">14.2.</span> <span class="nav-text">qemu参数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vdpa-%E8%AE%BE%E5%A4%87"><span class="nav-number">15.</span> <span class="nav-text">vdpa 设备</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#xml-1"><span class="nav-number">15.1.</span> <span class="nav-text">xml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#qemu%E5%8F%82%E6%95%B0-1"><span class="nav-number">15.2.</span> <span class="nav-text">qemu参数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vhost-user-%E8%AE%BE%E5%A4%87"><span class="nav-number">16.</span> <span class="nav-text">vhost-user 设备</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#xml-2"><span class="nav-number">16.1.</span> <span class="nav-text">xml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#qemu%E5%8F%82%E6%95%B0-2"><span class="nav-number">16.2.</span> <span class="nav-text">qemu参数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nvme%E8%AE%BE%E5%A4%87"><span class="nav-number">17.</span> <span class="nav-text">nvme设备</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#qemu%E5%8F%82%E6%95%B0-3"><span class="nav-number">17.1.</span> <span class="nav-text">qemu参数</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rma-shuyu</span>
+
+  
+</div>
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共312.4k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'D2xdJ1c0QWBntVsHIVyVXtSZ-gzGzoHsz',
+        appKey: 'UGFWDjX2oTi2dIoWPAyisa9S',
+        placeholder: '请在此输入您的留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

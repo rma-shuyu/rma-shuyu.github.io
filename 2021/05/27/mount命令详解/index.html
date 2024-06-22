@@ -110,7 +110,7 @@
 <meta property="og:description" content="mount命令（用来挂载硬盘或镜像等）1mount [-t vfstype] [-o options] device dir">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-05-27T12:27:18.000Z">
-<meta property="article:modified_time" content="2023-07-29T06:46:38.896Z">
+<meta property="article:modified_time" content="2024-06-22T07:13:57.665Z">
 <meta property="article:author" content="rma-shuyu">
 <meta property="article:tag" content="linux">
 <meta name="twitter:card" content="summary">
@@ -430,6 +430,25 @@
 <h2 id="umount显示-device-busy"><a href="#umount显示-device-busy" class="headerlink" title="umount显示 device busy"></a>umount显示 device busy</h2><p>这是因为有程序正在访问这个设备，最简单的办法就是让访问该设备的程序退出以后再umount。可能有时候用户搞不清除究竟是什么程序在访问设备，如果用户不急着umount，则可以用:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># umount -l /mnt/hda5</span></span><br></pre></td></tr></table></figure>
 <p>来卸载设备。选项 –l 并不是马上umount，而是在该目录空闲后再umount。还可以先用命令 ps aux 来查看占用设备的程序PID，然后用命令kill来杀死占用设备的进程。</p>
+<h2 id="fdisk恢复分区"><a href="#fdisk恢复分区" class="headerlink" title="fdisk恢复分区"></a>fdisk恢复分区</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看当前块设备分区情况</span></span><br><span class="line">root@localhost:/home/data<span class="comment"># lsblk</span></span><br><span class="line">NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS</span><br><span class="line">sda      8:0    0 223.6G  0 disk </span><br><span class="line">├─sda1   8:1    0   538M  0 part /boot/efi</span><br><span class="line">├─sda2   8:2    0   512M  0 part /boot</span><br><span class="line">└─sda3   8:3    0    63G  0 part /</span><br><span class="line"></span><br><span class="line"><span class="comment">#对/dev/sda进行分区恢复</span></span><br><span class="line">root@localhost:/home/data<span class="comment"># fdisk /dev/sda</span></span><br><span class="line"></span><br><span class="line">Welcome to fdisk (util-linux 2.34).</span><br><span class="line">Changes will remain <span class="keyword">in</span> memory only, until you decide to write them.</span><br><span class="line">Be careful before using the write <span class="built_in">command</span>.</span><br><span class="line"></span><br><span class="line">GPT PMBR size mismatch (134217727 != 468862127) will be corrected by write.</span><br><span class="line"></span><br><span class="line">Command (m <span class="keyword">for</span> <span class="built_in">help</span>): n</span><br><span class="line">Partition number (4-128, default 4): 4</span><br><span class="line">First sector (134217695-468862094, default 134217728): </span><br><span class="line">Last sector, +/-sectors or +/-size&#123;K,M,G,T,P&#125; (134217728-468862094, default 468862094): </span><br><span class="line"></span><br><span class="line">Created a new partition 4 of <span class="built_in">type</span> <span class="string">&#x27;Linux filesystem&#x27;</span> and of size 159.6 GiB.</span><br><span class="line">Partition <span class="comment">#4 contains a ext4 signature.</span></span><br><span class="line"></span><br><span class="line">Do you want to remove the signature? [Y]es/[N]o: N</span><br><span class="line"></span><br><span class="line">Command (m <span class="keyword">for</span> <span class="built_in">help</span>): w</span><br><span class="line"></span><br><span class="line">The partition table has been altered.</span><br><span class="line">Syncing disks.</span><br><span class="line"></span><br><span class="line"><span class="comment">#查看当前块设备分区情况</span></span><br><span class="line">root@localhost:/home/data<span class="comment"># lsblk</span></span><br><span class="line">NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS</span><br><span class="line">sda      8:0    0 223.6G  0 disk </span><br><span class="line">├─sda1   8:1    0   538M  0 part /boot/efi</span><br><span class="line">├─sda2   8:2    0   512M  0 part /boot</span><br><span class="line">├─sda3   8:3    0    63G  0 part /</span><br><span class="line">└─sda4   8:4    0 159.6G  0 part </span><br><span class="line"></span><br><span class="line"><span class="comment">#查看当前块设备挂载情况</span></span><br><span class="line">root@localhost:/home/data<span class="comment"># df -h</span></span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">udev             15G  8.4M   15G   1% /dev</span><br><span class="line">tmpfs           3.0G  2.3M  3.0G   1% /run</span><br><span class="line">/dev/sda3        62G   18G   42G  30% /</span><br><span class="line">/dev/sda2       488M  297M  155M  66% /boot</span><br><span class="line">/dev/sda1       537M  5.1M  532M   1% /boot/efi</span><br><span class="line"></span><br><span class="line"><span class="comment">#挂载恢复的分区</span></span><br><span class="line">root@localhost:/home/data<span class="comment"># mount /dev/sda4 /home/data</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#查看当前块设备挂载情况</span></span><br><span class="line">root@localhost:/home/data<span class="comment"># df -h</span></span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">udev             15G  8.4M   15G   1% /dev</span><br><span class="line">tmpfs           3.0G  2.3M  3.0G   1% /run</span><br><span class="line">/dev/sda3        62G   18G   42G  30% /</span><br><span class="line">/dev/sda2       488M  297M  155M  66% /boot</span><br><span class="line">/dev/sda1       537M  5.1M  532M   1% /boot/efi</span><br><span class="line">/dev/sda4       157G  138G   11G  94% /home/data</span><br><span class="line"></span><br><span class="line"><span class="comment">#查看数据是否恢复</span></span><br><span class="line">root@localhost:/home/data<span class="comment"># ll</span></span><br><span class="line">total 110261428</span><br><span class="line">drwxr-xr-x 5 root root        4096 1月   2 02:16 ./</span><br><span class="line">drwxr-xr-x 6 root root        4096 1月   1 08:48 ../</span><br><span class="line">-rw-r--r-- 1 root root   104857600 1月   1 10:59 data0.raw</span><br><span class="line">-rw-r--r-- 1 root root   104857600 1月   1 10:59 data1.raw</span><br><span class="line">-rw-r--r-- 1 root root   104857600 1月   1 10:59 data2.raw</span><br><span class="line">-rw-r--r-- 1 root root   104857600 1月   1 10:59 data3.raw</span><br><span class="line">-rw-r--r-- 1 root root   104857600 1月   1 10:59 data4.raw</span><br><span class="line">-rw-r--r-- 1 root root   104857600 1月   1 11:00 data5.raw</span><br><span class="line">-rw-r--r-- 1 root root   104857600 1月   1 11:00 data6.raw</span><br><span class="line">-rw-r--r-- 1 root root    10485760 1月   1 11:00 data7.raw</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="配置开机自动挂载"><a href="#配置开机自动挂载" class="headerlink" title="配置开机自动挂载"></a>配置开机自动挂载</h2><p>因为mount命令会在重启服务器后失效，所以要将分区信息写到/etc/fstab文件中让它永久挂载：</p>
+<blockquote>
+<p>sudo vim /etc/fstab</p>
+</blockquote>
+<p>加入：</p>
+<blockquote>
+<p>/dev/sda4 /home/data ext4 defaults 0 0</p>
+</blockquote>
+<blockquote>
+<p><fs spec> <fs file> <fs vfstype> <fs mntops> <fs freq> <fs passno><br>具体说明，以挂载/dev/sdb1为例：<br><fs spec>：分区定位，可以给UUID或LABEL，例如：UUID=6E9ADAC29ADA85CD或LABEL=software<br><fs file>：具体挂载点的位置，例如：/data<br><fs vfstype>：挂载磁盘类型，linux分区一般为ext4，windows分区一般为ntfs<br><fs mntops>：挂载参数，一般为defaults<br><fs freq>：磁盘检查，默认为0<br><fs passno>：磁盘检查，默认为0，不需要检查</fs></fs></fs></fs></fs></fs></fs></fs></fs></fs></fs></fs></p>
+</blockquote>
+<p>修改完/etc/fstab文件后，运行</p>
+<blockquote>
+<p>sudo mount -a</p>
+</blockquote>
+<p>命令验证一下配置是否正确。如果配置不正确可能会导致系统无法正常启动。</p>
 
       
     </div>
@@ -554,7 +573,7 @@
             
               <div class="site-state-item site-state-posts">
                 <a href="/archives">
-                  <span class="site-state-item-count">218</span>
+                  <span class="site-state-item-count">248</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -565,7 +584,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-count">44</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -576,7 +595,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">136</span>
+                  <span class="site-state-item-count">154</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -632,7 +651,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#mount%E5%91%BD%E4%BB%A4%EF%BC%88%E7%94%A8%E6%9D%A5%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98%E6%88%96%E9%95%9C%E5%83%8F%E7%AD%89%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">mount命令（用来挂载硬盘或镜像等）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mount%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">mount的基本用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#umount%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">umount基本用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#umount%E6%98%BE%E7%A4%BA-device-busy"><span class="nav-number">5.</span> <span class="nav-text">umount显示 device busy</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#mount%E5%91%BD%E4%BB%A4%EF%BC%88%E7%94%A8%E6%9D%A5%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98%E6%88%96%E9%95%9C%E5%83%8F%E7%AD%89%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">mount命令（用来挂载硬盘或镜像等）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mount%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">mount的基本用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#umount%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">umount基本用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#umount%E6%98%BE%E7%A4%BA-device-busy"><span class="nav-number">5.</span> <span class="nav-text">umount显示 device busy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fdisk%E6%81%A2%E5%A4%8D%E5%88%86%E5%8C%BA"><span class="nav-number">6.</span> <span class="nav-text">fdisk恢复分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%BC%80%E6%9C%BA%E8%87%AA%E5%8A%A8%E6%8C%82%E8%BD%BD"><span class="nav-number">7.</span> <span class="nav-text">配置开机自动挂载</span></a></li></ol></div>
             
 
           </div>
@@ -652,7 +671,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -677,7 +696,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共249k字</span>
+  <span class="post-count">博客全站共312.4k字</span>
 </div>
         
 

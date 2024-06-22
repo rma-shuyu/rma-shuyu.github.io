@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function () {
+        if ('') {
+            if (prompt('请输入文章密码') !== '') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://rma-shuyu.github.io/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="linux," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="rma's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="查看设备的是否是pf，当前驱动">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nvme pf直通vm">
+<meta property="og:url" content="https://rma-shuyu.github.io/2024/02/04/nvme-pf%E7%9B%B4%E9%80%9Avm/index.html">
+<meta property="og:site_name" content="rma&#39;s Blog">
+<meta property="og:description" content="查看设备的是否是pf，当前驱动">
+<meta property="og:locale">
+<meta property="og:image" content="https://rma-shuyu.github.io/2024/02/images/e5a8ffb582c5b2516c61b44f27271b401e93ee600a583472f4cc703f20f001f1.png">
+<meta property="og:image" content="https://rma-shuyu.github.io/2024/02/images/42fbb6a61912b1489b5c1b8eb6a2e486c5e412c27698443e1e2e940c70c4a81c.png">
+<meta property="article:published_time" content="2024-02-04T02:47:37.000Z">
+<meta property="article:modified_time" content="2024-06-22T07:13:57.665Z">
+<meta property="article:author" content="rma-shuyu">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://rma-shuyu.github.io/2024/02/images/e5a8ffb582c5b2516c61b44f27271b401e93ee600a583472f4cc703f20f001f1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rma-shuyu.github.io/2024/02/04/nvme-pf直通vm/"/>
+
+
+
+
+
+  <title>nvme pf直通vm | rma's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a target="_blank" rel="noopener" href="https://github.com/rma-shuyu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">rma's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay hungry, stay foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2024/02/04/nvme-pf%E7%9B%B4%E9%80%9Avm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">nvme pf直通vm</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-02-04T10:47:37+08:00">
+                2024-02-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/LINUX/" itemprop="url" rel="index">
+                    <span itemprop="name">LINUX</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2024/02/04/nvme-pf%E7%9B%B4%E9%80%9Avm/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2024/02/04/nvme-pf%E7%9B%B4%E9%80%9Avm/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>查看设备的是否是pf，当前驱动</p>
+</blockquote>
+<span id="more"></span>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">root@jaguar-2288H-V7:/data# lspci -s 41:00.0 -v</span><br><span class="line">41:00.0 Non-Volatile memory controller: Device 1f53:1a00 (prog-if 02 [NVM Express])</span><br><span class="line">        Subsystem: Device 1f53:1a00</span><br><span class="line">        Physical Slot: 3-1</span><br><span class="line">        Flags: bus master, fast devsel, latency 0, NUMA node 0</span><br><span class="line">        Memory at d3fffc00000 (64-bit, prefetchable) [size=8K]</span><br><span class="line">        Memory at d3fffc02000 (64-bit, prefetchable) [size=4K]</span><br><span class="line">        Capabilities: [88] Power Management version 3</span><br><span class="line">        Capabilities: [4c] Express Endpoint, MSI 00</span><br><span class="line">        Capabilities: [40] MSI-X: Enable+ Count=3 Masked-</span><br><span class="line">        Kernel driver in use: nvme</span><br><span class="line">        Kernel modules: nvme</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">root@jaguar-2288H-V7:/data# lspci -s 41:00.0 -vv</span><br><span class="line">41:00.0 Non-Volatile memory controller: Device 1f53:1a00 (prog-if 02 [NVM Express])</span><br><span class="line">        Subsystem: Device 1f53:1a00</span><br><span class="line">        Physical Slot: 3-1</span><br><span class="line">        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx+</span><br><span class="line">        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast &gt;TAbort- &lt;TAbort- &lt;MAbort- &gt;SERR- &lt;PERR- INTx-</span><br><span class="line">        Latency: 0, Cache Line Size: 32 bytes</span><br><span class="line">        NUMA node: 0</span><br><span class="line">        Region 0: Memory at d3fffc00000 (64-bit, prefetchable) [size=8K]</span><br><span class="line">        Region 2: Memory at d3fffc02000 (64-bit, prefetchable) [size=4K]</span><br><span class="line">        Capabilities: [88] Power Management version 3</span><br><span class="line">                Flags: PMEClk- DSI- D1- D2- AuxCurrent=0mA PME(D0-,D1-,D2-,D3hot-,D3cold-)</span><br><span class="line">                Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-</span><br><span class="line">        Capabilities: [4c] Express (v2) Endpoint, MSI 00</span><br><span class="line">                DevCap: MaxPayload 512 bytes, PhantFunc 0, Latency L0s &lt;64ns, L1 &lt;1us</span><br><span class="line">                        ExtTag+ AttnBtn- AttnInd- PwrInd- RBE+ FLReset+ SlotPowerLimit 0.000W</span><br><span class="line">                DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-</span><br><span class="line">                        RlxdOrd+ ExtTag+ PhantFunc- AuxPwr- NoSnoop- FLReset-</span><br><span class="line">                        MaxPayload 256 bytes, MaxReadReq 4096 bytes</span><br><span class="line">                DevSta: CorrErr- NonFatalErr- FatalErr- UnsupReq- AuxPwr- TransPend-</span><br><span class="line">                LnkCap: Port #0, Speed 32GT/s, Width x16, ASPM L0s, Exit Latency L0s &lt;64ns</span><br><span class="line">                        ClockPM- Surprise- LLActRep+ BwNot+ ASPMOptComp-</span><br><span class="line">                LnkCtl: ASPM Disabled; RCB 64 bytes Disabled- CommClk-</span><br><span class="line">                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-</span><br><span class="line">                LnkSta: Speed 32GT/s (ok), Width x16 (ok)</span><br><span class="line">                        TrErr- Train- SlotClk- DLActive- BWMgmt- ABWMgmt-</span><br><span class="line">                DevCap2: Completion Timeout: Range ABCD, TimeoutDis+, NROPrPrP-, LTR-</span><br><span class="line">                         10BitTagComp+, 10BitTagReq+, OBFF Not Supported, ExtFmt-, EETLPPrefix-</span><br><span class="line">                         EmergencyPowerReduction Not Supported, EmergencyPowerReductionInit-</span><br><span class="line">                         FRS-, TPHComp-, ExtTPHComp-</span><br><span class="line">                         AtomicOpsCap: 32bit- 64bit- 128bitCAS-</span><br><span class="line">                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-, LTR-, OBFF Disabled</span><br><span class="line">                         AtomicOpsCtl: ReqEn-</span><br><span class="line">                LnkCtl2: Target Link Speed: 32GT/s, EnterCompliance- SpeedDis-</span><br><span class="line">                         Transmit Margin: Normal Operating Range, EnterModifiedCompliance- ComplianceSOS-</span><br><span class="line">                         Compliance De-emphasis: -6dB</span><br><span class="line">                LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete+, EqualizationPhase1+</span><br><span class="line">                         EqualizationPhase2+, EqualizationPhase3+, LinkEqualizationRequest-</span><br><span class="line">        Capabilities: [40] MSI-X: Enable+ Count=3 Masked-</span><br><span class="line">                Vector table: BAR=2 offset=00000000</span><br><span class="line">                PBA: BAR=2 offset=00000c00</span><br><span class="line">        Kernel driver in use: nvme</span><br><span class="line">        Kernel modules: nvme</span><br></pre></td></tr></table></figure>
+
+<p>libvirt xml</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line">#cat nvme.xml </span><br><span class="line">&lt;domain type=&#x27;kvm&#x27; id=&#x27;1&#x27; xmlns:qemu=&#x27;http://libvirt.org/schemas/domain/qemu/1.0&#x27;&gt;</span><br><span class="line">        &lt;name&gt;vm_nvme&lt;/name&gt;</span><br><span class="line">        &lt;uuid&gt;0ba4f4d0-9a80-447e-a64c-e9c0d6c39ed8&lt;/uuid&gt;</span><br><span class="line">        &lt;memory unit=&#x27;KiB&#x27;&gt;4194304&lt;/memory&gt;</span><br><span class="line">        &lt;currentMemory unit=&#x27;KiB&#x27;&gt;4194304&lt;/currentMemory&gt;</span><br><span class="line">        &lt;vcpu placement=&#x27;static&#x27;&gt;10&lt;/vcpu&gt;</span><br><span class="line">        &lt;resource&gt;</span><br><span class="line">                &lt;partition&gt;/machine&lt;/partition&gt;</span><br><span class="line">        &lt;/resource&gt;</span><br><span class="line">        &lt;os&gt;</span><br><span class="line">                &lt;type arch=&#x27;x86_64&#x27; machine=&#x27;pc-i440fx-2.1&#x27;&gt;hvm&lt;/type&gt;</span><br><span class="line">                &lt;boot dev=&#x27;hd&#x27;/&gt;</span><br><span class="line">        &lt;/os&gt;</span><br><span class="line">        &lt;features&gt;</span><br><span class="line">                &lt;acpi/&gt;</span><br><span class="line">        &lt;/features&gt;</span><br><span class="line">        &lt;cpu mode=&#x27;custom&#x27; match=&#x27;exact&#x27; check=&#x27;full&#x27;&gt;</span><br><span class="line">                &lt;model fallback=&#x27;forbid&#x27;&gt;kvm64&lt;/model&gt;</span><br><span class="line">                &lt;feature policy=&#x27;require&#x27; name=&#x27;x2apic&#x27;/&gt;</span><br><span class="line">                &lt;feature policy=&#x27;require&#x27; name=&#x27;hypervisor&#x27;/&gt;</span><br><span class="line">        &lt;/cpu&gt;</span><br><span class="line">        &lt;clock offset=&#x27;utc&#x27;/&gt;</span><br><span class="line">        &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;</span><br><span class="line">        &lt;on_reboot&gt;restart&lt;/on_reboot&gt;</span><br><span class="line">        &lt;on_crash&gt;destroy&lt;/on_crash&gt;</span><br><span class="line">        &lt;devices&gt;</span><br><span class="line">                &lt;emulator&gt;/root/pc-bios/qemu-system-x86_64&lt;/emulator&gt;</span><br><span class="line">                &lt;disk type=&#x27;file&#x27; device=&#x27;disk&#x27;&gt;</span><br><span class="line">                        &lt;driver name=&#x27;qemu&#x27; type=&#x27;raw&#x27;/&gt;</span><br><span class="line">                        &lt;source file=&#x27;/data/centos8.3-8g-ext4-host_vm2.img&#x27; index=&#x27;1&#x27;/&gt;</span><br><span class="line">                        &lt;backingStore/&gt;</span><br><span class="line">                        &lt;target dev=&#x27;hda&#x27; bus=&#x27;ide&#x27;/&gt;</span><br><span class="line">                        &lt;alias name=&#x27;ide0-0-0&#x27;/&gt;</span><br><span class="line">                        &lt;address type=&#x27;drive&#x27; controller=&#x27;0&#x27; bus=&#x27;0&#x27; target=&#x27;0&#x27; unit=&#x27;0&#x27;/&gt;</span><br><span class="line">                &lt;/disk&gt;</span><br><span class="line">                &lt;controller type=&#x27;pci&#x27; index=&#x27;0&#x27; model=&#x27;pci-root&#x27;&gt;</span><br><span class="line">                        &lt;alias name=&#x27;pci.0&#x27;/&gt;</span><br><span class="line">                &lt;/controller&gt;</span><br><span class="line">                &lt;controller type=&#x27;usb&#x27; index=&#x27;0&#x27; model=&#x27;piix3-uhci&#x27;&gt;</span><br><span class="line">                        &lt;alias name=&#x27;usb&#x27;/&gt;</span><br><span class="line">                        &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x01&#x27; function=&#x27;0x2&#x27;/&gt;</span><br><span class="line">                &lt;/controller&gt;</span><br><span class="line">                &lt;controller type=&#x27;ide&#x27; index=&#x27;0&#x27;&gt;</span><br><span class="line">                        &lt;alias name=&#x27;ide&#x27;/&gt;</span><br><span class="line">                        &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x01&#x27; function=&#x27;0x1&#x27;/&gt;</span><br><span class="line">                &lt;/controller&gt;</span><br><span class="line">                &lt;input type=&#x27;mouse&#x27; bus=&#x27;ps2&#x27;&gt;</span><br><span class="line">                        &lt;alias name=&#x27;input0&#x27;/&gt;</span><br><span class="line">                &lt;/input&gt;</span><br><span class="line">                &lt;input type=&#x27;keyboard&#x27; bus=&#x27;ps2&#x27;&gt;</span><br><span class="line">                        &lt;alias name=&#x27;input1&#x27;/&gt;</span><br><span class="line">                &lt;/input&gt;</span><br><span class="line">                &lt;graphics type=&#x27;vnc&#x27; port=&#x27;5900&#x27; autoport=&#x27;yes&#x27; listen=&#x27;0.0.0.0&#x27;&gt;</span><br><span class="line">                        &lt;listen type=&#x27;address&#x27; address=&#x27;0.0.0.0&#x27;/&gt;</span><br><span class="line">                &lt;/graphics&gt;</span><br><span class="line">                &lt;video&gt;</span><br><span class="line">                        &lt;model type=&#x27;cirrus&#x27; vram=&#x27;16384&#x27; heads=&#x27;1&#x27; primary=&#x27;yes&#x27;/&gt;</span><br><span class="line">                        &lt;alias name=&#x27;video0&#x27;/&gt;</span><br><span class="line">                        &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x02&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">                &lt;/video&gt;</span><br><span class="line">                &lt;hostdev mode=&#x27;subsystem&#x27; type=&#x27;pci&#x27; managed=&#x27;yes&#x27;&gt;</span><br><span class="line">                        &lt;driver name=&#x27;vfio&#x27;/&gt;</span><br><span class="line">                        &lt;source&gt;</span><br><span class="line">                                &lt;address domain=&#x27;0x0000&#x27; bus=&#x27;0x41&#x27; slot=&#x27;0x00&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">                        &lt;/source&gt;</span><br><span class="line">                        &lt;alias name=&#x27;hostdev0&#x27;/&gt;</span><br><span class="line">                        &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x0a&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">                &lt;/hostdev&gt;</span><br><span class="line">                &lt;memballoon model=&#x27;virtio&#x27;&gt;</span><br><span class="line">                        &lt;alias name=&#x27;balloon0&#x27;/&gt;</span><br><span class="line">                        &lt;address type=&#x27;pci&#x27; domain=&#x27;0x0000&#x27; bus=&#x27;0x00&#x27; slot=&#x27;0x03&#x27; function=&#x27;0x0&#x27;/&gt;</span><br><span class="line">                &lt;/memballoon&gt;</span><br><span class="line">        &lt;/devices&gt;</span><br><span class="line">        &lt;seclabel type=&#x27;dynamic&#x27; model=&#x27;dac&#x27; relabel=&#x27;yes&#x27;&gt;</span><br><span class="line">                &lt;label&gt;+0:+0&lt;/label&gt;</span><br><span class="line">                &lt;imagelabel&gt;+0:+0&lt;/imagelabel&gt;</span><br><span class="line">        &lt;/seclabel&gt;</span><br><span class="line">        &lt;qemu:commandline&gt;</span><br><span class="line">                &lt;qemu:arg value=&#x27;-L&#x27;/&gt;</span><br><span class="line">                &lt;qemu:arg value=&#x27;/root/pc-bios&#x27;/&gt;</span><br><span class="line">        &lt;/qemu:commandline&gt;</span><br><span class="line">&lt;/domain&gt;</span><br></pre></td></tr></table></figure>
+<p>这里<hostdev>设置managed=’yes’会将该设备从nvme驱动卸载绑定到指定驱动vfio</hostdev></p>
+<p>执行<br>virsh create /data/nvme.xml<br>Domain ‘vm_nvme’ created from /data/nvme.xml</p>
+<p>root@jaguar-2288H-V7:/data# virsh list<br> Id   Name      State</p>
+<hr>
+<p> 1    vm_nvme   running</p>
+<p>root@jaguar-2288H-V7:/data# ps -ef | grep qemu<br>root        4654       1 99 22:03 ?        00:00:22 /root/pc-bios/qemu-system-x86_64 -name guest=vm_nvme,debug-threads=on -S -object {“qom-type”:”secret”,”id”:”masterKey0”,”format”:”raw”,”file”:”/var/local/lib/libvirt/qemu/domain-1-vm_nvme/master-key.aes”} -machine pc-i440fx-2.1,usb=off,dump-guest-core=off,memory-backend=pc.ram -accel kvm -cpu kvm64,x2apic=on,hypervisor=on -m 4096 -object {“qom-type”:”memory-backend-ram”,”id”:”pc.ram”,”size”:4294967296} -overcommit mem-lock=off -smp 10,sockets=10,cores=1,threads=1 -uuid 0ba4f4d0-9a80-447e-a64c-e9c0d6c39ed8 -no-user-config -nodefaults -chardev socket,id=charmonitor,fd=24,server=on,wait=off -mon chardev=charmonitor,id=monitor,mode=control -rtc base=utc -no-shutdown -boot strict=on -device {“driver”:”piix3-usb-uhci”,”id”:”usb”,”bus”:”pci.0”,”addr”:”0x1.0x2”} -blockdev {“driver”:”file”,”filename”:”/data/centos8.3-8g-ext4-host_vm2.img”,”node-name”:”libvirt-1-storage”,”auto-read-only”:true,”discard”:”unmap”} -blockdev {“node-name”:”libvirt-1-format”,”read-only”:false,”driver”:”raw”,”file”:”libvirt-1-storage”} -device {“driver”:”ide-hd”,”bus”:”ide.0”,”unit”:0,”drive”:”libvirt-1-format”,”id”:”ide0-0-0”,”bootindex”:1} -audiodev {“id”:”audio1”,”driver”:”none”} -vnc 0.0.0.0:0,audiodev=audio1 -device {“driver”:”cirrus-vga”,”id”:”video0”,”bus”:”pci.0”,”addr”:”0x2”} -device {“driver”:”vfio-pci”,”host”:”0000:41:00.0”,”id”:”hostdev0”,”bus”:”pci.0”,”addr”:”0xa”} -device {“driver”:”virtio-balloon-pci”,”id”:”balloon0”,”bus”:”pci.0”,”addr”:”0x3”} -L /root/pc-bios -msg timestamp=on<br>root        4685    3954  0 22:03 pts/0    00:00:00 grep –color=auto qemu<br>root@jaguar-2288H-V7:/data# </p>
+<p>打开vnc，查看前端驱动类型</p>
+<p><img src="../../images/e5a8ffb582c5b2516c61b44f27271b401e93ee600a583472f4cc703f20f001f1.png" alt="picture 0">  </p>
+<p>查看nvme的fio配置<br><img src="../../images/42fbb6a61912b1489b5c1b8eb6a2e486c5e412c27698443e1e2e940c70c4a81c.png" alt="picture 1">  </p>
+<p><strong>x86_64</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/root/qemu-system-x86_64 -name guest=vm,debug-threads=on \</span><br><span class="line">-drive if=virtio,file=/data/centos8.3-8g-ext4-host_vm2.img -daemonize \</span><br><span class="line">-machine pc-i440fx-2.1,usb=off,dump-guest-core=off -accel kvm -cpu kvm64 -m 2048 \</span><br><span class="line">-overcommit mem-lock=off -smp 2,sockets=2,cores=1,threads=1 \</span><br><span class="line">-uuid 8c6ebff0-eb21-11eb-a2af-0c48c6c88118 -no-user-config -nodefaults \</span><br><span class="line">-rtc base=utc -no-shutdown -boot strict=on \</span><br><span class="line">-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \</span><br><span class="line">-device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \</span><br><span class="line">-device vfio-pci,host=0000:8c:00.0,id=hostdev1,bus=pci.0,addr=0xc \</span><br><span class="line">-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \</span><br><span class="line">-L /root/pc-bios \</span><br><span class="line">-vnc :1 \</span><br><span class="line">-msg timestamp=on</span><br></pre></td></tr></table></figure>
+
+<p><strong>aarch64</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/rma/qemu_620/install_dir/bin/qemu-system-aarch64 -name vm0 -machine virt,accel=kvm,usb=off \</span><br><span class="line">-cpu host -m 2048 -smp 2,sockets=1,cores=2,threads=1 \</span><br><span class="line">-boot menu=on \</span><br><span class="line">-hda centos8.6_arm.img \</span><br><span class="line">-device vfio-pci,host=8b:00.1,id=hostdev0,addr=0x9 \</span><br><span class="line">-device vfio-pci,host=8c:00.1,id=hostdev1,addr=0x10 \</span><br><span class="line">-bios /usr/share/qemu-efi-aarch64/QEMU_EFI.fd \</span><br><span class="line">-vnc :50 \</span><br><span class="line">-monitor stdio</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"><i class="fa fa-tag"></i> linux</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2024/01/04/manifest%E7%AE%A1%E7%90%86repo/" rel="next" title="manifest管理repo">
+                <i class="fa fa-chevron-left"></i> manifest管理repo
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2024/02/27/setcap%E6%8F%90%E6%9D%83/" rel="prev" title="setcap提权">
+                setcap提权 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mashuyu.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+                <a href="/archives">
+                  <span class="site-state-item-count">248</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">154</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/rma-shuyu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1004129700@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rma-shuyu</span>
+
+  
+</div>
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共312.4k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'D2xdJ1c0QWBntVsHIVyVXtSZ-gzGzoHsz',
+        appKey: 'UGFWDjX2oTi2dIoWPAyisa9S',
+        placeholder: '请在此输入您的留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>

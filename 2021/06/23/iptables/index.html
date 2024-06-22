@@ -111,7 +111,7 @@
 <meta property="og:locale">
 <meta property="og:image" content="https://rma-shuyu.github.io/2021/06/23/iptables/5377285be5187989b312f02f8a5a4250396c4b9a60547e438ade55f651f405ef.png">
 <meta property="article:published_time" content="2021-06-23T12:27:18.000Z">
-<meta property="article:modified_time" content="2023-07-01T09:37:27.373Z">
+<meta property="article:modified_time" content="2024-06-22T07:13:57.665Z">
 <meta property="article:author" content="rma-shuyu">
 <meta property="article:tag" content="iptables">
 <meta name="twitter:card" content="summary">
@@ -447,6 +447,9 @@
 <p><strong>公网主机10.20.69.36让虚机内网192.168.122.19上网</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 内网虚机设置默认路由，网关为公网主机连接虚机内网的ip 192.168.122.1</span></span><br><span class="line">route add default gw 192.168.122.1</span><br><span class="line"></span><br><span class="line"><span class="comment">## 公网主机设置ip_forward转发功能</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;net.ipv4.ip_forward=1&quot;</span> &gt;&gt; /etc/sysctl.conf</span><br><span class="line">sysctl -p</span><br><span class="line"></span><br><span class="line"><span class="comment">## 公网主机设置SNAT</span></span><br><span class="line">iptables -t nat -A POSTROUTING -s 192.168.122.19 -j SNAT --to 10.20.69.36</span><br></pre></td></tr></table></figure>
 
+<p><strong>内网ip（本机无法直连）通过外网ip（本机可以直连）转发流量到本机代理访问外网</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#在外网ip上</span><br><span class="line">socat -d -d TCP-LISTEN:22890,reuseaddr,fork TCP:10.20.18.193:7890</span><br><span class="line"></span><br><span class="line">#在内网ip上</span><br><span class="line">https_proxy=http://10.20.69.52:22890 http_proxy=http://10.20.69.52:22890 wget www.google.com</span><br><span class="line"></span><br><span class="line">10.20.18.78:7890是自己电脑ip和代理端口</span><br></pre></td></tr></table></figure>
+
 <p><strong>本机的 2222 端口映射到内网 虚拟机的22 端口</strong></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A PREROUTING -d 10.20.69.36 -p tcp --dport 2222  -j DNAT --to-dest 192.168.122.19:22</span><br></pre></td></tr></table></figure>
 
@@ -596,7 +599,7 @@
             
               <div class="site-state-item site-state-posts">
                 <a href="/archives">
-                  <span class="site-state-item-count">218</span>
+                  <span class="site-state-item-count">248</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -607,7 +610,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-count">44</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -618,7 +621,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">136</span>
+                  <span class="site-state-item-count">154</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -694,7 +697,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -719,7 +722,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共249k字</span>
+  <span class="post-count">博客全站共312.4k字</span>
 </div>
         
 

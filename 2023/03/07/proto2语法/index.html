@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function () {
+        if ('') {
+            if (prompt('请输入文章密码') !== '') {
+                alert('密码错误！');
+                if (history.length === 1) {
+                    location.replace("https://rma-shuyu.github.io/"); // 这里替换成你的首页
+                } else {
+                    history.back();
+                }
+            }
+        }
+    })();
+</script>
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="proto2," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="rma's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="本指南介绍如何使用 protocol buffer 语言来构造 protocol buffer 数据，包括 .proto 文件语法以及如何从 .proto 文件生成数据访问类。它涵盖了 protocol buffer 语言的 proto2 版本。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="proto2语法指引">
+<meta property="og:url" content="https://rma-shuyu.github.io/2023/03/07/proto2%E8%AF%AD%E6%B3%95/index.html">
+<meta property="og:site_name" content="rma&#39;s Blog">
+<meta property="og:description" content="本指南介绍如何使用 protocol buffer 语言来构造 protocol buffer 数据，包括 .proto 文件语法以及如何从 .proto 文件生成数据访问类。它涵盖了 protocol buffer 语言的 proto2 版本。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2023-03-07T12:50:20.000Z">
+<meta property="article:modified_time" content="2024-06-22T07:13:57.665Z">
+<meta property="article:author" content="rma-shuyu">
+<meta property="article:tag" content="proto2">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rma-shuyu.github.io/2023/03/07/proto2语法/"/>
+
+
+
+
+
+  <title>proto2语法指引 | rma's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a target="_blank" rel="noopener" href="https://github.com/rma-shuyu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">rma's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay hungry, stay foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://rma-shuyu.github.io/2023/03/07/proto2%E8%AF%AD%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mashuyu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="rma's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">proto2语法指引</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-03-07T20:50:20+08:00">
+                2023-03-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/GRPC/" itemprop="url" rel="index">
+                    <span itemprop="name">GRPC</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2023/03/07/proto2%E8%AF%AD%E6%B3%95/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2023/03/07/proto2%E8%AF%AD%E6%B3%95/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>本指南介绍如何使用 protocol buffer 语言来构造 protocol buffer 数据，包括 <code>.proto</code> 文件语法以及如何从 <code>.proto</code> 文件生成数据访问类。它涵盖了 protocol buffer 语言的 <strong>proto2</strong> 版本。</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="定义一个-Message-类型"><a href="#定义一个-Message-类型" class="headerlink" title="定义一个 Message 类型"></a>定义一个 Message 类型</h2><p>首先让我们看一个非常简单的例子。假设你要定义一个搜索请求的 message 格式，其中每个搜索请求都有一个查询字符串，你感兴趣的特定结果页数（第几页）以及每页的结果数。下面就是定义这个请求的 .proto 文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">message SearchRequest &#123;</span><br><span class="line">  required string query = 1;  // 查询字符串</span><br><span class="line">  optional int32 page_number = 2;  // 第几页</span><br><span class="line">  optional int32 result_per_page = 3;  // 每页的结果数</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>SearchRequest message 定义指定了三个字段（名称/值对），每个字段对应着要包含在 message 中的数据，每个字段都有一个名称和类型。</p>
+<h3 id="指定字段类型"><a href="#指定字段类型" class="headerlink" title="指定字段类型"></a>指定字段类型</h3><p>在上面的示例中，所有字段都是 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/proto#scalar">标量类型</a>：两个整数（<code>page_number</code> 和 <code>result_per_page</code>）和一个字符串（<code>query</code>）。但是，你还可以为字段指定复合类型，包括 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/proto#enum">枚举</a> 和其它的 message 类型。</p>
+<h3 id="分配字段编号"><a href="#分配字段编号" class="headerlink" title="分配字段编号"></a>分配字段编号</h3><p>如你所见，message 定义中的每个字段都有<strong>唯一编号</strong>。这些数字以 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/82ff31c6adc6">message 二进制格式</a> 标识你的字段，并且一旦你的 message 被使用，这些编号就无法再更改。请注意，1 到 15 范围内的字段编号需要一个字节进行编码，编码结果将同时包含编号和类型（你可以在 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/82ff31c6adc6">Protocol Buffer 编码</a> 中找到更多相关信息）。16 到 2047 范围内的字段编号占用两个字节。因此，你应该为非常频繁出现的 message 元素保留字段编号 1 到 15。请记住为将来可能添加的常用元素预留出一些空间。</p>
+<p>你可以指定的最小字段数为 1，最大字段数为 229 - 1 或 536,870,911。你也不能使用 19000 到 19999 范围内的数字（<code>FieldDescriptor::kFirstReservedNumber</code> 到 <code>FieldDescriptor::kLastReservedNumber</code>），因为它们是为 Protocol Buffers 的实现保留的 - 如果你使用这些保留数字之一，protocol buffer 编译器会抱怨你的 <code>.proto</code>。同样，你也不能使用任何以前定义的 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/proto#reserved">保留</a> 字段编号。</p>
+<blockquote>
+<p>译者注：<br>“不能使用任何以前定义的保留字段编号” 指的是使用 reserved 关键字声明的保留字段。</p>
+</blockquote>
+<h3 id="指定字段规则"><a href="#指定字段规则" class="headerlink" title="指定字段规则"></a>指定字段规则</h3><p>你指定的 message 字段可以是下面几种情况之一：</p>
+<ul>
+<li>  <strong>required</strong>: 格式良好的 message 必须包含该字段一次。</li>
+<li>  <strong>optional</strong>: 格式良好的 message 可以包含该字段零次或一次（不超过一次）。</li>
+<li>  <strong>repeated</strong>: 该字段可以在格式良好的消息中重复任意多次（包括零）。其中重复值的顺序会被保留。</li>
+</ul>
+<p>由于一些历史原因，标量数字类型的 repeated 字段不能尽可能高效地编码。新代码应使用特殊选项 [packed = true] 来获得更高效的编码。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">repeated int32 samples = 4 [packed=true];</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>对 required 的使用永远都应该非常小心。如果你希望在某个时刻停止写入或发送 required 字段，则将字段更改为可选字段将会有问题 - 旧读者会认为没有此字段的邮件不完整，可能会无意中拒绝或删除它们。你应该考虑为 buffers 编写特定于应用程序的自定义验证的例程。谷歌的一些工程师得出的结论是，使用 required 弊大于利；他们更喜欢只使用 optional 和 repeated。但是，这种观点并未普及。</p>
+</blockquote>
+<blockquote>
+<p>译者注：在 proto3 中已经为兼容性彻底抛弃 required。</p>
+</blockquote>
+<h3 id="添加更多-message-类型"><a href="#添加更多-message-类型" class="headerlink" title="添加更多 message 类型"></a>添加更多 message 类型</h3><p>可以在单个 .proto 文件中定义多种 message 类型。这在你需要定义多个相关 message 的时候会很有用 - 例如，如果要定义与搜索请求相应的搜索回复 message - SearchResponse message，则可以将其添加到相同的 .proto：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">message SearchRequest &#123;</span><br><span class="line">  required string query = 1;</span><br><span class="line">  optional int32 page_number = 2;</span><br><span class="line">  optional int32 result_per_page = 3;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message SearchResponse &#123;</span><br><span class="line"> ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>组合 messages 会导致膨胀虽然可以在单个 .proto 文件中定义多种 messages 类型（例如 message，enum 和 service），但是当在单个文件中定义了大量具有不同依赖关系的 messages 时，它也会导致依赖性膨胀。建议每个 .proto 文件包含尽可能少的 message 类型。</p>
+</blockquote>
+<h3 id="添加注释"><a href="#添加注释" class="headerlink" title="添加注释"></a>添加注释</h3><p>为你的 .proto 文件添加注释，可以使用 C/C++ 语法风格的注释 // 和 /* … */ 。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/* SearchRequest represents a search query, with pagination options to</span><br><span class="line"> * indicate which results to include in the response. */</span><br><span class="line"></span><br><span class="line">message SearchRequest &#123;</span><br><span class="line">  required string query = 1;</span><br><span class="line">  optional int32 page_number = 2;  // Which page number do we want?</span><br><span class="line">  optional int32 result_per_page = 3;  // Number of results to return per page.</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="Reserved-保留字段"><a href="#Reserved-保留字段" class="headerlink" title="Reserved 保留字段"></a>Reserved 保留字段</h3><p>如果你通过完全删除字段或将其注释掉来更新 message 类型，则未来一些用户在做他们的修改或更新时就可能会再次使用这些字段编号。如果以后加载相同 <code>.proto</code> 的旧版本，这可能会导致一些严重问题，包括数据损坏，隐私错误等。确保不会发生这种情况的一种方法是指定已删除字段的字段编号（有时也需要指定名称为保留状态，英文名称可能会导致 JSON 序列化问题）为 “保留” 状态。如果将来的任何用户尝试使用这些字段标识符，protocol buffer 编译器将会抱怨。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">message Foo &#123;</span><br><span class="line">  reserved 2, 15, 9 to 11;</span><br><span class="line">  reserved &quot;foo&quot;, &quot;bar&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>请注意，你不能在同一 “reserved” 语句中将字段名称和字段编号混合在一起指定。</p>
+<h3 id="你的-proto-文件将生成什么？"><a href="#你的-proto-文件将生成什么？" class="headerlink" title="你的 .proto 文件将生成什么？"></a>你的 .proto 文件将生成什么？</h3><p>当你在 <code>.proto</code> 上运行 protocol buffer 编译器时，编译器将会生成所需语言的代码，这些代码可以操作文件中描述的 message 类型，包括获取和设置字段值、将 message 序列化为输出流、以及从输入流中解析出 message。</p>
+<ul>
+<li>  对于 C++，编译器从每个 .proto 生成一个 .h 和 .cc 文件，其中包含文件中描述的每种 message 类型对应的类。</li>
+<li>  对于 <strong>Java</strong>，编译器为每个 message 类型生成一个 .java 文件（类），以及用于创建 message 类实例的特殊 Builder 类。</li>
+<li>  <strong>Python</strong> 有点不同 - Python 编译器生成一个模块，其中包含 .proto 中每种 message 类型的静态描述符，然后与元类一起使用以创建必要的 Python 数据访问类。</li>
+<li>对于 <strong>Go</strong>，编译器会生成一个 .pb.go 文件，其中包含对应每种 message 类型的类型。<br>  你可以按照所选语言的教程了解更多有关各种语言使用 API ​​的信息。有关更多 API 详细信息，请参阅相关的 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/reference/overview">API 参考</a>。</li>
+</ul>
+<h2 id="标量值类型"><a href="#标量值类型" class="headerlink" title="标量值类型"></a>标量值类型</h2><p>标量 message 字段可以具有以下几种类型之一 - 该表显示 .proto 文件中指定的类型，以及自动生成的类中的相应类型：</p>
+<table>
+<thead>
+<tr>
+<th>.proto Type</th>
+<th>Notes</th>
+<th>C++ Type</th>
+<th>Java Type</th>
+<th>Python Type</th>
+<th>Go Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>double</td>
+<td></td>
+<td>double</td>
+<td>double</td>
+<td>float</td>
+<td>*float64</td>
+</tr>
+<tr>
+<td>float</td>
+<td></td>
+<td>float</td>
+<td>float</td>
+<td>float</td>
+<td>*float32</td>
+</tr>
+<tr>
+<td>int32</td>
+<td>使用可变长度编码。编码负数的效率低 - 如果你的字段可能有负值，请改用 sint32</td>
+<td>int32</td>
+<td>int</td>
+<td>int</td>
+<td>*int32</td>
+</tr>
+<tr>
+<td>int64</td>
+<td>使用可变长度编码。编码负数的效率低 - 如果你的字段可能有负值，请改用 sint64</td>
+<td>int64</td>
+<td>long</td>
+<td>int/long</td>
+<td>*int64</td>
+</tr>
+<tr>
+<td>uint32</td>
+<td>使用可变长度编码</td>
+<td>uint32</td>
+<td>int</td>
+<td>int/long</td>
+<td>*uint32</td>
+</tr>
+<tr>
+<td>uint64</td>
+<td>使用可变长度编码</td>
+<td>uint64</td>
+<td>long</td>
+<td>int/long</td>
+<td>*uint64</td>
+</tr>
+<tr>
+<td>sint32</td>
+<td>使用可变长度编码。有符号的 int 值。这些比常规 int32 对负数能更有效地编码</td>
+<td>int32</td>
+<td>int</td>
+<td>int</td>
+<td>*int32</td>
+</tr>
+<tr>
+<td>sint64</td>
+<td>使用可变长度编码。有符号的 int 值。这些比常规 int64 对负数能更有效地编码</td>
+<td>int64</td>
+<td>long</td>
+<td>int/long</td>
+<td>*int64</td>
+</tr>
+<tr>
+<td>fixed32</td>
+<td>总是四个字节。如果值通常大于 228，则比 uint32 更有效。</td>
+<td>uint32</td>
+<td>int</td>
+<td>int/long</td>
+<td>*uint32</td>
+</tr>
+<tr>
+<td>fixed64</td>
+<td>总是八个字节。如果值通常大于 256，则比 uint64 更有效。</td>
+<td>uint64</td>
+<td>long</td>
+<td>int/long</td>
+<td>*uint64</td>
+</tr>
+<tr>
+<td>sfixed32</td>
+<td>总是四个字节</td>
+<td>int32</td>
+<td>int</td>
+<td>int</td>
+<td>*int32</td>
+</tr>
+<tr>
+<td>sfixed64</td>
+<td>总是八个字节</td>
+<td>int64</td>
+<td>long</td>
+<td>int/long</td>
+<td>*int64</td>
+</tr>
+<tr>
+<td>bool</td>
+<td></td>
+<td>bool</td>
+<td>boolean</td>
+<td>bool</td>
+<td>*bool</td>
+</tr>
+<tr>
+<td>string</td>
+<td>字符串必须始终包含 UTF-8 编码或 7 位 ASCII 文本</td>
+<td>string</td>
+<td>String</td>
+<td>str/unicode</td>
+<td>*string</td>
+</tr>
+<tr>
+<td>bytes</td>
+<td>可以包含任意字节序列</td>
+<td>string</td>
+<td>ByteString</td>
+<td>str</td>
+<td>byte</td>
+</tr>
+</tbody></table>
+<p>在 Java 中，无符号的 32 位和 64 位整数使用它们对应的带符号表示，第一个 bit 位只是简单的存储在符号位中。<br>在所有情况下，设置字段的值将执行类型检查以确保其有效。<br>64 位或无符号 32 位整数在解码时始终表示为 long，但如果在设置字段时给出 int，则可以为int。在所有情况下，该值必须适合设置时的类型。见。<br>Python 字符串在解码时表示为 unicode，但如果给出了 ASCII 字符串，则可以是 str（这条可能会发生变化）。</p>
+<h2 id="Optional-可选字段和默认值"><a href="#Optional-可选字段和默认值" class="headerlink" title="Optional 可选字段和默认值"></a>Optional 可选字段和默认值</h2><p>如上所述，message 描述中的元素可以标记为可选 optional。格式良好的 message 可能包含也可能不包含被声明为可选的元素。解析 message 时，如果 message 不包含 optional 元素，则解析对象中的相应字段将设置为该字段的默认值。可以将默认值指定为 message 描述的一部分。例如，假设你要为 SearchRequest 的 result_per_page 字段提供默认值10。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">optional int32 result_per_page = 3 [default = 10];</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果未为 optional 元素指定默认值，则使用特定于类型的默认值：对于字符串，默认值为空字符串。对于 bool，默认值为 false。对于数字类型，默认值为零。对于枚举，默认值是枚举类型定义中列出的第一个值。这意味着在将值添加到枚举值列表的开头时必须小心。有关如何安全的更改定义的指导，请参阅 <code>更新 Message 类型</code> 部分（见下面的 <code>更新 message 类型</code>）。</p>
+<h2 id="枚举-Enumerations"><a href="#枚举-Enumerations" class="headerlink" title="枚举 Enumerations"></a>枚举 Enumerations</h2><p>在定义 message 类型时，你可能希望其中一个字段只有一个预定义的值列表。例如，假设你要为每个 SearchRequest 添加语料库字段，其中语料库可以是 UNIVERSAL，WEB，IMAGES，LOCAL，NEWS，PRODUCTS 或 VIDEO。你可以通过向 message 定义添加枚举来简单地执行此操作 - 具有枚举类型的字段只能将一组指定的常量作为其值（如果你尝试提供不同的值，则解析器会将其视为一个未知的领域）。在下面的例子中，我们添加了一个名为 Corpus 的枚举，其中包含所有可能的值，之后定义了一个类型为 Corpus 枚举的字段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">message SearchRequest &#123;</span><br><span class="line">  required string query = 1;</span><br><span class="line">  optional int32 page_number = 2;</span><br><span class="line">  optional int32 result_per_page = 3 [default = 10];</span><br><span class="line">  enum Corpus &#123;</span><br><span class="line">    UNIVERSAL = 0;</span><br><span class="line">    WEB = 1;</span><br><span class="line">    IMAGES = 2;</span><br><span class="line">    LOCAL = 3;</span><br><span class="line">    NEWS = 4;</span><br><span class="line">    PRODUCTS = 5;</span><br><span class="line">    VIDEO = 6;</span><br><span class="line">  &#125;</span><br><span class="line">  optional Corpus corpus = 4 [default = UNIVERSAL];</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>你可以通过为不同的枚举常量指定相同的值来定义别名。为此，你需要将 allow_alias 选项设置为true，否则 protocol 编译器将在找到别名时生成错误消息。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">enum EnumAllowingAlias &#123;</span><br><span class="line">  option allow_alias = true;</span><br><span class="line">  UNKNOWN = 0;</span><br><span class="line">  STARTED = 1;</span><br><span class="line">  RUNNING = 1;</span><br><span class="line">&#125;</span><br><span class="line">enum EnumNotAllowingAlias &#123;</span><br><span class="line">  UNKNOWN = 0;</span><br><span class="line">  STARTED = 1;</span><br><span class="line">  // RUNNING = 1;  // 取消此行注释将导致 Google 内部的编译错误和外部的警告消息</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>枚举器常量必须在 32 位整数范围内。由于 <code>enum</code> 值在线上使用 <code>varint encoding</code>，负值效率低，因此不推荐使用。你可以在 message 中定义 enums，如上例所示的那样。或者将其定义在 message 外部 - 这样这些 <code>enum</code> 就可以在 <code>.proto</code> 文件中的任何 message 定义中重用。你还可以使用一个 message 中声明的 <code>enum</code> 类型作为不同 message 中字段的类型，使用语法 <em>MessageType</em>.<em>EnumType</em> 来实现。</p>
+<p>当你在使用 <code>enum</code> 的 <code>.proto</code> 上运行 protocol buffer 编译器时，生成的代码将具有相应的用于　Java 或 C++ 的 <code>enum</code>，或者用于创建集合的 Python 的特殊 <code>EnumDescriptor</code> 类。运行时生成的类中具有整数值的符号常量。</p>
+<p>有关如何在应用程序中使用 enums 的更多信息，请参阅相关语言的 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/reference/overview">代码生成指南</a></p>
+<h3 id="保留值"><a href="#保留值" class="headerlink" title="保留值"></a>保留值</h3><p>如果你通过完全删除枚举条目或将其注释掉来更新枚举类型，则未来用户可能在对 message 做出自己的修改或更新时重复使用这些数值。如果以后加载相同 <code>.proto</code> 的旧版本，这可能会导致严重问题，包括数据损坏，隐私错误等。确保不会发生这种情况的一种方法是指定已删除字段的字段编号（有时也需要指定名称为保留状态，英文名称可能会导致 JSON 序列化问题）为 “保留” 状态。如果将来的任何用户尝试使用这些字段标识符，protocol buffer 编译器将会抱怨。你可以使用 <code>max</code> 关键字指定保留的数值范围一直到最大值。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">enum Foo &#123;</span><br><span class="line">  reserved 2, 15, 9 to 11, 40 to max;</span><br><span class="line">  reserved &quot;FOO&quot;, &quot;BAR&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>请注意，你不能在同一 “reserved” 语句中将字段名称和字段编号混合在一起指定。</p>
+<h2 id="使用其他-Message-类型"><a href="#使用其他-Message-类型" class="headerlink" title="使用其他 Message 类型"></a>使用其他 Message 类型</h2><p>你可以使用其他 message 类型作为字段类型。例如，假设你希望在每个 SearchResponse 消息中包含 Result message - 为此，你可以在同一 .proto 中定义 Result message 类型，然后在SearchResponse 中指定 Result 类型的字段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">message SearchResponse &#123;</span><br><span class="line">  repeated Result result = 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message Result &#123;</span><br><span class="line">  required string url = 1;</span><br><span class="line">  optional string title = 2;</span><br><span class="line">  repeated string snippets = 3;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="导入定义-Importing-Definitions"><a href="#导入定义-Importing-Definitions" class="headerlink" title="导入定义 Importing Definitions"></a>导入定义 Importing Definitions</h3><p>在上面的示例中，Result message 类型在与 SearchResponse 相同的文件中定义 - 如果要用作字段类型的 message 类型已在另一个 .proto 文件中定义，该怎么办？</p>
+<p>你可以通过导入来使用其他 .proto 文件中的定义。要导入另一个 .proto 的定义，可以在文件顶部添加一个 import 语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import &quot;myproject/other_protos.proto&quot;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>默认情况下，你只能使用直接导入的 .proto 文件中的定义。但是，有时你可能需要将 .proto 文件移动到新位置。现在，你可以在旧位置放置一个虚拟 .proto 文件，以使用 import public 概念将所有导入转发到新位置，而不是直接移动 .proto 文件并在一次更改中更新所有调用点。导入包含 import public 语句的 proto 的任何人都可以传递依赖导入公共依赖项。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// new.proto</span><br><span class="line">// All definitions are moved here</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// old.proto</span><br><span class="line">// This is the proto that all clients are importing.</span><br><span class="line">import public &quot;new.proto&quot;;</span><br><span class="line">import &quot;other.proto&quot;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// client.proto</span><br><span class="line">import &quot;old.proto&quot;;</span><br><span class="line">// 你可以使用 old.proto 和 new.proto 中的定义，但无法使用 other.proto</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>使用命令 -I/–proto_path 让 protocol 编译器在指定的一组目录中搜索要导入的文件。如果没有给出这个命令选项，它将查找调用编译器所在的目录。通常，你应将 –proto_path 设置为项目的根目录，并对所有导入使用完全限定名称。</p>
+<h3 id="使用-proto3-Message-类型"><a href="#使用-proto3-Message-类型" class="headerlink" title="使用 proto3 Message 类型"></a>使用 proto3 Message 类型</h3><p>可以导入 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/proto3">proto3</a> message 类型并在 proto2 message 中使用它们，反之亦然。但是，proto2 枚举不能用于 proto3 语法。</p>
+<h2 id="嵌套类型-Nested-Types"><a href="#嵌套类型-Nested-Types" class="headerlink" title="嵌套类型 Nested Types"></a>嵌套类型 Nested Types</h2><p>你可以在其他 message 类型中定义和使用 message 类型，如下例所示 - 此处结果消息在SearchResponse 消息中定义：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">message SearchResponse &#123;</span><br><span class="line">  message Result &#123;</span><br><span class="line">    required string url = 1;</span><br><span class="line">    optional string title = 2;</span><br><span class="line">    repeated string snippets = 3;</span><br><span class="line">  &#125;</span><br><span class="line">  repeated Result result = 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果要在其父消息类型之外重用此消息类型，请将其称为 _Parent.Type_：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">message SomeOtherMessage &#123;</span><br><span class="line">  optional SearchResponse.Result result = 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>你可以根据需要深入的嵌套消息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">message Outer &#123;                  // Level 0</span><br><span class="line">  message MiddleAA &#123;  // Level 1</span><br><span class="line">    message Inner &#123;   // Level 2</span><br><span class="line">      required int64 ival = 1;</span><br><span class="line">      optional bool  booly = 2;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  message MiddleBB &#123;  // Level 1</span><br><span class="line">    message Inner &#123;   // Level 2</span><br><span class="line">      required int32 ival = 1;</span><br><span class="line">      optional bool  booly = 2;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="Groups"><a href="#Groups" class="headerlink" title="Groups"></a>Groups</h3><p><strong>请注意，此功能已弃用，在创建新消息类型时不应使用 - 请改用嵌套消息类型。</strong><br>Groups 是在 message 定义中嵌套信息的另一种方法。例如，指定包含许多结果的SearchResponse 的另一种方法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">message SearchResponse &#123;</span><br><span class="line">  repeated group Result = 1 &#123;</span><br><span class="line">    required string url = 2;</span><br><span class="line">    optional string title = 3;</span><br><span class="line">    repeated string snippets = 4;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>group 只是将嵌套 message 类型和字段组合到单个声明中。在你的代码中，你可以将此消息视为具有名为 <code>result</code> 的 <code>Result</code> 类型字段（前一名称转换为小写，以便它不与前者冲突）。因此，此示例完全等同于上面的 <code>SearchResponse</code>，但 message 具有不同的编码结果。</p>
+<blockquote>
+<p>译者注：<br>再次强调，此功能<strong>已弃用</strong>，这里只为尽可能保留原文内容。</p>
+</blockquote>
+<h2 id="更新-message-类型"><a href="#更新-message-类型" class="headerlink" title="更新 message 类型"></a>更新 message 类型</h2><p>如果现有的 message 类型不再满足你的所有需求 - 例如，你希望 message 格式具有额外的字段 - 但你仍然希望使用旧格式创建代码，请不要担心！在不破坏任何现有代码的情况下更新 message 类型非常简单。请记住以下规则：</p>
+<ul>
+<li>  请勿更改任何现有字段的字段编号。</li>
+<li>  你添加的任何新字段都应该是 <code>optional</code> 或 <code>repeated</code>。这意味着使用“旧”消息格式的代码序列化的任何消息都可以由新生成的代码进行解析，因为它们不会缺少任何 <code>required</code> 元素。你应该为这些元素设置合理的 <code>默认值</code>，以便新代码可以正确地与旧代码生成的 message 进行交互。同样，你的新代码创建的 message 可以由旧代码解析：旧的二进制文件在解析时只是忽略新字段。但是未丢弃这个新字段（未知字段），如果稍后序列化消息，则将新字段（未知字段）与其一起序列化 - 因此，如果将消息传递给新代码，则新字段仍然可用。</li>
+<li>  只要在更新的 message 类型中不再使用字段编号，就可以删除非必填字段。你可能希望重命名该字段，可能添加前缀 “OBSOLETE_“，或者将字段编号<strong>保留（Reserved）</strong>，以便将来你的 <code>.proto</code> 的用户不会不小心重用这个编号。</li>
+<li>  只要类型和编号保持不变，非必填字段就可以转换为扩展 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/proto#extensions">extensions</a>，反之亦然。</li>
+<li>  <code>int32</code>，<code>uint32</code>，<code>int64</code>，<code>uint64</code> 和 <code>bool</code> 都是兼容的 - 这意味着你可以将字段从这些类型更改为另一种类型，而不会破坏向前或向后兼容性。如果从中解析出一个不符合相应类型的数字，你将获得与在 C++ 中将该数字转换为该类型时相同的效果（例如，如果将 64 位数字作为 int32 读取，它将被截断为 32 位）。</li>
+<li>  <code>sint32</code> 和 <code>sint64</code> 彼此兼容，但与其他整数类型不兼容。</li>
+<li>  只要字节是有效的 UTF-8，<code>string</code> 和 <code>bytes</code> 就是兼容的。</li>
+<li>  如果字节包含 message 的编码版本，则嵌入 message 与 <code>bytes</code> 兼容。</li>
+<li>  <code>fixed32</code> 与 <code>sfixed32</code> 兼容，<code>fixed64</code> 与 <code>sfixed64</code> 兼容。</li>
+<li>  <code>optional</code> 与 <code>repeated</code> 兼容。给定重复字段的序列化数据作为输入，期望该字段为 <code>optional</code> 的客户端将采用最后一个输入值（如果它是基本类型字段）或合并所有输入元素（如果它是 message 类型字段）。</li>
+<li>  更改默认值通常是正常的，只要你记住永远不会通过网络发送默认值。因此，如果程序接收到未设置特定字段的消息，则程序将看到该程序的协议版本中定义的默认值。它不会看到发件人代码中定义的默认值。</li>
+<li>  <code>enum</code> 与 <code>int32</code>，<code>uint32</code>，<code>int64</code> 和 <code>uint64</code>兼容（注意，如果它们不适合，值将被截断），但要注意 message 反序列化时客户端代码对待它们将有所不同。值得注意的是，当 message 被反序列化时，将丢弃无法识别的 <code>enum</code> 值，这使得字段的 <code>has..</code> 访问器返回 false 并且其 getter 返回 <code>enum</code> 定义中列出的第一个值，或者如果指定了一个默认值则返回默认值。在 repeated 枚举字段的情况下，任何无法识别的值都将从列表中删除。但是，整数字段将始终保留其值。因此，在有可能接收超出范围的枚举值时，对整数升级为 <code>enum</code> 这一操作需要非常小心。</li>
+<li>  在当前的 Java 和 C++ 实现中，当删除无法识别的 <code>enum</code> 值时，它们与其他未知字段一起存储。请注意，如果此数据被序列化，然后由识别这些值的客户端重新解析，则会导致奇怪的行为。在 optional 可选字段的情况下，即使在反序列化原始 message 之后写入新值，旧值仍然可以被客户端识别。在 repeated 字段的情况下，旧值将出现在任何已识别和新添加的值之后，这意味着顺序将不被保留。</li>
+<li>  将单个 <code>optional</code> 值更改为 <strong>new</strong><code>oneof</code> 的成员是安全且二进制兼容的。如果你确定没有代码一次设置多个，则将多个 <code>optional</code> 字段移动到新的 <code>oneof</code> 中可能是安全的。但是将任何字段移动到现有的 <code>oneof</code> 是不安全的。</li>
+</ul>
+<h2 id="扩展-Extensions"><a href="#扩展-Extensions" class="headerlink" title="扩展 Extensions"></a>扩展 Extensions</h2><p>通过扩展，你可以声明 message 中的一系列字段编号用于第三方扩展。扩展名是那些未由原始 .proto 文件定义的字段的占位符。这允许通过使用这些字段编号来定义部分或全部字段从而将其它 .proto 文件定义的字段添加到当前 message 定义中。我们来看一个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">message Foo &#123;</span><br><span class="line">  // ...</span><br><span class="line">  extensions 100 to 199;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这表示 Foo 中的字段数 [100,199] 的范围是为扩展保留的。其他用户现在可以使用指定范围内的字段编号在他们自己的 .proto 文件中为 Foo 添加新字段，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">extend Foo &#123;</span><br><span class="line">  optional int32 bar = 126;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这会将名为 bar 且编号为 126 的字段添加到 Foo 的原始定义中。</p>
+<blockquote>
+<p>译者注：<br>第一段翻译过来的语义实在是太别扭了（因为站在了被扩展字段所在的 .proto 文件的角度来看待扩展），实际站在扩展字段所在的 .proto 文件的角度－就是可以在自己的 .proto 文件中扩展其他人定义的另一个 .proto 中的 message。</p>
+</blockquote>
+<p>当用户的 Foo 消息被编码时，其格式与用户在 Foo 中常规定义新字段的格式完全相同。但是，在应用程序代码中访问扩展字段的方式与访问常规字段略有不同 - 生成的数据访问代码具有用于处理扩展的特殊访问器。那么，举个例子，下面就是如何在 C++ 中设置 bar 的值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Foo foo;</span><br><span class="line">foo.SetExtension(bar, 15);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>类似地，Foo 类定义模板化访问器 HasExtension()，ClearExtension()，GetExtension()，MutableExtension() 和 AddExtension()。它们都具有与正常字段生成的访问器相匹配的语义。有关使用扩展的更多信息，请参阅所选语言的代码生成参考。</p>
+<p>请注意，扩展可以是任何字段类型，包括 message 类型，但不能是 oneofs 或 maps。</p>
+<h3 id="嵌套扩展"><a href="#嵌套扩展" class="headerlink" title="嵌套扩展"></a>嵌套扩展</h3><p>你可以在另一种 message 类型内部声明扩展：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">message Baz &#123;</span><br><span class="line">  extend Foo &#123;</span><br><span class="line">    optional int32 bar = 126;</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在这种情况下，访问此扩展的 C++ 代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Foo foo;</span><br><span class="line">foo.SetExtension(Baz::bar, 15);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>换句话说，唯一的影响是 bar 是在 Baz 的范围内定义。</p>
+<blockquote>
+<p>注意:<br>这是一个常见的混淆源：在一个 message 类型中声明嵌套的扩展块并不意味着外部类型和扩展类型之间存在任何关系。特别是，上面的例子并不意味着 Baz 是 Foo 的任何子类。这意味着符号栏是在 Baz 范围内声明的；它仅仅只是一个静态成员而已。</p>
+</blockquote>
+<p>一种常见的模式是在扩展的字段类型范围内定义扩展 - 例如，这里是 Baz 类型的 Foo 扩展，其中扩展名被定义为 Baz 的一部分：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">message Baz &#123;</span><br><span class="line">  extend Foo &#123;</span><br><span class="line">    optional Baz foo_ext = 127;</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>译者注：<br>这里比较绕，实际上就是要对某个 message A 扩展一个字段 B（B 类型），那么可以将这条扩展语句写在 message B 的定义里。</p>
+</blockquote>
+<p>但是，并不是必须要在类型内才能定义该类型的扩展字段。你也可以这样做：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">message Baz &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 该定义甚至可以移到另一个文件中</span><br><span class="line">extend Foo &#123;</span><br><span class="line">  optional Baz foo_baz_ext = 127;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>实际上，这种语法可能是首选的，以避免混淆。如上所述，嵌套语法经常被不熟悉扩展的用户误认为是子类。</p>
+<h3 id="选择扩展字段编号"><a href="#选择扩展字段编号" class="headerlink" title="选择扩展字段编号"></a>选择扩展字段编号</h3><p>确保两个用户不使用相同的字段编号向同一 message 类型添加扩展名非常重要 - 如果扩展名被意外解释为错误类型，则可能导致数据损坏。你可能需要考虑为项目定义扩展编号的约定以防止这种情况发生。</p>
+<p>如果你的编号约定可能涉及那些具有非常大字段编号的扩展，则可以使用 max 关键字指定扩展范围至编号最大值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">message Foo &#123;</span><br><span class="line">  extensions 1000 to max;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>最大值为 229 - 1，或者 536,870,911。</p>
+<p>与一般选择字段编号时一样，你的编号约定还需要避免 19000 到 19999 的字段编号(FieldDescriptor::kFirstReservedNumber 到 FieldDescriptor::kLastReservedNumber)，因为它们是为 Protocol Buffers 实现保留的。你可以定义包含此范围的扩展名范围，但 protocol 编译器不允许你使用这些编号定义实际扩展名。</p>
+<h2 id="Oneof"><a href="#Oneof" class="headerlink" title="Oneof"></a>Oneof</h2><p>如果你的 message 包含许多可选字段，并且最多只能同时设置其中一个字段，则可以使用 oneof 功能强制执行此行为并节省内存。</p>
+<p>Oneof 字段类似于可选字段，除了 oneof 共享内存中的所有字段，并且最多只能同时设置一个字段。设置 oneof 的任何成员会自动清除所有其他成员。你可以使用特殊的 case() 或 WhichOneof() 方法检查 oneof 字段中当前是哪个值（如果有）被设置，具体方法取决于你选择的语言。</p>
+<h3 id="使用-Oneof"><a href="#使用-Oneof" class="headerlink" title="使用 Oneof"></a>使用 Oneof</h3><p>要在 .proto 中定义 oneof，请使用 oneof 关键字，后跟你的 oneof 名称，在本例中为 test_oneof：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">message SampleMessage &#123;</span><br><span class="line">  oneof test_oneof &#123;</span><br><span class="line">     string name = 4;</span><br><span class="line">     SubMessage sub_message = 9;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>然后，将 oneof 字段添加到 oneof 定义中。你可以添加任何类型的字段，但不能使用 <code>required</code>，<code>optional</code> 或 <code>repeated</code> 关键字。如果需要向 oneof 添加重复字段，可以使用包含重复字段的 message。</p>
+<p>在生成的代码中，oneof 字段与常规 <code>optional</code> 方法具有相同的 getter 和 setter。你还可以使用特殊方法检查 oneof 中的值（如果有）。你可以在相关的 API 参考中找到有关所选语言的 oneof API的更多信息。</p>
+<h3 id="Oneof-特性"><a href="#Oneof-特性" class="headerlink" title="Oneof 特性"></a>Oneof 特性</h3><ul>
+<li>设置 oneof 字段将自动清除 oneof 的所有其他成员。因此，如果你设置了多个字段，则只有你设置的最后一个字段仍然具有值。  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SampleMessage message;</span><br><span class="line">message.set_name(&quot;name&quot;);</span><br><span class="line">CHECK(message.has_name());</span><br><span class="line">message.mutable_sub_message();   // Will clear name field.</span><br><span class="line">CHECK(!message.has_name());</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li>如果解析器遇到同一个 oneof 的多个成员，则在解析的消息中仅使用看到的最后一个成员。</li>
+<li>oneof 不支持扩展</li>
+<li>oneof 不能使用 repeated</li>
+<li>反射 API 适用于 oneof 字段</li>
+<li>如果你使用的是 C++，请确保你的代码不会导致内存崩溃。以下示例代码将崩溃，因为已通过调用 set_name() 方法删除了 sub_message。  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SampleMessage message;</span><br><span class="line">SubMessage* sub_message = message.mutable_sub_message();</span><br><span class="line">message.set_name(&quot;name&quot;);      // Will delete sub_message</span><br><span class="line">sub_message-&gt;set_...            // Crashes here</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li>同样在 C++中，如果你使用 Swap() 交换了两条 oneofs 消息，则每条消息将以另一条消息的 oneof 实例结束：在下面的示例中，msg1 将具有 sub_message 而 msg2 将具有 name。  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">SampleMessage msg1;</span><br><span class="line">msg1.set_name(&quot;name&quot;);</span><br><span class="line">SampleMessage msg2;</span><br><span class="line">msg2.mutable_sub_message();</span><br><span class="line">msg1.swap(&amp;msg2);</span><br><span class="line">CHECK(msg1.has_sub_message());</span><br><span class="line">CHECK(msg2.has_name());</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="向后兼容性问题"><a href="#向后兼容性问题" class="headerlink" title="向后兼容性问题"></a>向后兼容性问题</h3><p>添加或删除其中一个字段时要小心。如果检查 oneof 的值返回 None/NOT_SET，则可能意味着 oneof 尚未设置或已设置为 oneof 的另一个字段。这种情况是无法区分的，因为无法知道未知字段是否是 oneof 成员。</p>
+<h4 id="标签重用问题"><a href="#标签重用问题" class="headerlink" title="标签重用问题"></a>标签重用问题</h4><ul>
+<li>  <strong>将 optional 可选字段移入或移出 oneof</strong>：在序列化和解析 message 后，你可能会丢失一些信息（某些字段将被清除）。但是，你可以安全地将单个字段移动到新的 oneof 中，并且如果已知只有一个字段被设置，则可以移动多个字段。</li>
+<li>  <strong>删除 oneof 字段并将其重新添加回去</strong>：在序列化和解析 message 后，这可能会清除当前设置的 oneof 字段。</li>
+<li>  <strong>拆分或合并 oneof</strong>：这与移动常规的 optional 字段有类似的问题。</li>
+</ul>
+<h2 id="Maps"><a href="#Maps" class="headerlink" title="Maps"></a>Maps</h2><p>如果要在数据定义中创建关联映射，protocol buffers 提供了一种方便快捷的语法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">map&lt;key_type, value_type&gt; map_field = N;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>…其中 <code>key_type</code> 可以是任何整数或字符串类型（任何标量类型除浮点类型和 <code>bytes</code>）。请注意，枚举不是有效的 <code>key_type</code>。<code>value_type</code> 可以是除 map 之外的任何类型。</p>
+<p>因此，举个例子，如果要创建项目映射，其中每个 “Project” message 都与字符串键相关联，则可以像下面这样定义它：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">map&lt;string, Project&gt; projects = 3;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>生成的 map API 目前可用于所有 proto2 支持的语言。你可以在相关的 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/reference/overview">API 参考</a> 中找到有关所选语言的 map API 的更多信息。</p>
+<h3 id="Maps-特性"><a href="#Maps-特性" class="headerlink" title="Maps 特性"></a>Maps 特性</h3><ul>
+<li>  maps 不支持扩展</li>
+<li>  maps 不能是 repeated、optional、required</li>
+<li>  map 值的格式排序和 map 迭代排序未定义，因此你不能依赖于特定顺序的 map 项</li>
+<li>  生成 .proto 的文本格式时，maps 按键排序。数字键按数字排序</li>
+<li>  当解析或合并时，如果有重复的 map 键，则使用最后看到的键。从文本格式解析 map 时，如果存在重复键，则解析可能会失败</li>
+</ul>
+<h3 id="向后兼容性"><a href="#向后兼容性" class="headerlink" title="向后兼容性"></a>向后兼容性</h3><p>map 语法等效于以下内容，因此不支持 map 的 protocol buffers 实现仍可处理你的数据：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">message MapFieldEntry &#123;</span><br><span class="line">  optional key_type key = 1;</span><br><span class="line">  optional value_type value = 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">repeated MapFieldEntry map_field = N;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>任何支持 maps 的 protocol buffers 实现都必须生成和接受上述定义所能接受的数据。</p>
+<h2 id="Packages"><a href="#Packages" class="headerlink" title="Packages"></a>Packages</h2><p>你可以将 optional 可选的包说明符添加到 .proto 文件，以防止 protocol message 类型之间的名称冲突。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">package foo.bar;</span><br><span class="line">message Open &#123; ... &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>然后，你可以在定义 message 类型的字段时使用包说明符：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">message Foo &#123;</span><br><span class="line">  ...</span><br><span class="line">  required foo.bar.Open open = 1;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>package 影响生成的代码的方式取决于你所选择的语言：</p>
+<ul>
+<li>  在 <strong>C++</strong> 中，生成的类包含在 C++ 命名空间中。例如，Open 将位于命名空间 foo::bar 中。</li>
+<li>  在 <strong>Java</strong> 中，除非在 .proto 文件中明确提供选项 java_package，否则该包将用作 Java 包</li>
+<li>  在 <strong>Python</strong> 中，package 指令被忽略，因为 Python 模块是根据它们在文件系统中的位置进行组织的</li>
+</ul>
+<p>请注意，即使 package 指令不直接影响生成的代码，但是例如在 Python 中，仍然强烈建议指定 .proto 文件的包，否则可能导致描述符中的命名冲突并使 proto 对于其他语言不方便。</p>
+<h3 id="Packages-和名称解析"><a href="#Packages-和名称解析" class="headerlink" title="Packages 和名称解析"></a>Packages 和名称解析</h3><p>protocol buffer 语言中的类型名称解析与 C++ 类似：首先搜索最里面的范围，然后搜索下一个范围，依此类推，每个包被认为是其父包的 “内部”。一个领先的 ‘.’（例如 .foo.bar.Baz）意味着从最外层的范围开始。</p>
+<p>protocol buffer 编译器通过解析导入的 .proto 文件来解析所有类型名称。每种语言的代码生成器都知道如何使用相应的语言类型，即使它具有不同的范围和规则。</p>
+<h2 id="定义服务"><a href="#定义服务" class="headerlink" title="定义服务"></a>定义服务</h2><p>如果要将 message 类型与 RPC（远程过程调用）系统一起使用，则可以在 .proto 文件中定义 RPC 服务接口，protocol buffer 编译器将使用你选择的语言生成服务接口代码和存根。因此，例如，如果要定义一个 RPC 服务，其中具有一个获取 SearchRequest 并返回 SearchResponse 的方法，可以在 .proto 文件中定义它，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">service SearchService &#123;</span><br><span class="line">  rpc Search (SearchRequest) returns (SearchResponse);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>默认情况下，protocol 编译器将生成一个名为 SearchService 的抽象接口和相应的 “存根” 实现。存根转发所有对 RpcChannel 的调用，而 RpcChannel 又是一个抽象接口，你必须根据自己的 RPC 系统自行定义。例如，你可以实现一个 RpcChannel，它将 message 序列化并通过 HTTP 将其发送到服务器。换句话说，生成的存根提供了一个类型安全的接口，用于进行基于 protocol-buffer 的 RPC 调用，而不会将你锁定到任何特定的 RPC 实现中。所以，在 C++ 中，你可能会得到这样的代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">using google::protobuf;</span><br><span class="line"></span><br><span class="line">protobuf::RpcChannel* channel;</span><br><span class="line">protobuf::RpcController* controller;</span><br><span class="line">SearchService* service;</span><br><span class="line">SearchRequest request;</span><br><span class="line">SearchResponse response;</span><br><span class="line"></span><br><span class="line">void DoSearch() &#123;</span><br><span class="line">  // You provide classes MyRpcChannel and MyRpcController, which implement</span><br><span class="line">  // the abstract interfaces protobuf::RpcChannel and protobuf::RpcController.</span><br><span class="line">  channel = new MyRpcChannel(&quot;somehost.example.com:1234&quot;);</span><br><span class="line">  controller = new MyRpcController;</span><br><span class="line"></span><br><span class="line">  // The protocol compiler generates the SearchService class based on the</span><br><span class="line">  // definition given above.</span><br><span class="line">  service = new SearchService::Stub(channel);</span><br><span class="line"></span><br><span class="line">  // Set up the request.</span><br><span class="line">  request.set_query(&quot;protocol buffers&quot;);</span><br><span class="line"></span><br><span class="line">  // Execute the RPC.</span><br><span class="line">  service-&gt;Search(controller, request, response, protobuf::NewCallback(&amp;Done));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void Done() &#123;</span><br><span class="line">  delete service;</span><br><span class="line">  delete channel;</span><br><span class="line">  delete controller;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>所有服务类还实现了 Service 接口，它提供了一种在编译时不知道方法名称或其输入和输出类型的情况下来调用特定方法的方法。在服务器端，这可用于实现一个可以注册服务的 RPC 服务器。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">using google::protobuf;</span><br><span class="line"></span><br><span class="line">class ExampleSearchService : public SearchService &#123;</span><br><span class="line"> public:</span><br><span class="line">  void Search(protobuf::RpcController* controller,</span><br><span class="line">              const SearchRequest* request,</span><br><span class="line">              SearchResponse* response,</span><br><span class="line">              protobuf::Closure* done) &#123;</span><br><span class="line">    if (request-&gt;query() == &quot;google&quot;) &#123;</span><br><span class="line">      response-&gt;add_result()-&gt;set_url(&quot;http://www.google.com&quot;);</span><br><span class="line">    &#125; else if (request-&gt;query() == &quot;protocol buffers&quot;) &#123;</span><br><span class="line">      response-&gt;add_result()-&gt;set_url(&quot;http://protobuf.googlecode.com&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    done-&gt;Run();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">  // You provide class MyRpcServer.  It does not have to implement any</span><br><span class="line">  // particular interface; this is just an example.</span><br><span class="line">  MyRpcServer server;</span><br><span class="line"></span><br><span class="line">  protobuf::Service* service = new ExampleSearchService;</span><br><span class="line">  server.ExportOnPort(1234, service);</span><br><span class="line">  server.Run();</span><br><span class="line"></span><br><span class="line">  delete service;</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果你不想插入自己现有的 RPC 系统，现在可以使用 <a target="_blank" rel="noopener" href="https://github.com/grpc/grpc-common">gRPC</a>: 一个由谷歌开发的与语言和平台无关的开源 RPC 系统。gRPC 特别适用于 protocol buffers，并允许你使用特殊的 protocol buffers 编译器插件直接从 <code>.proto</code> 文件生成相关的 RPC 代码。但是，由于使用 proto2 和 proto3 生成的客户端和服务器之间存在潜在的兼容性问题，我们建议你使用 proto3 来定义 gRPC 服务。你可以在 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/fc7485af828d">Proto3 语言指南</a> 中找到有关 proto3 语法的更多信息。如果你确实希望将 proto2 与 gRPC 一起使用，则需要使用 3.0.0 或更高版本的 protocol buffers 编译器和库。</p>
+<p>除了 gRPC 之外，还有许多正在进行的第三方项目，用于开发 Protocol Buffers 的 RPC 实现。有关我们了解的项目的链接列表，请参阅 <a target="_blank" rel="noopener" href="https://github.com/google/protobuf/blob/master/docs/third_party.md">第三方附加组件维基页面</a>。</p>
+<h2 id="选项-Options"><a href="#选项-Options" class="headerlink" title="选项 Options"></a>选项 Options</h2><p>.proto 文件中的各个声明可以使用许多选项进行注释。选项不会更改声明的整体含义，但可能会影响在特定上下文中处理它的方式。可用选项的完整列表在 google/protobuf/descriptor.proto 中定义。</p>
+<p>一些选项是文件级选项，这意味着它们应该在顶级范围内编写，而不是在任何消息，枚举或服务定义中。一些选项是 message 消息级选项，这意味着它们应该写在 message 消息定义中。一些选项是字段级选项，这意味着它们应该写在字段定义中。选项也可以写在枚举类型、枚举值、服务类型和服务方法上，但是，目前在这几个项目上并没有任何有用的选项。</p>
+<p>以下是一些最常用的选项：</p>
+<ul>
+<li>java_package（文件选项）：要用于生成的 Java 类的包。如果 .proto 文件中没有给出显式的 java_package 选项，那么默认情况下将使用 proto 包（使用 .proto 文件中的 “package” 关键字指定）。但是，proto 包通常不能生成好的 Java 包，因为 proto 包不会以反向域名开头。如果不生成Java 代码，则此选项无效。```<br>  option java_package = “com.example.foo”;  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">    </span><br><span class="line">*   java\_outer\_classname（文件选项）：要生成的最外层 Java 类（以及文件名）的类名。如果 .proto 文件中没有指定显式的 java\_outer\_classname，则通过将 .proto 文件名转换为 camel-case 来构造类名（因此 foo\_bar.proto 变为 FooBar.java）。如果不生成 Java 代码，则此选项无效。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+option java_outer_classname = “Ponycopter”;</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">*   optimize\_for（文件选项）：可以设置为 **SPEED**，**CODE\_SIZE** 或 **LITE\_RUNTIME**。这会以下列方式影响 C++和 Java 的代码生成器（可能还有第三方生成器）：</span><br><span class="line">    </span><br><span class="line">    *   **SPEED（默认值）**：protocol buffer 编译器将生成用于对 message 类型进行序列化，解析和执行其他常见操作的代码。此代码经过高度优化。</span><br><span class="line">    *   **CODE\_SIZE**：protocol buffer 编译器将生成最少的类，并依赖于基于反射的共享代码来实现序列化，解析和各种其他操作。因此，生成的代码将比使用 SPEED 小得多，但操作会更慢。类仍将实现与 SPEED 模式完全相同的公共 API。此模式在包含大量 .proto 文件的应用程序中最有用，并且不需要所有这些文件都非常快。</span><br><span class="line">    *   **LITE\_RUNTIME**：protocol buffer 编译器将生成仅依赖于 “lite” 运行时库（libprotobuf-lite 而不是libprotobuf）的类。精简版运行时比整个库小得多（大约小一个数量级），但省略了描述符和反射等特定功能。这对于在移动电话等受限平台上运行的应用程序尤其有用。编译器仍将生成所有方法的快速实现，就像在 SPEED 模式下一样。生成的类将仅实现每种语言的 MessageLite 接口，该接口仅提供完整 Message 接口的方法的子集。</span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+<pre><code>option optimize_for = CODE_SIZE;
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">    </span><br><span class="line">*   `cc_generic_services`，`java_generic_services`，`py_generic_services`（文件选项）：protocol buffer 编译器应根据服务定义判断是否生成 C++，Java 和 Python 抽象服务代码。由于遗留原因，这些默认为 “true”。但是，从版本 2.3.0（2010年1月）开始，RPC 实现最好提供 [代码生成器插件](https://developers.google.com/protocol-buffers/docs/reference/cpp/google.protobuf.compiler.plugin.pb) 生成更具体到每个系统的代码，而不是依赖于 “抽象” 服务。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</code></pre>
+<p>// This file relies on plugins to generate service code.<br>option cc_generic_services = false;<br>option java_generic_services = false;<br>option py_generic_services = false;</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">*   `cc_enable_arenas`（文件选项）：为 C++ 生成的代码启用 [arena allocation](https://developers.google.com/protocol-buffers/docs/reference/arenas)</span><br><span class="line">*   message\_set\_wire\_format（消息选项）：如果设置为 true，则消息使用不同的二进制格式，旨在与 Google 内部使用的旧格式兼容，即 MessageSet。Google 以外的用户可能永远不需要使用此选项。必须严格按如下方式声明消息：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>message Foo {<br>  option message_set_wire_format = true;<br>  extensions 4 to max;<br>}</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">*   `packed`（字段选项）：如果在基本数字类型的重复字段上设置为 &#x27;true\`，则一个更紧凑的编码 被使用。使用此选项没有任何缺点。但请注意，在版本 2.3.0 之前，在不期望的情况下接收打包数据的解析器将忽略它。因此，在不破坏兼容性的情况下，无法将现有字段更改为打包格式。在 2.3.0 及更高版本中，此更改是安全的，因为可打包字段的解析器将始终接受这两种格式，但如果你必须使用旧的 protobuf 版本处理旧程序，请务必小心。```</span><br><span class="line">    repeated int32 samples = 4 [packed=true];</span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>deprecated</code>（field option）：如果设置为 <code>true</code>，表示该字段已弃用，新代码不应使用该字段。在大多数语言中，这没有实际效果。在 Java 中，这变成了 <code>@Deprecated</code> 注释。将来，其他特定于语言的代码生成器可能会在字段的访问器上生成弃用注释，这将导致在编译尝试使用该字段的代码时发出警告。如果任何人都未使用该字段，并且你希望阻止新用户使用该字段，请考虑使用 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/proto#reserved">reserved</a> 替换字段声明。```<br>  optional int32 old_field = 6 [deprecated=true];  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    </span><br><span class="line"></span><br><span class="line">### 自定义选项</span><br><span class="line"></span><br><span class="line">Protocol Buffers 甚至允许你定义和使用自己的选项。请注意，这是 **高级功能**，大多数人不需要。由于选项是由 `google/protobuf/descriptor.proto`（如 `FileOptions` 或 `FieldOptions`）中定义的消息定义的，因此定义你自己的选项只需要扩展这些消息。例如：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+import “google/protobuf/descriptor.proto”;</li>
+</ul>
+<p>extend google.protobuf.MessageOptions {<br>  optional string my_option = 51234;<br>}</p>
+<p>message MyMessage {<br>  option (my_option) = “Hello world!”;<br>}</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">这里我们通过扩展 MessageOptions 定义了一个新的 message 级选项。然后，当我们使用该选项时，必须将选项名称括在括号中以指示它是扩展名。我们现在可以在 C++ 中读取 my\_option 的值，如下所示：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>string value = MyMessage::descriptor()-&gt;options().GetExtension(my_option);</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">这里，`MyMessage::descriptor()-&gt;options()` 返回 `MyMessage` 的 `MessageOptions` protocol message。从中读取自定义选项就像阅读任何其他扩展。</span><br><span class="line"></span><br><span class="line">同样，在 Java 中我们会写：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>String value = MyProtoFile.MyMessage.getDescriptor().getOptions().getExtension(MyProtoFile.myOption);</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">在 Python 中它将是：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>value = my_proto_file_pb2.MyMessage.DESCRIPTOR.GetOptions()<br>  .Extensions[my_proto_file_pb2.my_option]</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">可以在 Protocol Buffers 语言中为每种结构自定义选项。这是一个使用各种选项的示例：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>import “google/protobuf/descriptor.proto”;</p>
+<p>extend google.protobuf.FileOptions {<br>  optional string my_file_option = 50000;<br>}<br>extend google.protobuf.MessageOptions {<br>  optional int32 my_message_option = 50001;<br>}<br>extend google.protobuf.FieldOptions {<br>  optional float my_field_option = 50002;<br>}<br>extend google.protobuf.EnumOptions {<br>  optional bool my_enum_option = 50003;<br>}<br>extend google.protobuf.EnumValueOptions {<br>  optional uint32 my_enum_value_option = 50004;<br>}<br>extend google.protobuf.ServiceOptions {<br>  optional MyEnum my_service_option = 50005;<br>}<br>extend google.protobuf.MethodOptions {<br>  optional MyMessage my_method_option = 50006;<br>}</p>
+<p>option (my_file_option) = “Hello world!”;</p>
+<p>message MyMessage {<br>  option (my_message_option) = 1234;</p>
+<p>  optional int32 foo = 1 [(my_field_option) = 4.5];<br>  optional string bar = 2;<br>}</p>
+<p>enum MyEnum {<br>  option (my_enum_option) = true;</p>
+<p>  FOO = 1 [(my_enum_value_option) = 321];<br>  BAR = 2;<br>}</p>
+<p>message RequestType {}<br>message ResponseType {}</p>
+<p>service MyService {<br>  option (my_service_option) = FOO;</p>
+<p>  rpc MyMethod(RequestType) returns(ResponseType) {<br>    // Note:  my_method_option has type MyMessage.  We can set each field<br>    //   within it using a separate “option” line.<br>    option (my_method_option).foo = 567;<br>    option (my_method_option).bar = “Some string”;<br>  }<br>}</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">请注意，如果要在除定义它之外的包中使用自定义选项，则必须在选项名称前加上包名称，就像对类型名称一样。例如：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>// foo.proto<br>import “google/protobuf/descriptor.proto”;<br>package foo;<br>extend google.protobuf.MessageOptions {<br>  optional string my_option = 51234;<br>}</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">```</span><br><span class="line">// bar.proto</span><br><span class="line">import &quot;foo.proto&quot;;</span><br><span class="line">package bar;</span><br><span class="line">message MyMessage &#123;</span><br><span class="line">  option (foo.my_option) = &quot;Hello world!&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>最后一件事：由于自定义选项是扩展名，因此必须为其分配字段编号，就像任何其他字段或扩展名一样。在上面的示例中，我们使用了 50000-99999 范围内的字段编号。此范围保留供个别组织内部使用，因此你可以自由使用此范围内的数字用于内部应用程序。但是，如果你打算在公共应用程序中使用自定义选项，则务必确保你的字段编号是全局唯一的。要获取全球唯一的字段编号，请发送请求以向 <a target="_blank" rel="noopener" href="https://github.com/google/protobuf/blob/master/docs/options.md">protobuf全球扩展注册表</a> 添加条目。通常你只需要一个扩展号。你可以通过将多个选项放在子消息中来实现一个扩展号声明多个选项：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">message FooOptions &#123;</span><br><span class="line">  optional int32 opt1 = 1;</span><br><span class="line">  optional string opt2 = 2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extend google.protobuf.FieldOptions &#123;</span><br><span class="line">  optional FooOptions foo_options = 1234;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// usage:</span><br><span class="line">message Bar &#123;</span><br><span class="line">  optional int32 a = 1 [(foo_options).opt1 = 123, (foo_options).opt2 = &quot;baz&quot;];</span><br><span class="line">  // alternative aggregate syntax (uses TextFormat):</span><br><span class="line">  optional int32 b = 2 [(foo_options) = &#123; opt1: 123 opt2: &quot;baz&quot; &#125;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>另请注意，每种选项类型（文件级别，消息级别，字段级别等）都有自己的数字空间，例如，你可以使用相同的数字声明 FieldOptions 和 MessageOptions 的扩展名。</p>
+<h2 id="生成你的类"><a href="#生成你的类" class="headerlink" title="生成你的类"></a>生成你的类</h2><p>要生成 Java，Python 或 C++代码，你需要使用 <code>.proto</code> 文件中定义的 message 类型，你需要在 <code>.proto</code> 上运行 protocol buffer 编译器 <code>protoc</code>。如果尚未安装编译器，请 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/downloads.html">下载软件包</a> 并按照 README 文件中的说明进行操作。</p>
+<p>Protocol 编译器的调用如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">protoc --proto_path=IMPORT_PATH --cpp_out=DST_DIR --java_out=DST_DIR --python_out=DST_DIR path/to/file.proto</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>  IMPORT_PATH 指定在解析导入指令时查找 .proto 文件的目录。如果省略，则使用当前目录。可以通过多次传递 –proto_path 选项来指定多个导入目录；他们将按顺序搜索。-I = IMPORT_PATH 可以用作 –proto_path 的缩写形式。</li>
+<li>你可以提供一个或多个输出指令：<ul>
+<li>  <code>--cpp_out</code>在 <code>DST_DIR</code> 中生成 C++ 代码。有关详细信息，请参阅 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/reference/cpp-generated">C++ 生成的代码参考</a> 。</li>
+<li>  <code>--java_out</code>在<code>DST_DIR</code>中生成 Java 代码。有关更多信息，请参阅 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/reference/java-generated">Java 生成的代码参考</a> 。</li>
+<li><code>--python_out</code> 在 <code>DST_DIR</code> 中生成 Python 代码。有关更多信息，请参阅 <a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/reference/python-generated">Python 生成的代码</a> 。<br>  为了方便起见，如果 DST_DIR 以 .zip 或 .jar 结尾，编译器会将输出写入到具有给定名称的单个 ZIP 格式的存档文件。.jar 输出还将根据 Java JAR 规范的要求提供清单文件。请注意，如果输出存档已存在，则会被覆盖；编译器不够智能，无法将文件添加到现有存档中。</li>
+</ul>
+</li>
+<li>  你必须提供一个或多个 .proto 文件作为输入。可以一次指定多个 .proto 文件。虽然文件是相对于当前目录命名的，但每个文件必须驻留在其中一个 IMPORT_PATH 中，以便编译器可以确定其规范名称。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/proto2/" rel="tag"><i class="fa fa-tag"></i> proto2</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2023/03/06/DPDK-OVS-QEMU%E5%89%8D%E5%90%8E%E7%AB%AF%E5%90%AF%E5%8A%A8vm/" rel="next" title="DPDK+OVS+QEMU前后端启动vm">
+                <i class="fa fa-chevron-left"></i> DPDK+OVS+QEMU前后端启动vm
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2023/03/08/protobuf%E4%BD%BF%E7%94%A8/" rel="prev" title="protobuf使用">
+                protobuf使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mashuyu.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+                <a href="/archives">
+                  <span class="site-state-item-count">248</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">154</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/rma-shuyu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1004129700@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AA-Message-%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">定义一个 Message 类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A%E5%AD%97%E6%AE%B5%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">指定字段类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E9%85%8D%E5%AD%97%E6%AE%B5%E7%BC%96%E5%8F%B7"><span class="nav-number">1.2.</span> <span class="nav-text">分配字段编号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A%E5%AD%97%E6%AE%B5%E8%A7%84%E5%88%99"><span class="nav-number">1.3.</span> <span class="nav-text">指定字段规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E6%9B%B4%E5%A4%9A-message-%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">添加更多 message 类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E6%B3%A8%E9%87%8A"><span class="nav-number">1.5.</span> <span class="nav-text">添加注释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reserved-%E4%BF%9D%E7%95%99%E5%AD%97%E6%AE%B5"><span class="nav-number">1.6.</span> <span class="nav-text">Reserved 保留字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%A0%E7%9A%84-proto-%E6%96%87%E4%BB%B6%E5%B0%86%E7%94%9F%E6%88%90%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">1.7.</span> <span class="nav-text">你的 .proto 文件将生成什么？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%87%E9%87%8F%E5%80%BC%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">标量值类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Optional-%E5%8F%AF%E9%80%89%E5%AD%97%E6%AE%B5%E5%92%8C%E9%BB%98%E8%AE%A4%E5%80%BC"><span class="nav-number">3.</span> <span class="nav-text">Optional 可选字段和默认值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%9A%E4%B8%BE-Enumerations"><span class="nav-number">4.</span> <span class="nav-text">枚举 Enumerations</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%9D%E7%95%99%E5%80%BC"><span class="nav-number">4.1.</span> <span class="nav-text">保留值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%85%B6%E4%BB%96-Message-%E7%B1%BB%E5%9E%8B"><span class="nav-number">5.</span> <span class="nav-text">使用其他 Message 类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5%E5%AE%9A%E4%B9%89-Importing-Definitions"><span class="nav-number">5.1.</span> <span class="nav-text">导入定义 Importing Definitions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-proto3-Message-%E7%B1%BB%E5%9E%8B"><span class="nav-number">5.2.</span> <span class="nav-text">使用 proto3 Message 类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B5%8C%E5%A5%97%E7%B1%BB%E5%9E%8B-Nested-Types"><span class="nav-number">6.</span> <span class="nav-text">嵌套类型 Nested Types</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Groups"><span class="nav-number">6.1.</span> <span class="nav-text">Groups</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0-message-%E7%B1%BB%E5%9E%8B"><span class="nav-number">7.</span> <span class="nav-text">更新 message 类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A9%E5%B1%95-Extensions"><span class="nav-number">8.</span> <span class="nav-text">扩展 Extensions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B5%8C%E5%A5%97%E6%89%A9%E5%B1%95"><span class="nav-number">8.1.</span> <span class="nav-text">嵌套扩展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E6%89%A9%E5%B1%95%E5%AD%97%E6%AE%B5%E7%BC%96%E5%8F%B7"><span class="nav-number">8.2.</span> <span class="nav-text">选择扩展字段编号</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Oneof"><span class="nav-number">9.</span> <span class="nav-text">Oneof</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-Oneof"><span class="nav-number">9.1.</span> <span class="nav-text">使用 Oneof</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Oneof-%E7%89%B9%E6%80%A7"><span class="nav-number">9.2.</span> <span class="nav-text">Oneof 特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%91%E5%90%8E%E5%85%BC%E5%AE%B9%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">9.3.</span> <span class="nav-text">向后兼容性问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%87%E7%AD%BE%E9%87%8D%E7%94%A8%E9%97%AE%E9%A2%98"><span class="nav-number">9.3.1.</span> <span class="nav-text">标签重用问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Maps"><span class="nav-number">10.</span> <span class="nav-text">Maps</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Maps-%E7%89%B9%E6%80%A7"><span class="nav-number">10.1.</span> <span class="nav-text">Maps 特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%91%E5%90%8E%E5%85%BC%E5%AE%B9%E6%80%A7"><span class="nav-number">10.2.</span> <span class="nav-text">向后兼容性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Packages"><span class="nav-number">11.</span> <span class="nav-text">Packages</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Packages-%E5%92%8C%E5%90%8D%E7%A7%B0%E8%A7%A3%E6%9E%90"><span class="nav-number">11.1.</span> <span class="nav-text">Packages 和名称解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E6%9C%8D%E5%8A%A1"><span class="nav-number">12.</span> <span class="nav-text">定义服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E9%A1%B9-Options"><span class="nav-number">13.</span> <span class="nav-text">选项 Options</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E4%BD%A0%E7%9A%84%E7%B1%BB"><span class="nav-number">14.</span> <span class="nav-text">生成你的类</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rma-shuyu</span>
+
+  
+</div>
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共312.4k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'D2xdJ1c0QWBntVsHIVyVXtSZ-gzGzoHsz',
+        appKey: 'UGFWDjX2oTi2dIoWPAyisa9S',
+        placeholder: '请在此输入您的留言',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('Copied')
+          else $(this).text('Copy failed')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>
